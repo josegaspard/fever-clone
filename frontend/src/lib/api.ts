@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -158,7 +158,7 @@ export async function deleteEvent(id: string): Promise<void> {
 }
 
 export async function getAdminEvents(): Promise<Event[]> {
-  return fetchApi<Event[]>('/events/admin/all');
+  return fetchApi<Event[]>('/events/admin');
 }
 
 // ── Cities ─────────────────────────────────────────────────────────────────
