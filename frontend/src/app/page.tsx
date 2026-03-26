@@ -25,6 +25,7 @@ function transformEvent(row: Record<string, unknown>) {
     address: row.address as string | undefined,
     lat: row.lat as number | undefined,
     lng: row.lng as number | undefined,
+    currency: row.currency as string | undefined,
     status: row.status as string,
     featured: row.featured as boolean,
     capacity: row.capacity as number | undefined,
@@ -38,19 +39,30 @@ function transformEvent(row: Record<string, unknown>) {
   };
 }
 
+export const metadata = {
+  title: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
+  description: 'Explora conciertos, gastronomía, arte, festivales y más. Crea tu Day perfecto en Ciudad de México, Madrid, Barcelona, New York, London y Paris. Eventos gratuitos y de pago.',
+};
+
 export default async function HomePage() {
   // Fetch all data server-side in parallel
-  const [featuredRes, cdmxRes, categoriesRes, citiesRes] = await Promise.all([
+  const [featuredRes, cdmxRes, freeRes, popularRes, categoriesRes, citiesRes, totalCount] = await Promise.all([
     supabase.from('events').select('*, cities(*), categories(*)').eq('status', 'PUBLISHED').eq('featured', true).order('date', { ascending: true }).limit(12),
     supabase.from('events').select('*, cities(*), categories(*)').eq('status', 'PUBLISHED').eq('city_id', 6).order('date', { ascending: true }).limit(12),
+    supabase.from('events').select('*, cities(*), categories(*)').eq('status', 'PUBLISHED').eq('price', 0).order('rating', { ascending: false }).limit(8),
+    supabase.from('events').select('*, cities(*), categories(*)').eq('status', 'PUBLISHED').order('sold_count', { ascending: false }).limit(12),
     supabase.from('categories').select('id, name, slug, icon, color').order('name'),
     supabase.from('cities').select('id, name, slug, image, country').order('name'),
+    supabase.from('events').select('id', { count: 'exact', head: true }).eq('status', 'PUBLISHED'),
   ]);
 
   const featured = (featuredRes.data || []).map(transformEvent) as unknown as Event[];
   const cdmxEvents = (cdmxRes.data || []).map(transformEvent) as unknown as Event[];
+  const freeEvents = (freeRes.data || []).map(transformEvent) as unknown as Event[];
+  const popularEvents = (popularRes.data || []).map(transformEvent) as unknown as Event[];
   const categories = categoriesRes.data || [];
   const cities = citiesRes.data || [];
+  const eventCount = totalCount.count || 0;
 
   // Fetch events per category
   const categoryEvents = await Promise.all(
@@ -75,10 +87,48 @@ export default async function HomePage() {
     <div>
       <HeroBanner />
 
-      <div className="max-w-7xl mx-auto px-4 space-y-12 pb-16">
+      {/* How it works */}
+      <section className="max-w-5xl mx-auto px-4 py-16">
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">
+          Crea tu <span className="gradient-text">Day perfecto</span> en 3 pasos
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { icon: '🔍', title: 'Explora eventos', desc: 'Descubre experiencias únicas en tu ciudad: conciertos, gastronomía, arte y más.' },
+            { icon: '📅', title: 'Crea tu Day', desc: 'Agrega actividades a tu plan diario. Te mostramos la ruta y el costo total.' },
+            { icon: '🎉', title: 'Disfruta', desc: 'Obtén tus tickets QR, comparte con amigos y vive un día inolvidable.' },
+          ].map((step, i) => (
+            <div key={i} className="text-center space-y-3 animate-fade-in" style={{ animationDelay: `${i * 150}ms` }}>
+              <div className="text-4xl">{step.icon}</div>
+              <h3 className="text-lg font-bold text-white">{step.title}</h3>
+              <p className="text-sm text-gray-400">{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="border-y border-[#2a2a2a] bg-[#111]">
+        <div className="max-w-5xl mx-auto px-4 py-10 grid grid-cols-3 gap-4 text-center">
+          <div>
+            <p className="text-3xl font-extrabold gradient-text">{eventCount}+</p>
+            <p className="text-sm text-gray-400 mt-1">Eventos</p>
+          </div>
+          <div>
+            <p className="text-3xl font-extrabold gradient-text">{cities.length}</p>
+            <p className="text-sm text-gray-400 mt-1">Ciudades</p>
+          </div>
+          <div>
+            <p className="text-3xl font-extrabold gradient-text">{categories.length}</p>
+            <p className="text-sm text-gray-400 mt-1">Categorías</p>
+          </div>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 space-y-14 py-16">
         {/* Featured */}
         <EventCarousel
-          title="Destacados"
+          title="🔥 Destacados"
           events={featured}
           loading={false}
           viewAllHref="/search?featured=true"
@@ -87,10 +137,30 @@ export default async function HomePage() {
         {/* CDMX Events */}
         {cdmxEvents.length > 0 && (
           <EventCarousel
-            title="Lo mejor en Ciudad de México"
+            title="🇲🇽 Lo mejor en Ciudad de México"
             events={cdmxEvents}
             loading={false}
             viewAllHref="/search?city=cdmx"
+          />
+        )}
+
+        {/* Free events */}
+        {freeEvents.length > 0 && (
+          <EventCarousel
+            title="🎁 Eventos gratuitos"
+            events={freeEvents}
+            loading={false}
+            viewAllHref="/search?maxPrice=0"
+          />
+        )}
+
+        {/* Most popular */}
+        {popularEvents.length > 0 && (
+          <EventCarousel
+            title="🏆 Los más populares"
+            events={popularEvents}
+            loading={false}
+            viewAllHref="/search?sortBy=popularity"
           />
         )}
 

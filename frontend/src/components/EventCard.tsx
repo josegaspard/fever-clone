@@ -65,9 +65,12 @@ export default function EventCard({
     }
   };
 
+  const currencySymbol = event.currency === 'MXN' ? '$' : event.currency === 'USD' ? '$' : event.currency === 'GBP' ? '£' : '€';
+  const currencyLabel = event.currency || 'EUR';
+
   return (
     <Link href={`/events/${event.slug}`} className="group block">
-      <div className="bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#2a2a2a] transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-lg group-hover:shadow-black/30">
+      <article className="card-hover bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#2a2a2a] transition-all duration-300 group-hover:border-[#e63946]/30">
         {/* Image */}
         <div className="relative aspect-[3/4] overflow-hidden">
           {event.image ? (
@@ -75,7 +78,7 @@ export default function EventCard({
               src={event.image}
               alt={event.title}
               loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a] flex items-center justify-center">
@@ -148,11 +151,15 @@ export default function EventCard({
           <div className="flex items-center gap-2">
             {event.originalPrice && event.originalPrice > event.price && (
               <span className="text-xs text-gray-500 line-through">
-                {event.originalPrice.toFixed(2)}&euro;
+                {currencySymbol}{event.originalPrice.toFixed(0)}
               </span>
             )}
             <span className="text-sm font-bold text-white">
-              {event.price === 0 ? 'Gratis' : `${event.price.toFixed(2)}\u20AC`}
+              {event.price === 0 ? (
+                <span className="text-green-400">Gratis</span>
+              ) : (
+                `${currencySymbol}${event.price.toFixed(0)} ${currencyLabel}`
+              )}
             </span>
           </div>
           {event.rating !== undefined && event.rating > 0 && (
@@ -161,7 +168,7 @@ export default function EventCard({
             </div>
           )}
         </div>
-      </div>
+      </article>
     </Link>
   );
 }

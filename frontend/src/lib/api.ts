@@ -44,6 +44,7 @@ export interface Event {
   address?: string;
   lat?: number;
   lng?: number;
+  currency?: string;
   status: string;
   featured: boolean;
   capacity?: number;
