@@ -49,19 +49,19 @@ export default function EditEventPage() {
     cityId: '',
     categoryId: '',
     address: '',
-    status: 'draft',
+    status: 'DRAFT',
     featured: false,
     capacity: '',
   });
 
   useEffect(() => {
-    if (!authLoading && (!user || user.role !== 'admin')) {
+    if (!authLoading && (!user || user.role?.toUpperCase() !== 'ADMIN')) {
       router.push('/');
     }
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (!user || user.role !== 'admin') return;
+    if (!user || user.role?.toUpperCase() !== 'ADMIN') return;
 
     async function load() {
       try {
@@ -394,8 +394,8 @@ export default function EditEventPage() {
               onChange={(e) => updateField('status', e.target.value)}
               className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
             >
-              <option value="draft">Borrador</option>
-              <option value="published">Publicado</option>
+              <option value="DRAFT">Borrador</option>
+              <option value="PUBLISHED">Publicado</option>
             </select>
           </div>
 

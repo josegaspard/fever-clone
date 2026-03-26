@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
     const categorySlug = searchParams.get('category') || searchParams.get('categorySlug');
     const search = searchParams.get('q') || searchParams.get('search');
     const featured = searchParams.get('featured');
-    const status = searchParams.get('status') || 'published';
+    const status = (searchParams.get('status') || 'PUBLISHED').toUpperCase();
     const sortBy = searchParams.get('sortBy');
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '24', 10);
@@ -111,7 +111,7 @@ export async function GET(req: NextRequest) {
       );
 
     // Filter by status
-    if (status && status !== 'all') {
+    if (status && status !== 'ALL') {
       query = query.eq('status', status);
     }
 
@@ -263,7 +263,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const user = await getUserFromRequest(req);
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role.toUpperCase() !== 'ADMIN') {
       return NextResponse.json(
         { message: 'Unauthorized' },
         { status: 401 }
@@ -292,7 +292,7 @@ export async function POST(req: NextRequest) {
       city_id: body.cityId || null,
       category_id: body.categoryId || null,
       organizer_id: body.organizerId || user.id,
-      status: body.status || 'draft',
+      status: body.status ? body.status.toUpperCase() : 'DRAFT',
       featured: body.featured || false,
       capacity: body.capacity ? Number(body.capacity) : null,
     };

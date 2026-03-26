@@ -19,7 +19,7 @@ export async function GET() {
     const { data: counts } = await supabase
       .from('events')
       .select('city_id')
-      .eq('status', 'published');
+      .eq('status', 'PUBLISHED');
 
     const countMap: Record<string, number> = {};
     if (counts) {

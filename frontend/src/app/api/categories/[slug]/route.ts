@@ -26,7 +26,7 @@ export async function GET(
       .from('events')
       .select('id', { count: 'exact', head: true })
       .eq('category_id', category.id)
-      .eq('status', 'published');
+      .eq('status', 'PUBLISHED');
 
     return NextResponse.json({
       id: category.id,

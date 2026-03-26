@@ -217,7 +217,7 @@ export default function Navbar() {
                       <div className="px-4 py-2 text-sm text-gray-400 border-b border-[#2a2a2a]">
                         {user.name}
                       </div>
-                      {user.role === 'admin' && (
+                      {user.role?.toUpperCase() === 'ADMIN' && (
                         <Link
                           href="/admin"
                           className="block px-4 py-2 text-sm text-gray-300 hover:bg-[#2a2a2a]"
@@ -347,7 +347,7 @@ export default function Navbar() {
               >
                 Mis tickets
               </Link>
-              {user.role === 'admin' && (
+              {user.role?.toUpperCase() === 'ADMIN' && (
                 <Link
                   href="/admin"
                   className="block text-sm text-gray-300"

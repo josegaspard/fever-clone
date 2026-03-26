@@ -17,13 +17,13 @@ export default function AdminPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!authLoading && (!user || user.role !== 'admin')) {
+    if (!authLoading && (!user || user.role.toUpperCase() !== 'ADMIN')) {
       router.push('/');
     }
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user?.role === 'admin') {
+    if (user?.role?.toUpperCase() === 'ADMIN') {
       loadEvents();
     }
   }, [user]);
@@ -53,15 +53,16 @@ export default function AdminPage() {
     }
   };
 
+  const s = (v: string) => (v || '').toUpperCase();
   const filtered = events.filter((e) =>
-    tab === 'all' ? true : e.status === tab
+    tab === 'all' ? true : s(e.status) === tab.toUpperCase()
   );
 
   const stats = {
     total: events.length,
-    published: events.filter((e) => e.status === 'published').length,
-    draft: events.filter((e) => e.status === 'draft').length,
-    archived: events.filter((e) => e.status === 'archived').length,
+    published: events.filter((e) => s(e.status) === 'PUBLISHED').length,
+    draft: events.filter((e) => s(e.status) === 'DRAFT').length,
+    archived: events.filter((e) => s(e.status) === 'ARCHIVED').length,
   };
 
   if (authLoading || !user) {
@@ -194,16 +195,16 @@ export default function AdminPage() {
                   <td className="py-3">
                     <span
                       className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                        event.status === 'published'
+                        s(event.status) === 'PUBLISHED'
                           ? 'bg-green-500/10 text-green-400'
-                          : event.status === 'draft'
+                          : s(event.status) === 'DRAFT'
                           ? 'bg-yellow-500/10 text-yellow-400'
                           : 'bg-gray-500/10 text-gray-400'
                       }`}
                     >
-                      {event.status === 'published'
+                      {s(event.status) === 'PUBLISHED'
                         ? 'Publicado'
-                        : event.status === 'draft'
+                        : s(event.status) === 'DRAFT'
                         ? 'Borrador'
                         : 'Archivado'}
                     </span>
