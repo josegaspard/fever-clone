@@ -31,6 +31,8 @@ function SearchContent() {
   const maxPrice = searchParams.get('maxPrice') || '';
   const date = searchParams.get('date') || '';
   const featured = searchParams.get('featured') || '';
+  const rating = searchParams.get('rating') || '';
+  const sortBy = searchParams.get('sortBy') || '';
   const page = parseInt(searchParams.get('page') || '1', 10);
 
   const updateUrl = useCallback(
@@ -68,6 +70,9 @@ function SearchContent() {
           maxPrice: maxPrice ? Number(maxPrice) : undefined,
           date: date || undefined,
           featured: featured === 'true' ? true : undefined,
+          rating: rating ? Number(rating) : undefined,
+          sortBy: sortBy || undefined,
+          status: 'PUBLISHED',
           page,
           limit: 24,
         });
@@ -80,7 +85,7 @@ function SearchContent() {
       }
     }
     load();
-  }, [q, city, category, minPrice, maxPrice, date, featured, page]);
+  }, [q, city, category, minPrice, maxPrice, date, featured, rating, sortBy, page]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -113,13 +118,13 @@ function SearchContent() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-gray-300 mb-2">Categoría</h3>
+            <h3 className="text-sm font-semibold text-gray-300 mb-2">Categoria</h3>
             <select
               value={category}
               onChange={(e) => updateUrl({ category: e.target.value })}
               className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm rounded-lg px-3 py-2"
             >
-              <option value="">Todas las categorías</option>
+              <option value="">Todas las categorias</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.slug}>
                   {c.name}
@@ -152,6 +157,37 @@ function SearchContent() {
           </div>
 
           <div>
+            <h3 className="text-sm font-semibold text-gray-300 mb-2">Puntuacion minima</h3>
+            <select
+              value={rating}
+              onChange={(e) => updateUrl({ rating: e.target.value })}
+              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm rounded-lg px-3 py-2"
+            >
+              <option value="">Cualquier puntuacion</option>
+              <option value="4">4+ estrellas</option>
+              <option value="3">3+ estrellas</option>
+              <option value="2">2+ estrellas</option>
+              <option value="1">1+ estrella</option>
+            </select>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-gray-300 mb-2">Ordenar por</h3>
+            <select
+              value={sortBy}
+              onChange={(e) => updateUrl({ sortBy: e.target.value })}
+              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm rounded-lg px-3 py-2"
+            >
+              <option value="">Fecha (predeterminado)</option>
+              <option value="price_asc">Precio: menor a mayor</option>
+              <option value="price_desc">Precio: mayor a menor</option>
+              <option value="rating">Mejor puntuacion</option>
+              <option value="popularity">Mas popular</option>
+              <option value="date">Fecha mas cercana</option>
+            </select>
+          </div>
+
+          <div>
             <h3 className="text-sm font-semibold text-gray-300 mb-2">Fecha</h3>
             <input
               type="date"
@@ -162,7 +198,7 @@ function SearchContent() {
           </div>
 
           {/* Clear filters */}
-          {(q || city || category || minPrice || maxPrice || date || featured) && (
+          {(q || city || category || minPrice || maxPrice || date || featured || rating || sortBy) && (
             <button
               onClick={() => router.push('/search')}
               className="text-sm text-[#e63946] hover:underline"
@@ -199,7 +235,7 @@ function SearchContent() {
                 No se encontraron resultados
               </h2>
               <p className="text-gray-400">
-                Intenta con otros filtros o términos de búsqueda.
+                Intenta con otros filtros o terminos de busqueda.
               </p>
             </div>
           ) : (

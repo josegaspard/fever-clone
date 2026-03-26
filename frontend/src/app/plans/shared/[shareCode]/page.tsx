@@ -26,7 +26,7 @@ export default function SharedPlanPage() {
       const p = await getSharedPlan(shareCode);
       setPlan(p);
     } catch {
-      setError('No se pudo cargar el plan compartido.');
+      setError('No se pudo cargar el Day compartido.');
     } finally {
       setLoading(false);
     }
@@ -61,7 +61,7 @@ export default function SharedPlanPage() {
   if (error || !plan) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-        <h1 className="text-2xl font-bold mb-2">Plan no encontrado</h1>
+        <h1 className="text-2xl font-bold mb-2">Day no encontrado</h1>
         <p className="text-gray-400 mb-6">{error}</p>
         <Link
           href="/"
@@ -73,6 +73,8 @@ export default function SharedPlanPage() {
     );
   }
 
+  const totalCost = (plan.items || []).reduce((acc, item) => acc + (item.cost || 0), 0);
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
       {/* Shared badge */}
@@ -80,7 +82,7 @@ export default function SharedPlanPage() {
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
         </svg>
-        Plan compartido
+        Day compartido
       </div>
 
       {/* Header */}
@@ -90,6 +92,14 @@ export default function SharedPlanPage() {
         {plan.description && (
           <p className="text-sm text-gray-300 mt-2">{plan.description}</p>
         )}
+      </div>
+
+      {/* Summary card */}
+      <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4 flex items-center justify-between">
+        <div className="flex items-center gap-4 text-sm">
+          <span className="text-gray-400">{plan.items?.length || 0} actividades</span>
+          <span className="text-white font-bold">{totalCost === 0 ? 'Gratis' : `$${totalCost.toFixed(2)} MXN`}</span>
+        </div>
       </div>
 
       {/* Timeline (read-only) */}
@@ -102,7 +112,7 @@ export default function SharedPlanPage() {
             href="/plans"
             className="flex-1 bg-[#e63946] hover:bg-[#c62d3a] py-3 rounded-xl text-sm font-bold text-center transition"
           >
-            Crear tu propio plan
+            Crea tu propio Day
           </Link>
         ) : (
           <>
@@ -110,7 +120,7 @@ export default function SharedPlanPage() {
               href="/auth/register"
               className="flex-1 bg-[#e63946] hover:bg-[#c62d3a] py-3 rounded-xl text-sm font-bold text-center transition"
             >
-              Unete a Fever
+              Crea tu propio Day
             </Link>
             <Link
               href="/auth/login"

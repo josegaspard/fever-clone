@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { getCities, City } from '@/lib/api';
+import { getCities, getPlans, City } from '@/lib/api';
 
 export default function Navbar() {
   const { user, logout, loading } = useAuth();
@@ -16,6 +16,7 @@ export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [planCount, setPlanCount] = useState(0);
   const cityRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
 
@@ -27,6 +28,21 @@ export default function Navbar() {
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      getPlans()
+        .then((res) => {
+          const active = (res.data || []).filter(
+            (p) => p.status === 'active' || p.status === 'ACTIVE'
+          );
+          setPlanCount(active.length);
+        })
+        .catch(() => {});
+    } else {
+      setPlanCount(0);
+    }
+  }, [user]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -59,7 +75,7 @@ export default function Navbar() {
           FEVER
         </Link>
 
-        {/* City selector – desktop */}
+        {/* City selector -- desktop */}
         <div ref={cityRef} className="relative hidden md:block">
           <button
             onClick={() => setCityOpen(!cityOpen)}
@@ -175,16 +191,21 @@ export default function Navbar() {
             </Link>
           )}
 
-          {/* My Plans */}
+          {/* Mis Days */}
           {user && (
             <Link
               href="/plans"
-              className="hidden md:block text-gray-400 hover:text-[#e63946] transition"
-              title="Mis Planes"
+              className="hidden md:flex items-center gap-1 text-gray-400 hover:text-[#e63946] transition relative"
+              title="Mis Days"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
+              {planCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#e63946] rounded-full text-[10px] font-bold flex items-center justify-center text-white">
+                  {planCount > 9 ? '9+' : planCount}
+                </span>
+              )}
             </Link>
           )}
 
@@ -201,7 +222,7 @@ export default function Navbar() {
             </Link>
           )}
 
-          {/* User menu – desktop */}
+          {/* User menu -- desktop */}
           {!loading && (
             <div ref={userRef} className="relative hidden md:block">
               {user ? (
@@ -238,7 +259,7 @@ export default function Navbar() {
                         className="block px-4 py-2 text-sm text-gray-300 hover:bg-[#2a2a2a]"
                         onClick={() => setUserMenuOpen(false)}
                       >
-                        Mis planes
+                        Mis Days
                       </Link>
                       <Link
                         href="/tickets"
@@ -254,7 +275,7 @@ export default function Navbar() {
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-[#2a2a2a]"
                       >
-                        Cerrar sesión
+                        Cerrar sesion
                       </button>
                     </div>
                   )}
@@ -265,7 +286,7 @@ export default function Navbar() {
                     href="/auth/login"
                     className="text-sm text-gray-300 hover:text-white transition"
                   >
-                    Iniciar sesión
+                    Iniciar sesion
                   </Link>
                   <Link
                     href="/auth/register"
@@ -278,7 +299,7 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Hamburger – mobile */}
+          {/* Hamburger -- mobile */}
           <button
             className="md:hidden text-gray-400 hover:text-white"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -335,10 +356,15 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/plans"
-                className="block text-sm text-gray-300"
+                className="block text-sm text-gray-300 flex items-center gap-2"
                 onClick={() => setMenuOpen(false)}
               >
-                Mis planes
+                Mis Days
+                {planCount > 0 && (
+                  <span className="w-5 h-5 bg-[#e63946] rounded-full text-[10px] font-bold flex items-center justify-center text-white">
+                    {planCount}
+                  </span>
+                )}
               </Link>
               <Link
                 href="/tickets"
@@ -363,7 +389,7 @@ export default function Navbar() {
                 }}
                 className="block text-sm text-gray-300"
               >
-                Cerrar sesión
+                Cerrar sesion
               </button>
             </>
           ) : (
@@ -373,7 +399,7 @@ export default function Navbar() {
                 className="block text-sm text-gray-300"
                 onClick={() => setMenuOpen(false)}
               >
-                Iniciar sesión
+                Iniciar sesion
               </Link>
               <Link
                 href="/auth/register"

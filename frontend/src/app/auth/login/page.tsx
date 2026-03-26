@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
-export default function LoginPage() {
+function LoginForm() {
   const { login } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,9 +21,9 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
-      router.push('/');
+      router.push(redirectTo);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
+      setError(err instanceof Error ? err.message : 'Error al iniciar sesion');
     } finally {
       setLoading(false);
     }
@@ -31,7 +33,7 @@ export default function LoginPage() {
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold">Iniciar sesión</h1>
+          <h1 className="text-3xl font-extrabold">Iniciar sesion</h1>
           <p className="text-gray-400 mt-2">
             Accede a tu cuenta de Fever
           </p>
@@ -63,7 +65,7 @@ export default function LoginPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
-              Contraseña
+              Contrasena
             </label>
             <input
               type="password"
@@ -80,17 +82,29 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full py-3 bg-[#e63946] hover:bg-[#c62d3a] disabled:opacity-50 rounded-lg text-white font-bold transition"
           >
-            {loading ? 'Entrando...' : 'Iniciar sesión'}
+            {loading ? 'Entrando...' : 'Iniciar sesion'}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-400 mt-6">
-          ¿No tienes cuenta?{' '}
+          No tienes cuenta?{' '}
           <Link href="/auth/register" className="text-[#e63946] hover:underline">
-            Regístrate
+            Registrate
           </Link>
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[70vh] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#e63946] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }

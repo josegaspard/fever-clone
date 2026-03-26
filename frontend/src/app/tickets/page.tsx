@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Ticket, getTickets } from '@/lib/api';
 import QRTicket from '@/components/QRTicket';
@@ -99,8 +100,8 @@ export default function TicketsPage() {
 
       {/* Ticket detail modal */}
       {selectedTicket && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="relative w-full max-w-sm">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setSelectedTicket(null)}>
+          <div className="relative w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setSelectedTicket(null)}
               className="absolute -top-10 right-0 text-gray-400 hover:text-white transition"
@@ -127,7 +128,13 @@ export default function TicketsPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
           </svg>
           <h2 className="text-lg font-semibold text-white mb-2">No tienes tickets</h2>
-          <p className="text-gray-400 text-sm">Compra entradas para eventos y apareceran aqui</p>
+          <p className="text-gray-400 text-sm mb-6">Compra entradas para eventos y apareceran aqui</p>
+          <Link
+            href="/search"
+            className="inline-block bg-[#e63946] hover:bg-[#c62d3a] px-6 py-2.5 rounded-lg text-sm font-medium transition"
+          >
+            Explorar eventos
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -139,10 +146,17 @@ export default function TicketsPage() {
                 onClick={() => setSelectedTicket(ticket)}
                 className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden text-left hover:border-[#3a3a3a] transition-all group"
               >
+                {/* Event image */}
+                {ticket.event?.image && (
+                  <div className="h-32 overflow-hidden">
+                    <img src={ticket.event.image} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                )}
+
                 {/* Mini QR preview */}
                 <div className="p-4 flex justify-center">
-                  <div className="w-20 h-20 bg-white rounded-lg flex items-center justify-center">
-                    <div className="grid grid-cols-5 gap-0 w-14 h-14">
+                  <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center">
+                    <div className="grid grid-cols-5 gap-0 w-12 h-12">
                       {Array.from({ length: 25 }).map((_, i) => (
                         <div
                           key={i}

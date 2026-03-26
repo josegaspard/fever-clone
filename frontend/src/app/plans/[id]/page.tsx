@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { Plan, getPlan, updatePlan } from '@/lib/api';
+import { Plan, getPlan, updatePlan, createTicket } from '@/lib/api';
 import PlanTimeline from '@/components/PlanTimeline';
 import InviteFriends from '@/components/InviteFriends';
 import SharePlan from '@/components/SharePlan';
@@ -24,6 +24,7 @@ export default function PlanDetailPage() {
   const [editTitle, setEditTitle] = useState('');
   const [editingDesc, setEditingDesc] = useState(false);
   const [editDesc, setEditDesc] = useState('');
+  const [payingPending, setPayingPending] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -43,7 +44,7 @@ export default function PlanDetailPage() {
       setEditTitle(p.title);
       setEditDesc(p.description || '');
     } catch {
-      setError('No se pudo cargar el plan.');
+      setError('No se pudo cargar el Day.');
     } finally {
       setLoading(false);
     }
@@ -84,6 +85,28 @@ export default function PlanDetailPage() {
     });
   }
 
+  async function handlePayPending() {
+    if (!plan) return;
+    const unpaidItems = plan.items.filter((i) => i.cost > 0 && !i.isPaid);
+    if (unpaidItems.length === 0) {
+      showToast('No hay pagos pendientes', 'info');
+      return;
+    }
+    setPayingPending(true);
+    try {
+      for (const item of unpaidItems) {
+        await createTicket(item.eventId, item.id);
+      }
+      showToast(`${unpaidItems.length} tickets creados exitosamente`);
+      // Reload plan to get updated isPaid status
+      await loadPlan();
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Error al pagar', 'error');
+    } finally {
+      setPayingPending(false);
+    }
+  }
+
   const formatDate = (d?: string) => {
     if (!d) return 'Sin fecha';
     try {
@@ -98,20 +121,35 @@ export default function PlanDetailPage() {
     }
   };
 
-  const isOwner = plan && user && plan.userId === user.id;
+  const isOwner = plan && user && String(plan.userId) === String(user.id);
+  const unpaidCount = plan ? plan.items.filter((i) => i.cost > 0 && !i.isPaid).length : 0;
+  const unpaidTotal = plan ? plan.items.filter((i) => i.cost > 0 && !i.isPaid).reduce((acc, i) => acc + i.cost, 0) : 0;
 
   // Build a Google Maps URL with all waypoints
   const getOverviewMapUrl = () => {
     if (!plan || !plan.items || plan.items.length === 0) return null;
-    const addresses = plan.items
-      .filter((i) => i.event?.address)
-      .map((i) => i.event!.address!);
-    if (addresses.length < 2) return null;
-    const origin = encodeURIComponent(addresses[0]);
-    const destination = encodeURIComponent(addresses[addresses.length - 1]);
-    const waypoints = addresses
+    const sorted = [...plan.items].sort((a, b) => {
+      const ta = a.startTime || '';
+      const tb = b.startTime || '';
+      if (ta < tb) return -1;
+      if (ta > tb) return 1;
+      return a.sortOrder - b.sortOrder;
+    });
+    const withCoords = sorted.filter((i) => {
+      const ev = i.event as Record<string, unknown> | null;
+      return ev && ev.lat && ev.lng;
+    });
+    if (withCoords.length < 2) return null;
+    const first = withCoords[0].event as Record<string, unknown>;
+    const last = withCoords[withCoords.length - 1].event as Record<string, unknown>;
+    const origin = `${first.lat},${first.lng}`;
+    const destination = `${last.lat},${last.lng}`;
+    const waypoints = withCoords
       .slice(1, -1)
-      .map((a) => encodeURIComponent(a))
+      .map((i) => {
+        const ev = i.event as Record<string, unknown>;
+        return `${ev.lat},${ev.lng}`;
+      })
       .join('|');
     return `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints ? `&waypoints=${waypoints}` : ''}&travelmode=driving`;
   };
@@ -131,13 +169,13 @@ export default function PlanDetailPage() {
   if (error || !plan) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-24 text-center">
-        <h1 className="text-2xl font-bold mb-2">Plan no encontrado</h1>
+        <h1 className="text-2xl font-bold mb-2">Day no encontrado</h1>
         <p className="text-gray-400 mb-6">{error}</p>
         <button
           onClick={() => router.push('/plans')}
           className="px-6 py-2 bg-[#e63946] rounded-lg hover:bg-[#c62d3a] transition"
         >
-          Volver a mis planes
+          Volver a mis Days
         </button>
       </div>
     );
@@ -149,7 +187,7 @@ export default function PlanDetailPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-        <Link href="/plans" className="hover:text-white transition">Mis Planes</Link>
+        <Link href="/plans" className="hover:text-white transition">Mis Days</Link>
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
@@ -231,6 +269,29 @@ export default function PlanDetailPage() {
             onItemRemoved={handleItemRemoved}
           />
 
+          {/* Pay pending button */}
+          {unpaidCount > 0 && isOwner && (
+            <button
+              onClick={handlePayPending}
+              disabled={payingPending}
+              className="w-full py-3 bg-[#FFB800] hover:bg-[#e6a600] text-black font-bold rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {payingPending ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                  Procesando pagos...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
+                  Pagar pendientes ({unpaidCount}) - ${unpaidTotal.toFixed(2)} MXN
+                </>
+              )}
+            </button>
+          )}
+
           {/* Add more */}
           <Link
             href="/search"
@@ -270,16 +331,21 @@ export default function PlanDetailPage() {
             <h3 className="text-sm font-semibold text-white">Resumen de costos</h3>
             {(plan.items || []).map((item) => (
               <div key={item.id} className="flex items-center justify-between text-xs">
-                <span className="text-gray-400 truncate mr-2">{item.event?.title || 'Evento'}</span>
+                <div className="flex items-center gap-2 min-w-0 mr-2">
+                  <span className="text-gray-400 truncate">{item.event?.title || 'Evento'}</span>
+                  {item.cost > 0 && !item.isPaid && (
+                    <span className="text-[10px] text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded shrink-0">Pendiente</span>
+                  )}
+                </div>
                 <span className="text-white shrink-0">
-                  {item.cost === 0 ? 'Gratis' : `${item.cost.toFixed(2)}\u20AC`}
+                  {item.cost === 0 ? 'Gratis' : `$${item.cost.toFixed(2)} MXN`}
                 </span>
               </div>
             ))}
             <div className="border-t border-[#2a2a2a] pt-3 flex items-center justify-between">
               <span className="text-sm font-medium text-gray-300">Total</span>
               <span className="text-lg font-bold text-white">
-                {plan.totalCost === 0 ? 'Gratis' : `${plan.totalCost.toFixed(2)}\u20AC`}
+                {plan.totalCost === 0 ? 'Gratis' : `$${plan.totalCost.toFixed(2)} MXN`}
               </span>
             </div>
           </div>

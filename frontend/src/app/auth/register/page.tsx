@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
-export default function RegisterPage() {
+function RegisterForm() {
   const { register } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/';
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,18 +22,18 @@ export default function RegisterPage() {
     setError('');
 
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
+      setError('Las contrasenas no coinciden');
       return;
     }
     if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
+      setError('La contrasena debe tener al menos 6 caracteres');
       return;
     }
 
     setLoading(true);
     try {
       await register(name, email, password);
-      router.push('/');
+      router.push(redirectTo);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al registrarse');
     } finally {
@@ -45,7 +47,7 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold">Crear cuenta</h1>
           <p className="text-gray-400 mt-2">
-            Únete a Fever y descubre experiencias únicas
+            Unete a Fever y descubre experiencias unicas
           </p>
         </div>
 
@@ -89,7 +91,7 @@ export default function RegisterPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
-              Contraseña
+              Contrasena
             </label>
             <input
               type="password"
@@ -103,7 +105,7 @@ export default function RegisterPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
-              Confirmar contraseña
+              Confirmar contrasena
             </label>
             <input
               type="password"
@@ -125,12 +127,24 @@ export default function RegisterPage() {
         </form>
 
         <p className="text-center text-sm text-gray-400 mt-6">
-          ¿Ya tienes cuenta?{' '}
+          Ya tienes cuenta?{' '}
           <Link href="/auth/login" className="text-[#e63946] hover:underline">
-            Iniciar sesión
+            Iniciar sesion
           </Link>
         </p>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[70vh] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#e63946] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <RegisterForm />
+    </Suspense>
   );
 }

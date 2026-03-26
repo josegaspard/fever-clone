@@ -42,7 +42,9 @@ export interface Event {
   city: City | null;
   category: Category | null;
   address?: string;
-  status: 'draft' | 'published' | 'archived';
+  lat?: number;
+  lng?: number;
+  status: string;
   featured: boolean;
   capacity?: number;
   soldCount?: number;

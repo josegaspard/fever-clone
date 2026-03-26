@@ -23,6 +23,8 @@ function transformEvent(row: Record<string, unknown>) {
     time: row.time as string | undefined,
     duration: row.duration as string | undefined,
     address: row.address as string | undefined,
+    lat: row.lat as number | undefined,
+    lng: row.lng as number | undefined,
     status: row.status as string,
     featured: row.featured as boolean,
     capacity: row.capacity as number | undefined,
