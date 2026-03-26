@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Event, addFavorite, removeFavorite } from '@/lib/api';
+import StarRating from './StarRating';
+import AddToPlanButton from './AddToPlanButton';
 
 interface EventCardProps {
   event: Event;
@@ -107,6 +109,11 @@ export default function EventCard({
             </div>
           )}
 
+          {/* Add to plan */}
+          <div className="absolute top-3 right-12 z-10">
+            <AddToPlanButton event={event} variant="icon" />
+          </div>
+
           {/* Favorite heart */}
           <button
             onClick={toggleFav}
@@ -148,6 +155,11 @@ export default function EventCard({
               {event.price === 0 ? 'Gratis' : `${event.price.toFixed(2)}\u20AC`}
             </span>
           </div>
+          {event.rating !== undefined && event.rating > 0 && (
+            <div className="mt-1">
+              <StarRating rating={event.rating} count={event.reviewCount} size="sm" />
+            </div>
+          )}
         </div>
       </div>
     </Link>

@@ -18,6 +18,7 @@ export default function HomePage() {
   const [categoryEvents, setCategoryEvents] = useState<
     { category: Category; events: Event[] }[]
   >([]);
+  const [cdmxEvents, setCdmxEvents] = useState<Event[]>([]);
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,6 +45,14 @@ export default function HomePage() {
           })
         );
         setCategoryEvents(catResults.filter((c) => c.events.length > 0));
+
+        // Fetch CDMX events
+        try {
+          const cdmxRes = await getEvents({ city: 'cdmx', limit: 12 });
+          setCdmxEvents(cdmxRes.data ?? (cdmxRes as unknown as Event[]));
+        } catch {
+          // CDMX city might not exist
+        }
       } catch {
         // API might not be running; show empty state
       } finally {
@@ -65,6 +74,16 @@ export default function HomePage() {
           loading={loading}
           viewAllHref="/search?featured=true"
         />
+
+        {/* CDMX Events */}
+        {cdmxEvents.length > 0 && (
+          <EventCarousel
+            title="Lo mejor en Ciudad de Mexico"
+            events={cdmxEvents}
+            loading={false}
+            viewAllHref="/search?city=cdmx"
+          />
+        )}
 
         {/* Per-category carousels */}
         {categoryEvents.map(({ category, events }) => (

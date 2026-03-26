@@ -23,6 +23,7 @@ export interface Category {
   name: string;
   slug: string;
   icon?: string;
+  color?: string;
 }
 
 export interface Event {
@@ -44,8 +45,75 @@ export interface Event {
   status: 'draft' | 'published' | 'archived';
   featured: boolean;
   capacity?: number;
+  soldCount?: number;
+  rating?: number;
+  reviewCount?: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Review {
+  id: string;
+  userId: string;
+  eventId: string;
+  rating: number;
+  comment?: string;
+  createdAt: string;
+  user: { id: string; name: string; avatar?: string } | null;
+}
+
+export interface PlanItem {
+  id: string;
+  planId: string;
+  eventId: string;
+  startTime?: string;
+  endTime?: string;
+  sortOrder: number;
+  notes?: string;
+  isPaid: boolean;
+  cost: number;
+  travelMode?: string;
+  travelDuration?: number;
+  travelDistance?: number;
+  createdAt: string;
+  event: Partial<Event> | null;
+}
+
+export interface Plan {
+  id: string;
+  userId: string;
+  title: string;
+  description?: string;
+  planDate?: string;
+  status: string;
+  shareCode: string;
+  totalCost: number;
+  createdAt: string;
+  updatedAt: string;
+  items: PlanItem[];
+}
+
+export interface PlanInvitation {
+  id: string;
+  planId: string;
+  inviterId: string;
+  inviteeEmail: string;
+  inviteeId?: string;
+  status: 'PENDING' | 'ACCEPTED' | 'DECLINED';
+  createdAt: string;
+  respondedAt?: string;
+}
+
+export interface Ticket {
+  id: string;
+  userId: string;
+  eventId: string;
+  planItemId?: string;
+  qrCode: string;
+  status: 'ACTIVE' | 'USED' | 'CANCELLED';
+  scannedAt?: string;
+  createdAt: string;
+  event: Partial<Event> | null;
 }
 
 export interface EventFilters {
@@ -57,6 +125,13 @@ export interface EventFilters {
   minPrice?: number;
   maxPrice?: number;
   date?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  rating?: number;
+  sortBy?: string;
+  lat?: number;
+  lng?: number;
+  radius?: number;
   page?: number;
   limit?: number;
 }
@@ -223,4 +298,164 @@ export async function addFavorite(eventId: string): Promise<void> {
 
 export async function removeFavorite(eventId: string): Promise<void> {
   return fetchApi<void>(`/favorites/${eventId}`, { method: 'DELETE' });
+}
+
+// ── Reviews ────────────────────────────────────────────────────────────────
+
+export async function getReviews(
+  eventId: string
+): Promise<{ data: Review[] }> {
+  return fetchApi<{ data: Review[] }>(`/reviews?eventId=${eventId}`);
+}
+
+export async function createReview(
+  eventId: string,
+  rating: number,
+  comment: string
+): Promise<Review> {
+  return fetchApi<Review>('/reviews', {
+    method: 'POST',
+    body: JSON.stringify({ eventId, rating, comment }),
+  });
+}
+
+// ── Plans ──────────────────────────────────────────────────────────────────
+
+export async function getPlans(): Promise<{ data: Plan[] }> {
+  return fetchApi<{ data: Plan[] }>('/plans');
+}
+
+export async function createPlan(data: {
+  title: string;
+  description?: string;
+  planDate?: string;
+}): Promise<Plan> {
+  return fetchApi<Plan>('/plans', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function getPlan(id: string): Promise<Plan> {
+  return fetchApi<Plan>(`/plans/${id}`);
+}
+
+export async function updatePlan(
+  id: string,
+  data: Partial<{ title: string; description: string; planDate: string; status: string }>
+): Promise<Plan> {
+  return fetchApi<Plan>(`/plans/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deletePlan(id: string): Promise<void> {
+  return fetchApi<void>(`/plans/${id}`, { method: 'DELETE' });
+}
+
+// ── Plan Items ─────────────────────────────────────────────────────────────
+
+export async function getPlanItems(
+  planId: string
+): Promise<{ data: PlanItem[] }> {
+  return fetchApi<{ data: PlanItem[] }>(`/plans/${planId}/items`);
+}
+
+export async function addPlanItem(
+  planId: string,
+  data: { eventId: string; startTime?: string; endTime?: string; notes?: string }
+): Promise<PlanItem> {
+  return fetchApi<PlanItem>(`/plans/${planId}/items`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updatePlanItem(
+  planId: string,
+  itemId: string,
+  data: Partial<{
+    sortOrder: number;
+    startTime: string;
+    endTime: string;
+    notes: string;
+    travelMode: string;
+    travelDuration: number;
+    travelDistance: number;
+  }>
+): Promise<PlanItem> {
+  return fetchApi<PlanItem>(`/plans/${planId}/items/${itemId}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function removePlanItem(
+  planId: string,
+  itemId: string
+): Promise<void> {
+  return fetchApi<void>(`/plans/${planId}/items/${itemId}`, {
+    method: 'DELETE',
+  });
+}
+
+// ── Plan Invitations ───────────────────────────────────────────────────────
+
+export async function inviteToPlan(
+  planId: string,
+  email: string
+): Promise<PlanInvitation> {
+  return fetchApi<PlanInvitation>(`/plans/${planId}/invite`, {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+}
+
+export async function getPlanInvitations(
+  planId: string
+): Promise<{ data: PlanInvitation[] }> {
+  return fetchApi<{ data: PlanInvitation[] }>(`/plans/${planId}/invite`);
+}
+
+export async function respondToInvitation(
+  inviteId: string,
+  status: 'ACCEPTED' | 'DECLINED'
+): Promise<PlanInvitation> {
+  return fetchApi<PlanInvitation>(`/plans/invite/${inviteId}`, {
+    method: 'PUT',
+    body: JSON.stringify({ status }),
+  });
+}
+
+// ── Shared Plans ───────────────────────────────────────────────────────────
+
+export async function getSharedPlan(shareCode: string): Promise<Plan> {
+  return fetchApi<Plan>(`/plans/shared/${shareCode}`);
+}
+
+// ── Tickets ────────────────────────────────────────────────────────────────
+
+export async function getTickets(): Promise<{ data: Ticket[] }> {
+  return fetchApi<{ data: Ticket[] }>('/tickets');
+}
+
+export async function createTicket(
+  eventId: string,
+  planItemId?: string
+): Promise<Ticket> {
+  return fetchApi<Ticket>('/tickets', {
+    method: 'POST',
+    body: JSON.stringify({ eventId, planItemId }),
+  });
+}
+
+export async function getTicket(id: string): Promise<Ticket> {
+  return fetchApi<Ticket>(`/tickets/${id}`);
+}
+
+export async function scanTicket(id: string): Promise<Ticket> {
+  return fetchApi<Ticket>(`/tickets/${id}`, {
+    method: 'PUT',
+  });
 }

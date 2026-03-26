@@ -11,6 +11,9 @@ import {
   removeFavorite,
 } from '@/lib/api';
 import EventCarousel from '@/components/EventCarousel';
+import StarRating from '@/components/StarRating';
+import ReviewSection from '@/components/ReviewSection';
+import AddToPlanButton from '@/components/AddToPlanButton';
 
 export default function EventDetailPage() {
   const params = useParams();
@@ -161,6 +164,11 @@ export default function EventDetailPage() {
               {event.title}
             </h1>
 
+            {/* Rating */}
+            {event.rating !== undefined && event.rating > 0 && (
+              <StarRating rating={event.rating} count={event.reviewCount} size="md" />
+            )}
+
             {/* Meta */}
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400">
               {event.city && (
@@ -234,6 +242,11 @@ export default function EventDetailPage() {
                     ? 'Gratis'
                     : `${event.price.toFixed(2)}\u20AC`}
                 </p>
+                {event.price === 0 && (
+                  <span className="inline-block mt-1 text-xs font-bold text-green-400 bg-green-400/10 px-3 py-1 rounded-full">
+                    GRATIS
+                  </span>
+                )}
               </div>
 
               {/* Info lines */}
@@ -305,8 +318,20 @@ export default function EventDetailPage() {
                 </svg>
                 {isFav ? 'Guardado en favoritos' : 'Añadir a favoritos'}
               </button>
+
+              {/* Add to plan */}
+              <AddToPlanButton event={event} />
             </div>
           </div>
+        </div>
+
+        {/* Reviews */}
+        <div className="mt-16">
+          <ReviewSection
+            eventId={event.id}
+            averageRating={event.rating}
+            reviewCount={event.reviewCount}
+          />
         </div>
 
         {/* Related events */}

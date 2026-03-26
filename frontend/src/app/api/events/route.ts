@@ -2,6 +2,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { getUserFromRequest } from '@/lib/auth-helpers';
 
+// Haversine distance in km between two lat/lng points
+function haversineDistance(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number
+): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
 // Helper to transform a DB event row (with joined city/category) to camelCase
 function transformEvent(row: Record<string, unknown>): Record<string, unknown> {
   const city = row.cities as Record<string, unknown> | null;
@@ -33,6 +53,8 @@ function transformEvent(row: Record<string, unknown>): Record<string, unknown> {
     featured: row.featured,
     capacity: row.capacity,
     soldCount: row.sold_count,
+    rating: row.rating,
+    reviewCount: row.review_count,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     city: city
@@ -73,6 +95,12 @@ export async function GET(req: NextRequest) {
     const minPrice = searchParams.get('minPrice');
     const maxPrice = searchParams.get('maxPrice');
     const date = searchParams.get('date');
+    const rating = searchParams.get('rating');
+    const dateFrom = searchParams.get('dateFrom');
+    const dateTo = searchParams.get('dateTo');
+    const lat = searchParams.get('lat');
+    const lng = searchParams.get('lng');
+    const radius = searchParams.get('radius');
     const offset = (page - 1) * limit;
 
     let query = supabase
@@ -146,20 +174,42 @@ export async function GET(req: NextRequest) {
       query = query.lte('price', Number(maxPrice));
     }
 
-    // Date filter
+    // Date filter (legacy single date)
     if (date) {
       query = query.gte('date', date);
+    }
+
+    // Date range filter
+    if (dateFrom) {
+      query = query.gte('date', dateFrom);
+    }
+    if (dateTo) {
+      query = query.lte('date', dateTo);
+    }
+
+    // Rating filter
+    if (rating) {
+      query = query.gte('rating', Number(rating));
     }
 
     // Sorting
     if (sortBy === 'price') {
       query = query.order('price', { ascending: true });
+    } else if (sortBy === 'rating') {
+      query = query.order('rating', { ascending: false, nullsFirst: false });
+    } else if (sortBy === 'popularity') {
+      query = query.order('sold_count', { ascending: false, nullsFirst: false });
     } else {
       query = query.order('date', { ascending: true });
     }
 
-    // Pagination
-    query = query.range(offset, offset + limit - 1);
+    // When using geo filter, fetch all matching rows first then filter in-memory
+    const useGeoFilter = lat && lng && radius;
+
+    if (!useGeoFilter) {
+      // Pagination (only when not doing geo filter)
+      query = query.range(offset, offset + limit - 1);
+    }
 
     const { data, error, count } = await query;
 
@@ -170,8 +220,29 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const total = count || 0;
-    const events = (data || []).map(transformEvent);
+    let filtered = data || [];
+
+    // Location-based filter (Haversine)
+    if (useGeoFilter) {
+      const centerLat = Number(lat);
+      const centerLng = Number(lng);
+      const maxDistance = Number(radius);
+      filtered = filtered.filter((row) => {
+        const eLat = row.lat as number | null;
+        const eLng = row.lng as number | null;
+        if (eLat == null || eLng == null) return false;
+        return haversineDistance(centerLat, centerLng, eLat, eLng) <= maxDistance;
+      });
+    }
+
+    const total = useGeoFilter ? filtered.length : (count || 0);
+
+    // Apply pagination for geo-filtered results
+    if (useGeoFilter) {
+      filtered = filtered.slice(offset, offset + limit);
+    }
+
+    const events = filtered.map(transformEvent);
 
     return NextResponse.json({
       data: events,
