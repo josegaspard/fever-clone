@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  password  String
+  name      String
+  role      String     @default("USER")
+  avatar    String?
+  createdAt DateTime   @default(now())
+  events    Event[]    @relation("OrganizerEvents")
+  favorites Favorite[]
+}
+
+model City {
+  id      Int     @id @default(autoincrement())
+  name    String
+  slug    String  @unique
+  image   String?
+  country String
+  events  Event[]
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String
+  slug   String  @unique
+  icon   String?
+  color  String?
+  events Event[]
+}
+
+model Event {
+  id               Int        @id @default(autoincrement())
+  title            String
+  slug             String     @unique
+  description      String
+  shortDescription String?
+  image            String?
+  gallery          String     @default("[]")
+  price            Float
+  originalPrice    Float?
+  currency         String     @default("EUR")
+  date             DateTime
+  endDate          DateTime?
+  time             String?
+  duration         String?
+  address          String?
+  lat              Float?
+  lng              Float?
+  cityId           Int
+  categoryId       Int
+  organizerId      Int
+  status           String     @default("DRAFT")
+  featured         Boolean    @default(false)
+  capacity         Int?
+  soldCount        Int        @default(0)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  city             City       @relation(fields: [cityId], references: [id])
+  category         Category   @relation(fields: [categoryId], references: [id])
+  organizer        User       @relation("OrganizerEvents", fields: [organizerId], references: [id])
+  favorites        Favorite[]
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  eventId   Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+}
