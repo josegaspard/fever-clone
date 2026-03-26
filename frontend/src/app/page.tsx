@@ -1,89 +1,84 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Event, Category, City } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
+import { Event } from '@/lib/api';
 import HeroBanner from '@/components/HeroBanner';
 import EventCarousel from '@/components/EventCarousel';
 
-export default function HomePage() {
-  const [featured, setFeatured] = useState<Event[]>([]);
-  const [categoryEvents, setCategoryEvents] = useState<
-    { category: Category; events: Event[] }[]
-  >([]);
-  const [cdmxEvents, setCdmxEvents] = useState<Event[]>([]);
-  const [cities, setCities] = useState<City[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export const dynamic = 'force-dynamic';
 
-  useEffect(() => {
-    async function load() {
-      try {
-        // Fetch featured events, categories, and cities in parallel
-        const [featRes, catRes, cityRes] = await Promise.all([
-          fetch('/api/events?featured=true&limit=12'),
-          fetch('/api/categories'),
-          fetch('/api/cities'),
-        ]);
+function transformEvent(row: Record<string, unknown>) {
+  const city = row.cities as Record<string, unknown> | null;
+  const category = row.categories as Record<string, unknown> | null;
+  return {
+    id: String(row.id),
+    title: row.title as string,
+    slug: row.slug as string,
+    description: (row.description as string) || '',
+    shortDescription: row.short_description as string | undefined,
+    image: row.image as string | undefined,
+    price: row.price as number,
+    originalPrice: row.original_price as number | undefined,
+    date: row.date as string,
+    endDate: row.end_date as string | undefined,
+    time: row.time as string | undefined,
+    duration: row.duration as string | undefined,
+    address: row.address as string | undefined,
+    status: row.status as string,
+    featured: row.featured as boolean,
+    capacity: row.capacity as number | undefined,
+    soldCount: row.sold_count as number | undefined,
+    rating: row.rating as number | undefined,
+    reviewCount: row.review_count as number | undefined,
+    createdAt: row.created_at as string,
+    updatedAt: row.updated_at as string,
+    city: city ? { id: String(city.id), name: city.name as string, slug: city.slug as string, image: city.image as string | undefined, country: city.country as string } : null,
+    category: category ? { id: String(category.id), name: category.name as string, slug: category.slug as string, icon: category.icon as string | undefined, color: category.color as string | undefined } : null,
+  };
+}
 
-        const featJson = await featRes.json();
-        setFeatured(featJson.data || []);
+export default async function HomePage() {
+  // Fetch all data server-side in parallel
+  const [featuredRes, cdmxRes, categoriesRes, citiesRes] = await Promise.all([
+    supabase.from('events').select('*, cities(*), categories(*)').eq('status', 'PUBLISHED').eq('featured', true).order('date', { ascending: true }).limit(12),
+    supabase.from('events').select('*, cities(*), categories(*)').eq('status', 'PUBLISHED').eq('city_id', 6).order('date', { ascending: true }).limit(12),
+    supabase.from('categories').select('id, name, slug, icon, color').order('name'),
+    supabase.from('cities').select('id, name, slug, image, country').order('name'),
+  ]);
 
-        const cats: Category[] = await catRes.json();
-        const citiesData: City[] = await cityRes.json();
-        setCities(citiesData);
+  const featured = (featuredRes.data || []).map(transformEvent) as unknown as Event[];
+  const cdmxEvents = (cdmxRes.data || []).map(transformEvent) as unknown as Event[];
+  const categories = categoriesRes.data || [];
+  const cities = citiesRes.data || [];
 
-        // Fetch CDMX events
-        try {
-          const cdmxRes = await fetch('/api/events?city=cdmx&limit=12');
-          const cdmxJson = await cdmxRes.json();
-          setCdmxEvents(cdmxJson.data || []);
-        } catch {
-          // ignore
-        }
+  // Fetch events per category
+  const categoryEvents = await Promise.all(
+    categories.map(async (cat) => {
+      const { data } = await supabase
+        .from('events')
+        .select('*, cities(*), categories(*)')
+        .eq('status', 'PUBLISHED')
+        .eq('category_id', cat.id)
+        .order('date', { ascending: true })
+        .limit(12);
+      return {
+        category: { id: String(cat.id), name: cat.name, slug: cat.slug, icon: cat.icon, color: cat.color },
+        events: (data || []).map(transformEvent) as unknown as Event[],
+      };
+    })
+  );
 
-        // Fetch events per category
-        const catResults = await Promise.all(
-          cats.map(async (cat: Category) => {
-            try {
-              const res = await fetch(`/api/events?category=${cat.slug}&limit=12`);
-              const json = await res.json();
-              return {
-                category: cat,
-                events: (json.data || []) as Event[],
-              };
-            } catch {
-              return { category: cat, events: [] as Event[] };
-            }
-          })
-        );
-        setCategoryEvents(catResults.filter((c) => c.events.length > 0));
-      } catch (err) {
-        console.error('Error loading homepage:', err);
-        setError(err instanceof Error ? err.message : 'Error loading data');
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
+  const filteredCategoryEvents = categoryEvents.filter((c) => c.events.length > 0);
 
   return (
     <div>
       <HeroBanner />
 
       <div className="max-w-7xl mx-auto px-4 space-y-12 pb-16">
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-red-400 text-sm">
-            Error: {error}
-          </div>
-        )}
-
         {/* Featured */}
         <EventCarousel
           title="Destacados"
           events={featured}
-          loading={loading}
+          loading={false}
           viewAllHref="/search?featured=true"
         />
 
@@ -98,7 +93,7 @@ export default function HomePage() {
         )}
 
         {/* Per-category carousels */}
-        {categoryEvents.map(({ category, events }) => (
+        {filteredCategoryEvents.map(({ category, events }) => (
           <EventCarousel
             key={category.id}
             title={`${category.icon || ''} ${category.name}`}

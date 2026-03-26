@@ -39,8 +39,8 @@ export interface Event {
   endDate?: string;
   time?: string;
   duration?: string;
-  city: City;
-  category: Category;
+  city: City | null;
+  category: Category | null;
   address?: string;
   status: 'draft' | 'published' | 'archived';
   featured: boolean;
