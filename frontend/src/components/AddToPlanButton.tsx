@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { Event, Plan, getPlans, createPlan, addPlanItem, createTicket } from '@/lib/api';
+import { Event, Plan, getPlans, createPlan, addPlanItem, createTicket, createCheckoutSession } from '@/lib/api';
 import { useToast } from './Toast';
 
 interface AddToPlanButtonProps {
@@ -69,16 +69,25 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
         startTime,
         endTime,
       });
-      // For paid events, create a ticket to simulate payment
+      // For paid events, redirect to Stripe or create ticket
       if (!isFree && item.id) {
         try {
-          await createTicket(event.id, item.id);
+          const { url } = await createCheckoutSession({
+            eventId: event.id,
+            planItemId: item.id,
+            planId,
+          });
+          if (url) {
+            window.location.href = url;
+            return;
+          }
         } catch {
-          // ticket creation is best-effort
+          // Fallback: create ticket directly (demo mode)
+          try { await createTicket(event.id, item.id); } catch {}
         }
       }
       setSuccessPlanId(planId);
-      showToast(isFree ? 'Agregado gratis a tu Day' : 'Comprado y agregado a tu Day');
+      showToast(isFree ? 'Agregado gratis a tu Day' : 'Agregado a tu Day');
       setTimeout(() => {
         setOpen(false);
         setSuccessPlanId(null);
@@ -103,12 +112,17 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
         startTime,
         endTime,
       });
-      // For paid events, create a ticket
+      // For paid events, redirect to Stripe or create ticket
       if (!isFree && item.id) {
         try {
-          await createTicket(event.id, item.id);
+          const { url } = await createCheckoutSession({
+            eventId: event.id,
+            planItemId: item.id,
+            planId: plan.id,
+          });
+          if (url) { window.location.href = url; return; }
         } catch {
-          // best-effort
+          try { await createTicket(event.id, item.id); } catch {}
         }
       }
       setSuccessPlanId(plan.id);

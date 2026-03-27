@@ -462,3 +462,16 @@ export async function scanTicket(id: string): Promise<Ticket> {
     method: 'PUT',
   });
 }
+
+// ── Stripe ────────────────────────────────────────────────────────────────
+
+export async function createCheckoutSession(data: {
+  eventId: string;
+  planItemId?: string;
+  planId?: string;
+}): Promise<{ url: string; sessionId: string }> {
+  return fetchApi<{ url: string; sessionId: string }>('/stripe/checkout', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}

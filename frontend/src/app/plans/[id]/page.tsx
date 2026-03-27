@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { Plan, getPlan, updatePlan, createTicket } from '@/lib/api';
+import { Plan, getPlan, updatePlan, createTicket, createCheckoutSession } from '@/lib/api';
 import PlanTimeline from '@/components/PlanTimeline';
+import RouteMap from '@/components/RouteMap';
 import InviteFriends from '@/components/InviteFriends';
 import SharePlan from '@/components/SharePlan';
 import { useToast } from '@/components/Toast';
@@ -94,12 +95,23 @@ export default function PlanDetailPage() {
     }
     setPayingPending(true);
     try {
-      for (const item of unpaidItems) {
-        await createTicket(item.eventId, item.id);
+      // Try Stripe checkout for the first unpaid item
+      const firstUnpaid = unpaidItems[0];
+      try {
+        const { url } = await createCheckoutSession({
+          eventId: firstUnpaid.eventId,
+          planItemId: firstUnpaid.id,
+          planId: plan.id,
+        });
+        if (url) { window.location.href = url; return; }
+      } catch {
+        // Fallback: create tickets directly (demo mode)
+        for (const item of unpaidItems) {
+          await createTicket(item.eventId, item.id);
+        }
+        showToast(`${unpaidItems.length} tickets creados`);
+        await loadPlan();
       }
-      showToast(`${unpaidItems.length} tickets creados exitosamente`);
-      // Reload plan to get updated isPaid status
-      await loadPlan();
     } catch (err) {
       showToast(err instanceof Error ? err.message : 'Error al pagar', 'error');
     } finally {
@@ -303,25 +315,8 @@ export default function PlanDetailPage() {
             Agregar mas actividades
           </Link>
 
-          {/* Map overview */}
-          {mapUrl && (
-            <a
-              href={mapUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 hover:border-[#3a3a3a] transition"
-            >
-              <div className="flex items-center gap-3">
-                <svg className="w-8 h-8 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-                <div>
-                  <p className="text-sm font-semibold text-white">Ver ruta completa en Google Maps</p>
-                  <p className="text-xs text-gray-400">{plan.items?.length || 0} paradas</p>
-                </div>
-              </div>
-            </a>
-          )}
+          {/* Interactive Route Map */}
+          <RouteMap items={plan.items || []} />
         </div>
 
         {/* Sidebar */}
