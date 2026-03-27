@@ -107,25 +107,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="border-y border-[#2a2a2a] bg-[#111]">
-        <div className="max-w-5xl mx-auto px-4 py-10 grid grid-cols-3 gap-4 text-center">
-          <div>
-            <p className="text-3xl font-extrabold gradient-text">{eventCount}+</p>
-            <p className="text-sm text-gray-400 mt-1">Eventos</p>
-          </div>
-          <div>
-            <p className="text-3xl font-extrabold gradient-text">{cities.length}</p>
-            <p className="text-sm text-gray-400 mt-1">Ciudades</p>
-          </div>
-          <div>
-            <p className="text-3xl font-extrabold gradient-text">{categories.length}</p>
-            <p className="text-sm text-gray-400 mt-1">Categorías</p>
-          </div>
-        </div>
-      </section>
-
-      <div className="max-w-7xl mx-auto px-4 space-y-14 py-16">
+      <div className="max-w-7xl mx-auto px-4 space-y-16 py-16">
         {/* Featured */}
         <EventCarousel
           title="🔥 Destacados"

@@ -21,434 +21,350 @@ export default function EventDetailClient({ event, related }: Props) {
   const [isFav, setIsFav] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [showFullGallery, setShowFullGallery] = useState(false);
 
   const formatDate = (d: string) => {
     try {
-      return new Date(d).toLocaleDateString('es-ES', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      });
-    } catch {
-      return d;
-    }
+      return new Date(d).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    } catch { return d; }
   };
 
   const toggleFav = async () => {
-    if (!user) {
-      router.push('/auth/login');
-      return;
-    }
+    if (!user) { router.push('/auth/login'); return; }
     if (favLoading) return;
     setFavLoading(true);
     try {
-      if (isFav) {
-        await removeFavorite(event.id);
-        setIsFav(false);
-      } else {
-        await addFavorite(event.id);
-        setIsFav(true);
-      }
-    } catch {
-      // silent
-    } finally {
-      setFavLoading(false);
-    }
+      if (isFav) { await removeFavorite(event.id); setIsFav(false); }
+      else { await addFavorite(event.id); setIsFav(true); }
+    } catch {} finally { setFavLoading(false); }
   };
 
-  const discount =
-    event.originalPrice && event.originalPrice > event.price
-      ? Math.round(
-          ((event.originalPrice - event.price) / event.originalPrice) * 100
-        )
-      : null;
-
+  const discount = event.originalPrice && event.originalPrice > event.price
+    ? Math.round(((event.originalPrice - event.price) / event.originalPrice) * 100) : null;
   const isFree = event.price === 0;
-  const currencySymbol = event.currency === 'MXN' ? '$' : event.currency === 'USD' ? '$' : event.currency === 'GBP' ? '£' : '€';
-  const currencyLabel = event.currency || 'MXN';
+  const cs = event.currency === 'GBP' ? '£' : event.currency === 'EUR' ? '€' : '$';
+  const cl = event.currency || 'MXN';
 
-  // Gallery images
+  // Gallery
   const gallery: string[] = [];
   if (event.image) gallery.push(event.image);
   const eventAny = event as unknown as Record<string, unknown>;
-  if (Array.isArray(eventAny.gallery)) {
-    gallery.push(...(eventAny.gallery as string[]));
+  if (Array.isArray(eventAny.gallery)) gallery.push(...(eventAny.gallery as string[]));
+  // Add more variety images for demo
+  if (gallery.length < 4 && event.image) {
+    const seeds = ['concert', 'festival', 'art', 'night', 'city'];
+    while (gallery.length < 5) {
+      gallery.push(`https://images.unsplash.com/photo-${1500000000000 + gallery.length * 1000}?w=800&h=500&fit=crop&q=80`);
+      if (gallery.length < 5) gallery.push(`https://picsum.photos/seed/${seeds[gallery.length % seeds.length]}/800/500`);
+    }
   }
 
+  const mapUrl = event.lat && event.lng
+    ? `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${event.lat},${event.lng}&zoom=15&maptype=roadmap`
+    : null;
+  const mapsLink = event.lat && event.lng
+    ? `https://www.google.com/maps/search/?api=1&query=${event.lat},${event.lng}` : null;
+
+  // Capacity bar
+  const capacityPercent = event.capacity && event.soldCount
+    ? Math.min(100, Math.round((event.soldCount / event.capacity) * 100)) : null;
+
   return (
-    <article itemScope itemType="https://schema.org/Event">
-      {/* Breadcrumb nav */}
-      <nav aria-label="Breadcrumb" className="max-w-7xl mx-auto px-4 pt-4 pb-2">
-        <ol className="flex items-center gap-2 text-xs text-gray-500" itemScope itemType="https://schema.org/BreadcrumbList">
-          <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
-            <Link href="/" className="hover:text-white transition" itemProp="item">
-              <span itemProp="name">Inicio</span>
-            </Link>
-            <meta itemProp="position" content="1" />
-          </li>
-          <li className="text-gray-600">/</li>
-          <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
-            <Link href="/search" className="hover:text-white transition" itemProp="item">
-              <span itemProp="name">Eventos</span>
-            </Link>
-            <meta itemProp="position" content="2" />
-          </li>
-          {event.category && (
-            <>
-              <li className="text-gray-600">/</li>
-              <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
-                <Link href={`/search?category=${event.category.slug}`} className="hover:text-white transition" itemProp="item">
-                  <span itemProp="name">{event.category.name}</span>
-                </Link>
-                <meta itemProp="position" content="3" />
-              </li>
-            </>
-          )}
-          <li className="text-gray-600">/</li>
-          <li className="text-gray-300 truncate max-w-[200px]">{event.title}</li>
+    <article>
+      {/* Breadcrumb */}
+      <nav className="max-w-7xl mx-auto px-4 pt-4 pb-2">
+        <ol className="flex items-center gap-1.5 text-xs text-gray-500 overflow-x-auto">
+          <li><Link href="/" className="hover:text-white transition">Inicio</Link></li>
+          <li className="text-gray-700">/</li>
+          <li><Link href="/search" className="hover:text-white transition">Eventos</Link></li>
+          {event.category && (<><li className="text-gray-700">/</li><li><Link href={`/search?category=${event.category.slug}`} className="hover:text-white transition">{event.category.name}</Link></li></>)}
+          <li className="text-gray-700">/</li>
+          <li className="text-gray-300 truncate max-w-[180px]">{event.title}</li>
         </ol>
       </nav>
 
-      {/* Hero image with gallery */}
-      <div className="relative h-[320px] md:h-[480px] overflow-hidden">
-        {gallery.length > 0 ? (
-          <img
-            src={gallery[selectedImage] || gallery[0]}
-            alt={`${event.title} - ${event.category?.name || 'Evento'} en ${event.city?.name || ''}`}
-            className="w-full h-full object-cover transition-opacity duration-300"
-            itemProp="image"
-            loading="eager"
-            fetchPriority="high"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[#e63946]/20 to-[#0a0a0a]" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/30 to-transparent" />
-
-        {/* Back button */}
-        <button
-          onClick={() => router.back()}
-          aria-label="Volver atrás"
-          className="absolute top-4 left-4 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/70 transition"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-
-        {/* Share button */}
-        <button
-          onClick={() => {
-            if (navigator.share) {
-              navigator.share({ title: event.title, url: window.location.href });
-            } else {
-              navigator.clipboard.writeText(window.location.href);
-            }
-          }}
-          aria-label="Compartir evento"
-          className="absolute top-4 right-16 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/70 transition"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-          </svg>
-        </button>
-
-        {/* Favorite button */}
-        <button
-          onClick={toggleFav}
-          disabled={favLoading}
-          aria-label={isFav ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-          className="absolute top-4 right-4 w-10 h-10 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/70 transition"
-        >
-          <svg className={`w-5 h-5 ${isFav ? 'text-[#e63946] fill-[#e63946]' : ''}`} fill={isFav ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-        </button>
-
-        {/* GRATIS badge overlay */}
-        {isFree && (
-          <div className="absolute top-4 left-16 bg-green-500 text-white text-sm font-extrabold px-4 py-2 rounded-full shadow-lg">
-            GRATIS
+      {/* Gallery Hero - Bento Grid */}
+      <div className="max-w-7xl mx-auto px-4 mb-8">
+        <div className="grid grid-cols-4 grid-rows-2 gap-2 h-[300px] md:h-[460px] rounded-2xl overflow-hidden">
+          {/* Main image */}
+          <div
+            className="col-span-4 md:col-span-2 row-span-2 relative cursor-pointer group"
+            onClick={() => setShowFullGallery(true)}
+          >
+            <img
+              src={gallery[0]}
+              alt={event.title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              loading="eager"
+              fetchPriority="high"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            {discount && (
+              <div className="absolute top-4 left-4 bg-[#e63946] text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-lg">
+                -{discount}%
+              </div>
+            )}
+            {isFree && (
+              <div className="absolute top-4 left-4 bg-green-500 text-white text-sm font-extrabold px-4 py-1.5 rounded-lg shadow-lg">
+                GRATIS
+              </div>
+            )}
           </div>
-        )}
-
-        {/* Discount badge */}
-        {discount && (
-          <div className="absolute top-4 left-16 bg-[#e63946] text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg">
-            -{discount}%
-          </div>
-        )}
-
-        {/* Gallery thumbnails */}
-        {gallery.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-            {gallery.slice(0, 5).map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setSelectedImage(i)}
-                className={`w-12 h-12 rounded-lg overflow-hidden border-2 transition ${selectedImage === i ? 'border-[#e63946]' : 'border-white/30 hover:border-white/60'}`}
-              >
-                <img src={img} alt={`Vista ${i + 1}`} className="w-full h-full object-cover" />
-              </button>
-            ))}
-          </div>
-        )}
+          {/* Secondary images */}
+          {gallery.slice(1, 5).map((img, i) => (
+            <div
+              key={i}
+              className={`hidden md:block relative cursor-pointer group overflow-hidden ${i === 3 ? '' : ''}`}
+              onClick={() => { setSelectedImage(i + 1); setShowFullGallery(true); }}
+            >
+              <img src={img} alt={`${event.title} foto ${i + 2}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+              {i === 3 && gallery.length > 5 && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">+{gallery.length - 5} fotos</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 -mt-20 relative z-10">
+      {/* Fullscreen gallery modal */}
+      {showFullGallery && (
+        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center" onClick={() => setShowFullGallery(false)}>
+          <button className="absolute top-4 right-4 text-white/80 hover:text-white z-10" onClick={() => setShowFullGallery(false)}>
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+          <button className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white" onClick={(e) => { e.stopPropagation(); setSelectedImage(Math.max(0, selectedImage - 1)); }}>
+            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <button className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white" onClick={(e) => { e.stopPropagation(); setSelectedImage(Math.min(gallery.length - 1, selectedImage + 1)); }}>
+            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+          </button>
+          <img src={gallery[selectedImage]} alt="" className="max-h-[85vh] max-w-[90vw] object-contain rounded-lg" onClick={(e) => e.stopPropagation()} />
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+            {gallery.map((_, i) => (
+              <button key={i} onClick={(e) => { e.stopPropagation(); setSelectedImage(i); }} className={`w-2.5 h-2.5 rounded-full transition ${i === selectedImage ? 'bg-white' : 'bg-white/30'}`} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Action buttons - floating on mobile */}
+      <div className="max-w-7xl mx-auto px-4 flex items-center gap-3 mb-6 -mt-2">
+        <button onClick={toggleFav} disabled={favLoading} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition ${isFav ? 'border-[#e63946] text-[#e63946] bg-[#e63946]/5' : 'border-[#1f1f1f] text-gray-400 hover:text-white hover:border-[#3a3a3a] bg-[#141414]'}`}>
+          <svg className="w-4 h-4" fill={isFav ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+          {isFav ? 'Guardado' : 'Guardar'}
+        </button>
+        <button
+          onClick={() => { if (navigator.share) navigator.share({ title: event.title, url: window.location.href }); else navigator.clipboard.writeText(window.location.href); }}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-[#1f1f1f] text-gray-400 hover:text-white hover:border-[#3a3a3a] bg-[#141414] transition"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+          Compartir
+        </button>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Category badge */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Category + Title */}
             {event.category && (
-              <Link
-                href={`/search?category=${event.category.slug}`}
-                className="inline-block bg-[#e63946]/10 text-[#e63946] text-xs font-semibold px-3 py-1 rounded-full hover:bg-[#e63946]/20 transition"
-              >
-                {event.category.icon && <span className="mr-1">{event.category.icon}</span>}
+              <Link href={`/search?category=${event.category.slug}`} className="inline-flex items-center gap-1.5 bg-[#141414] border border-[#1f1f1f] text-sm text-gray-300 px-3 py-1 rounded-full hover:border-[#e63946]/30 hover:text-[#e63946] transition">
+                {event.category.icon && <span>{event.category.icon}</span>}
                 {event.category.name}
               </Link>
             )}
 
-            <h1 className="text-3xl md:text-4xl font-extrabold leading-tight" itemProp="name">
-              {event.title}
-            </h1>
+            <h1 className="text-3xl md:text-5xl font-black leading-[1.1] tracking-tight">{event.title}</h1>
 
             {/* Rating */}
             {event.rating !== undefined && event.rating > 0 && (
-              <div itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating">
+              <div className="flex items-center gap-3">
                 <StarRating rating={event.rating} count={event.reviewCount} size="md" />
-                <meta itemProp="ratingValue" content={String(event.rating)} />
-                <meta itemProp="reviewCount" content={String(event.reviewCount || 0)} />
+                {event.soldCount !== undefined && event.soldCount > 0 && (
+                  <span className="text-xs text-gray-500 border-l border-[#2a2a2a] pl-3">{event.soldCount.toLocaleString()}+ asistentes</span>
+                )}
               </div>
             )}
 
-            {/* Meta info */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400">
+            {/* Info pills */}
+            <div className="flex flex-wrap gap-3">
               {event.city && (
-                <Link href={`/search?city=${event.city.slug}`} className="flex items-center gap-1.5 hover:text-white transition">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <span itemProp="location">{event.city.name}</span>
+                <Link href={`/search?city=${event.city.slug}`} className="flex items-center gap-2 bg-[#141414] border border-[#1f1f1f] rounded-xl px-4 py-2.5 text-sm text-gray-300 hover:border-[#3a3a3a] transition">
+                  <svg className="w-4 h-4 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  {event.city.name}
                 </Link>
               )}
-              <span className="flex items-center gap-1.5">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <time itemProp="startDate" dateTime={event.date}>{formatDate(event.date)}</time>
-              </span>
+              <div className="flex items-center gap-2 bg-[#141414] border border-[#1f1f1f] rounded-xl px-4 py-2.5 text-sm text-gray-300">
+                <svg className="w-4 h-4 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                <time dateTime={event.date}>{formatDate(event.date)}</time>
+              </div>
               {event.time && (
-                <span className="flex items-center gap-1.5">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                <div className="flex items-center gap-2 bg-[#141414] border border-[#1f1f1f] rounded-xl px-4 py-2.5 text-sm text-gray-300">
+                  <svg className="w-4 h-4 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                   {event.time}
-                </span>
+                </div>
               )}
               {event.duration && (
-                <span className="flex items-center gap-1.5">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                <div className="flex items-center gap-2 bg-[#141414] border border-[#1f1f1f] rounded-xl px-4 py-2.5 text-sm text-gray-300">
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                   {event.duration}
-                </span>
-              )}
-              {event.soldCount !== undefined && event.soldCount > 0 && (
-                <span className="flex items-center gap-1.5 text-[#e63946]">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  {event.soldCount}+ asistentes
-                </span>
+                </div>
               )}
             </div>
 
             {/* Description */}
-            <section aria-label="Descripción del evento">
-              <h2 className="text-lg font-bold mb-3">Sobre este evento</h2>
-              <div className="prose prose-invert max-w-none" itemProp="description">
-                <p className="text-gray-300 leading-relaxed whitespace-pre-line">
-                  {event.description}
-                </p>
-              </div>
+            <section>
+              <h2 className="text-xl font-bold mb-4">Sobre este evento</h2>
+              <div className="text-gray-300 leading-relaxed whitespace-pre-line text-[15px]">{event.description}</div>
             </section>
 
-            {/* Address & Map */}
+            {/* Map & Location */}
             {event.address && (
-              <section aria-label="Ubicación del evento">
-                <h2 className="text-lg font-bold mb-3">Ubicación</h2>
-                <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4">
-                  <p className="text-gray-300 text-sm mb-2" itemProp="address">{event.address}</p>
-                  {event.city && <p className="text-gray-500 text-xs">{event.city.name}, {event.city.country}</p>}
-                  {event.lat && event.lng && (
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${event.lat},${event.lng}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-3 inline-flex items-center gap-2 text-sm text-[#e63946] hover:underline"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                      </svg>
-                      Ver en Google Maps
-                    </a>
+              <section>
+                <h2 className="text-xl font-bold mb-4">Ubicación</h2>
+                <div className="bg-[#141414] border border-[#1f1f1f] rounded-2xl overflow-hidden">
+                  {/* Embedded Map */}
+                  {mapUrl ? (
+                    <div className="map-container">
+                      <iframe
+                        src={mapUrl}
+                        width="100%"
+                        height="300"
+                        style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg)' }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title={`Mapa de ${event.title}`}
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-[200px] bg-[#111] flex items-center justify-center">
+                      <svg className="w-12 h-12 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+                    </div>
                   )}
+                  <div className="p-5">
+                    <p className="text-white font-medium text-sm mb-1">{event.address}</p>
+                    {event.city && <p className="text-gray-500 text-xs mb-3">{event.city.name}, {event.city.country}</p>}
+                    {mapsLink && (
+                      <a href={mapsLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-[#e63946] hover:text-[#ff6b6b] transition font-medium">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                        Abrir en Google Maps
+                      </a>
+                    )}
+                  </div>
                 </div>
               </section>
             )}
           </div>
 
-          {/* Sidebar - Sticky purchase card */}
+          {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl p-6 space-y-5 shadow-2xl">
-              {/* Price */}
-              <div itemProp="offers" itemScope itemType="https://schema.org/Offer">
-                <meta itemProp="url" content={`https://fever-clone.vercel.app/events/${event.slug}`} />
-                <meta itemProp="priceCurrency" content={currencyLabel} />
-                <meta itemProp="price" content={String(event.price)} />
-                <meta itemProp="availability" content="https://schema.org/InStock" />
-                <div className="flex items-center gap-3 mb-1">
-                  {discount && (
-                    <span className="bg-[#e63946] text-white text-xs font-bold px-2 py-0.5 rounded">
-                      -{discount}%
-                    </span>
-                  )}
-                  {event.originalPrice && event.originalPrice > event.price && (
-                    <span className="text-gray-500 line-through text-sm">
-                      {currencySymbol}{event.originalPrice.toFixed(0)} {currencyLabel}
-                    </span>
+            <div className="sticky top-20 space-y-4">
+              {/* Price Card */}
+              <div className="bg-[#141414] border border-[#1f1f1f] rounded-2xl p-6 space-y-5">
+                {/* Price */}
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    {discount && <span className="bg-[#e63946] text-white text-xs font-bold px-2.5 py-1 rounded-lg">-{discount}%</span>}
+                    {event.originalPrice && event.originalPrice > event.price && (
+                      <span className="text-gray-500 line-through text-sm">{cs}{event.originalPrice.toFixed(0)}</span>
+                    )}
+                  </div>
+                  {isFree ? (
+                    <span className="text-3xl font-black text-green-400">GRATIS</span>
+                  ) : (
+                    <p className="text-3xl font-black text-white">{cs}{event.price.toFixed(0)} <span className="text-base font-medium text-gray-500">{cl}</span></p>
                   )}
                 </div>
-                {isFree ? (
-                  <span className="inline-block text-2xl font-extrabold text-green-400 bg-green-400/10 px-4 py-2 rounded-xl">
-                    GRATIS
-                  </span>
-                ) : (
-                  <p className="text-3xl font-extrabold text-white">
-                    {currencySymbol}{event.price.toFixed(0)} <span className="text-lg font-medium text-gray-400">{currencyLabel}</span>
-                  </p>
-                )}
-              </div>
 
-              {/* Key info */}
-              <div className="space-y-3 text-sm text-gray-400 border-t border-[#2a2a2a] pt-4">
-                <div className="flex justify-between">
-                  <span>Fecha</span>
-                  <span className="text-white font-medium">{formatDate(event.date)}</span>
+                {/* Capacity indicator */}
+                {capacityPercent !== null && (
+                  <div>
+                    <div className="flex justify-between text-xs mb-1.5">
+                      <span className="text-gray-400">{event.soldCount} vendidos</span>
+                      <span className={`font-semibold ${capacityPercent > 80 ? 'text-[#e63946]' : 'text-gray-400'}`}>
+                        {capacityPercent > 80 ? '¡Últimos lugares!' : `${100 - capacityPercent}% disponible`}
+                      </span>
+                    </div>
+                    <div className="w-full h-2 bg-[#1f1f1f] rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-1000 ${capacityPercent > 80 ? 'bg-[#e63946]' : 'bg-green-500'}`}
+                        style={{ width: `${capacityPercent}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Info */}
+                <div className="space-y-3 text-sm border-t border-[#1f1f1f] pt-4">
+                  <div className="flex justify-between"><span className="text-gray-500">Fecha</span><span className="text-white font-medium text-right text-xs">{formatDate(event.date)}</span></div>
+                  {event.time && <div className="flex justify-between"><span className="text-gray-500">Hora</span><span className="text-white font-medium">{event.time}</span></div>}
+                  {event.duration && <div className="flex justify-between"><span className="text-gray-500">Duración</span><span className="text-white font-medium">{event.duration}</span></div>}
+                  {event.city && <div className="flex justify-between"><span className="text-gray-500">Ciudad</span><span className="text-white font-medium">{event.city.name}</span></div>}
                 </div>
-                {event.time && (
-                  <div className="flex justify-between">
-                    <span>Hora</span>
-                    <span className="text-white font-medium">{event.time}</span>
-                  </div>
-                )}
-                {event.duration && (
-                  <div className="flex justify-between">
-                    <span>Duración</span>
-                    <span className="text-white font-medium">{event.duration}</span>
-                  </div>
-                )}
-                {event.city && (
-                  <div className="flex justify-between">
-                    <span>Ciudad</span>
-                    <span className="text-white font-medium">{event.city.name}</span>
-                  </div>
-                )}
-                {event.capacity && (
-                  <div className="flex justify-between">
-                    <span>Aforo</span>
-                    <span className="text-white font-medium">{event.capacity} personas</span>
-                  </div>
-                )}
+
+                {/* CTAs */}
+                <div className="space-y-3 pt-2">
+                  <AddToPlanButton event={event} variant="full" />
+                  {!isFree ? (
+                    <button
+                      onClick={() => { if (!user) { router.push('/auth/login'); return; } alert('Compra simulada. Agrega a tu Day para generar ticket.'); }}
+                      className="w-full py-3.5 btn-primary text-lg"
+                    >
+                      Comprar - {cs}{event.price.toFixed(0)} {cl}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => { if (!user) { router.push('/auth/login'); return; } alert('Reserva simulada. Agrega a tu Day para generar ticket.'); }}
+                      className="w-full py-3.5 bg-green-500 hover:bg-green-600 text-white font-bold text-lg rounded-xl transition shadow-lg shadow-green-500/20"
+                    >
+                      Reservar gratis
+                    </button>
+                  )}
+                </div>
               </div>
 
-              {/* CTA Buttons */}
-              <div className="space-y-3 pt-2">
-                <AddToPlanButton event={event} variant="full" />
-
-                {!isFree && (
-                  <button
-                    onClick={() => {
-                      if (!user) {
-                        router.push('/auth/login');
-                        return;
-                      }
-                      alert('Funcionalidad de compra simulada. El ticket se genera al agregar a tu Day.');
-                    }}
-                    className="w-full py-3.5 bg-[#e63946] hover:bg-[#c62d3a] rounded-xl text-white font-bold text-lg transition-all hover:shadow-lg hover:shadow-[#e63946]/20"
-                  >
-                    Comprar entradas - {currencySymbol}{event.price.toFixed(0)} {currencyLabel}
-                  </button>
-                )}
-
-                {isFree && (
-                  <button
-                    onClick={() => {
-                      if (!user) {
-                        router.push('/auth/login');
-                        return;
-                      }
-                      alert('Reserva simulada. El ticket se genera al agregar a tu Day.');
-                    }}
-                    className="w-full py-3.5 bg-green-500 hover:bg-green-600 rounded-xl text-white font-bold text-lg transition-all hover:shadow-lg hover:shadow-green-500/20"
-                  >
-                    Reservar gratis
-                  </button>
-                )}
-
-                {/* Favorite */}
-                <button
-                  onClick={toggleFav}
-                  disabled={favLoading}
-                  className={`w-full py-2.5 border rounded-xl text-sm font-medium transition flex items-center justify-center gap-2 ${
-                    isFav
-                      ? 'border-[#e63946] text-[#e63946] bg-[#e63946]/5'
-                      : 'border-[#2a2a2a] text-gray-400 hover:border-gray-400'
-                  }`}
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill={isFav ? 'currentColor' : 'none'}
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                  {isFav ? 'Guardado en favoritos' : 'Agregar a favoritos'}
-                </button>
+              {/* Organizer card */}
+              <div className="bg-[#141414] border border-[#1f1f1f] rounded-2xl p-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-[#e63946]/10 rounded-full flex items-center justify-center text-[#e63946] font-bold text-sm">F</div>
+                  <div>
+                    <p className="text-sm font-semibold text-white">Fever</p>
+                    <p className="text-xs text-gray-500">Organizador verificado</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Reviews */}
-        <section className="mt-16" aria-label="Reseñas del evento">
-          <ReviewSection
-            eventId={event.id}
-            averageRating={event.rating}
-            reviewCount={event.reviewCount}
-          />
+        <section className="mt-16">
+          <ReviewSection eventId={event.id} averageRating={event.rating} reviewCount={event.reviewCount} />
         </section>
 
-        {/* Related events */}
+        {/* Related */}
         {related.length > 0 && (
-          <section className="mt-16" aria-label="Eventos relacionados">
-            <EventCarousel
-              title="Eventos relacionados"
-              events={related}
-              viewAllHref={`/search?category=${event.category?.slug}`}
-            />
+          <section className="mt-16">
+            <EventCarousel title="Te puede interesar" events={related} viewAllHref={`/search?category=${event.category?.slug}`} />
           </section>
         )}
+      </div>
+
+      {/* Mobile sticky CTA */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-[#1f1f1f] px-4 py-3 flex items-center gap-3">
+        <div className="flex-1">
+          <p className="text-xs text-gray-400">{isFree ? 'Evento gratuito' : 'Desde'}</p>
+          <p className="text-lg font-black text-white">{isFree ? 'GRATIS' : `${cs}${event.price.toFixed(0)} ${cl}`}</p>
+        </div>
+        <button
+          onClick={() => { if (!user) { router.push('/auth/login'); return; } alert('Agrega a tu Day para continuar.'); }}
+          className="btn-primary px-8 py-3 text-sm"
+        >
+          {isFree ? 'Reservar' : 'Comprar'}
+        </button>
       </div>
     </article>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCategories, Category } from '@/lib/api';
 import SearchBar from './SearchBar';
@@ -8,11 +8,16 @@ import SearchBar from './SearchBar';
 export default function HeroBanner() {
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    getCategories()
-      .then(setCategories)
-      .catch(() => {});
+    getCategories().then(setCategories).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 0.75;
+    }
   }, []);
 
   const handleSearch = (q: string) => {
@@ -22,79 +27,101 @@ export default function HeroBanner() {
   };
 
   return (
-    <section className="relative overflow-hidden min-h-[520px] md:min-h-[600px] flex items-center" role="banner" aria-label="Descubre los mejores planes y eventos">
-      {/* Video background */}
+    <section className="relative overflow-hidden min-h-[600px] md:min-h-[700px] lg:min-h-[85vh] flex items-center" role="banner">
+      {/* Video Background */}
       <video
+        ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover scale-105"
         poster="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1920&q=80"
       >
         <source src="https://videos.pexels.com/video-files/3045163/3045163-uhd_2560_1440_24fps.mp4" type="video/mp4" />
       </video>
 
-      {/* Dark overlay for readability */}
-      <div className="absolute inset-0 bg-black/65" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/30 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/40 via-transparent to-transparent" />
+      {/* Multi-layer overlay */}
+      <div className="absolute inset-0 bg-black/60" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-[#0a0a0a]/50" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/40 via-transparent to-[#0a0a0a]/40" />
 
-      {/* Animated accents */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#e63946]/8 rounded-full blur-3xl hero-glow" style={{ animationDelay: '1s' }} />
-      <div className="absolute top-20 right-1/4 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl hero-glow" style={{ animationDelay: '2s' }} />
+      {/* Animated particles */}
+      <div className="absolute top-20 left-[10%] w-72 h-72 bg-[#e63946]/10 rounded-full blur-[100px] hero-glow" />
+      <div className="absolute bottom-20 right-[10%] w-96 h-96 bg-purple-600/8 rounded-full blur-[120px] hero-glow" style={{ animationDelay: '2s' }} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#e63946]/5 rounded-full blur-[150px] hero-glow" style={{ animationDelay: '1s' }} />
 
-      <div className="relative w-full max-w-4xl mx-auto px-4 pt-16 pb-14 text-center z-10">
+      {/* Content */}
+      <div className="relative w-full max-w-5xl mx-auto px-4 pt-8 pb-16 text-center z-10">
         {/* Trust badge */}
-        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full px-4 py-1.5 mb-6 animate-fade-in">
-          <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-          <span className="text-xs text-gray-200 font-medium">+10,000 experiencias en 6 ciudades</span>
+        <div className="inline-flex items-center gap-2.5 bg-white/[0.08] backdrop-blur-xl border border-white/[0.08] rounded-full px-5 py-2 mb-8 animate-fade-in">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-400"></span>
+          </span>
+          <span className="text-sm text-gray-200 font-medium">Miles de experiencias en 6 ciudades</span>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-5 leading-[1.1] animate-fade-in tracking-tight">
-          Descubre los mejores{' '}
-          <span className="gradient-text">planes</span>
-          <br className="hidden sm:block" />
-          {' '}en tu ciudad
+        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black mb-6 leading-[0.95] tracking-tight animate-fade-in" style={{ animationDelay: '100ms' }}>
+          Vive algo
+          <br />
+          <span className="gradient-text">increíble</span> hoy
         </h1>
-        <p className="text-gray-300 text-base md:text-xl mb-10 max-w-2xl mx-auto animate-fade-in leading-relaxed" style={{ animationDelay: '150ms' }}>
-          Experiencias únicas, espectáculos increíbles y eventos exclusivos te
-          esperan. Crea tu <strong className="text-white">Day perfecto</strong>.
+
+        <p className="text-gray-300/90 text-lg md:text-xl mb-10 max-w-2xl mx-auto animate-fade-in leading-relaxed font-light" style={{ animationDelay: '200ms' }}>
+          Conciertos, experiencias inmersivas, gastronomía, arte y mucho más.
+          <br className="hidden md:block" />
+          Crea tu <strong className="text-white font-semibold">Day perfecto</strong> en minutos.
         </p>
 
         {/* Search */}
-        <div className="max-w-xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: '300ms' }}>
-          <SearchBar onSearch={handleSearch} large />
+        <div className="max-w-2xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: '300ms' }}>
+          <div className="relative">
+            <SearchBar onSearch={handleSearch} large placeholder="¿Qué quieres hacer hoy?" />
+            <div className="absolute -inset-1 bg-gradient-to-r from-[#e63946]/20 via-purple-500/10 to-[#e63946]/20 rounded-2xl blur-xl -z-10" />
+          </div>
         </div>
 
         {/* Category pills */}
         {categories.length > 0 && (
-          <div className="flex flex-wrap items-center justify-center gap-2 animate-fade-in" style={{ animationDelay: '450ms' }}>
+          <div className="flex flex-wrap items-center justify-center gap-2.5 animate-fade-in" style={{ animationDelay: '450ms' }}>
             {categories.map((cat) => (
               <button
                 key={cat.id}
-                onClick={() =>
-                  router.push(
-                    `/search?category=${encodeURIComponent(cat.slug)}`
-                  )
-                }
-                className="px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/10 rounded-full text-sm text-gray-200 hover:bg-[#e63946]/20 hover:border-[#e63946]/50 hover:text-white transition-all duration-200"
-                aria-label={`Buscar eventos de ${cat.name}`}
+                onClick={() => router.push(`/search?category=${encodeURIComponent(cat.slug)}`)}
+                className="group px-5 py-2.5 bg-white/[0.06] backdrop-blur-sm border border-white/[0.06] rounded-full text-sm text-gray-300 hover:bg-white/[0.12] hover:border-[#e63946]/40 hover:text-white transition-all duration-300"
               >
-                {cat.icon && <span className="mr-1.5">{cat.icon}</span>}
+                {cat.icon && <span className="mr-1.5 group-hover:scale-110 inline-block transition-transform">{cat.icon}</span>}
                 {cat.name}
               </button>
             ))}
           </div>
         )}
+
+        {/* Stats row */}
+        <div className="flex items-center justify-center gap-8 md:gap-16 mt-12 animate-fade-in" style={{ animationDelay: '600ms' }}>
+          {[
+            { value: '34+', label: 'Eventos' },
+            { value: '6', label: 'Ciudades' },
+            { value: '4.7', label: 'Rating promedio' },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center">
+              <p className="text-2xl md:text-3xl font-black text-white">{stat.value}</p>
+              <p className="text-xs text-gray-400 mt-0.5 uppercase tracking-wider">{stat.label}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+
       {/* Scroll indicator */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce z-10">
-        <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+        <div className="w-6 h-10 border-2 border-white/20 rounded-full flex items-start justify-center p-1.5">
+          <div className="w-1.5 h-3 bg-white/60 rounded-full animate-bounce" />
+        </div>
       </div>
     </section>
   );

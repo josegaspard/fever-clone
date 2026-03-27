@@ -65,7 +65,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[#2a2a2a]" style={{ background: '#111111' }} role="navigation" aria-label="Navegación principal">
+    <nav className="sticky top-0 z-50 border-b border-white/[0.06]" role="navigation" aria-label="Navegación principal">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link
