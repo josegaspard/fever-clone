@@ -73,7 +73,7 @@ export default function PlansPage() {
 
   const now = new Date().toISOString().split('T')[0];
   const filtered = plans.filter((p) => {
-    if (!p.planDate) return filter === 'upcoming';
+    if (!p.planDate) return true;
     return filter === 'upcoming' ? p.planDate >= now : p.planDate < now;
   });
 

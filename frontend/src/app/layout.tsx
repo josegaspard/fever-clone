@@ -57,10 +57,34 @@ export default function RootLayout({
     name: 'Fever',
     url: 'https://fever-clone.vercel.app',
     description: 'Descubre los mejores planes y eventos en tu ciudad',
+    inLanguage: 'es',
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://fever-clone.vercel.app/search?q={search_term_string}',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://fever-clone.vercel.app/search?q={search_term_string}',
+      },
       'query-input': 'required name=search_term_string',
+    },
+  };
+
+  const orgJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Fever',
+    url: 'https://fever-clone.vercel.app',
+    logo: 'https://fever-clone.vercel.app/favicon.ico',
+    description: 'Plataforma de descubrimiento de eventos y experiencias en tu ciudad.',
+    sameAs: [
+      'https://www.instagram.com/fever',
+      'https://twitter.com/fever',
+      'https://www.facebook.com/fever',
+      'https://www.tiktok.com/@fever',
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      availableLanguage: ['Spanish', 'English'],
     },
   };
 
@@ -72,6 +96,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
         />
       </head>
       <body className="min-h-full flex flex-col bg-[#0a0a0a] text-white">

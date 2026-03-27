@@ -137,7 +137,7 @@ export default function PlanDetailPage() {
     });
     const withCoords = sorted.filter((i) => {
       const ev = i.event as Record<string, unknown> | null;
-      return ev && ev.lat && ev.lng;
+      return ev && !isNaN(Number(ev.lat)) && !isNaN(Number(ev.lng)) && ev.lat != null && ev.lng != null;
     });
     if (withCoords.length < 2) return null;
     const first = withCoords[0].event as Record<string, unknown>;

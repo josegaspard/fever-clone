@@ -65,6 +65,14 @@ export async function GET(
       );
     }
 
+    // Only allow ticket owner or admin to view
+    if (data.user_id !== user.id && (user.role || '').toUpperCase() !== 'ADMIN') {
+      return NextResponse.json(
+        { message: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
     return NextResponse.json(transformTicket(data));
   } catch (error) {
     console.error('Get ticket error:', error);
@@ -80,7 +88,36 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await getUserFromRequest(req);
+    if (!user) {
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
+
+    // Verify ticket exists and belongs to user (or user is admin)
+    const { data: existing } = await supabase
+      .from('tickets')
+      .select('user_id')
+      .eq('id', id)
+      .single();
+
+    if (!existing) {
+      return NextResponse.json(
+        { message: 'Ticket not found' },
+        { status: 404 }
+      );
+    }
+
+    if (existing.user_id !== user.id && (user.role || '').toUpperCase() !== 'ADMIN') {
+      return NextResponse.json(
+        { message: 'Forbidden' },
+        { status: 403 }
+      );
+    }
 
     const { data, error } = await supabase
       .from('tickets')

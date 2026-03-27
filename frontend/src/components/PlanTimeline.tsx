@@ -99,8 +99,12 @@ export default function PlanTimeline({
     const fromEvent = from.event as Record<string, unknown> | null;
     const toEvent = to.event as Record<string, unknown> | null;
     // Prefer lat/lng coordinates
-    if (fromEvent?.lat && fromEvent?.lng && toEvent?.lat && toEvent?.lng) {
-      return `https://www.google.com/maps/dir/?api=1&origin=${fromEvent.lat},${fromEvent.lng}&destination=${toEvent.lat},${toEvent.lng}&travelmode=driving`;
+    const fLat = Number(fromEvent?.lat);
+    const fLng = Number(fromEvent?.lng);
+    const tLat = Number(toEvent?.lat);
+    const tLng = Number(toEvent?.lng);
+    if (!isNaN(fLat) && !isNaN(fLng) && !isNaN(tLat) && !isNaN(tLng) && fromEvent?.lat && toEvent?.lat) {
+      return `https://www.google.com/maps/dir/?api=1&origin=${fLat},${fLng}&destination=${tLat},${tLng}&travelmode=driving`;
     }
     // Fallback to address
     const origin = encodeURIComponent((fromEvent?.address as string) || (fromEvent?.city as Record<string, unknown>)?.name as string || '');
@@ -114,10 +118,11 @@ export default function PlanTimeline({
     const toEvent = to.event as Record<string, unknown> | null;
     if (from.travelDuration != null) return Math.round(from.travelDuration);
     if (!fromEvent?.lat || !fromEvent?.lng || !toEvent?.lat || !toEvent?.lng) return null;
-    const lat1 = fromEvent.lat as number;
-    const lng1 = fromEvent.lng as number;
-    const lat2 = toEvent.lat as number;
-    const lng2 = toEvent.lng as number;
+    const lat1 = Number(fromEvent.lat);
+    const lng1 = Number(fromEvent.lng);
+    const lat2 = Number(toEvent.lat);
+    const lng2 = Number(toEvent.lng);
+    if (isNaN(lat1) || isNaN(lng1) || isNaN(lat2) || isNaN(lng2)) return null;
     // Haversine approximation for distance in km
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;

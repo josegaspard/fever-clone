@@ -69,14 +69,14 @@ export default function EventCard({
   const currencyLabel = event.currency || 'EUR';
 
   return (
-    <Link href={`/events/${event.slug}`} className="group block">
+    <Link href={`/events/${event.slug}`} className="group block" aria-label={`${event.title} - ${event.city?.name || ''} - ${event.price === 0 ? 'Gratis' : `${currencySymbol}${event.price}`}`}>
       <article className="card-hover bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#2a2a2a] transition-all duration-300 group-hover:border-[#e63946]/30">
         {/* Image */}
         <div className="relative aspect-[3/4] overflow-hidden">
           {event.image ? (
             <img
               src={event.image}
-              alt={event.title}
+              alt={`${event.title} - ${event.category?.name || 'Evento'} en ${event.city?.name || ''}`}
               loading="lazy"
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />

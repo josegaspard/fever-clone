@@ -84,11 +84,11 @@ export default async function HomePage() {
   const filteredCategoryEvents = categoryEvents.filter((c) => c.events.length > 0);
 
   return (
-    <div>
+    <div itemScope itemType="https://schema.org/WebPage">
       <HeroBanner />
 
       {/* How it works */}
-      <section className="max-w-5xl mx-auto px-4 py-16">
+      <section className="max-w-5xl mx-auto px-4 py-16" aria-label="Cómo funciona">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">
           Crea tu <span className="gradient-text">Day perfecto</span> en 3 pasos
         </h2>
@@ -177,7 +177,7 @@ export default async function HomePage() {
 
         {/* Popular cities */}
         {cities.length > 0 && (
-          <section>
+          <section aria-label="Ciudades populares">
             <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
               Ciudades populares
             </h2>
@@ -191,7 +191,7 @@ export default async function HomePage() {
                   {city.image ? (
                     <img
                       src={city.image}
-                      alt={city.name}
+                      alt={`Eventos en ${city.name}, ${city.country || ''}`}
                       loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />

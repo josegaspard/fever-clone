@@ -13,6 +13,8 @@ import {
 import EventCard, { EventCardSkeleton } from '@/components/EventCard';
 import SearchBar from '@/components/SearchBar';
 
+// Note: metadata for this page is set via the parent layout since this is a client component
+
 function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -256,9 +258,13 @@ function SearchContent() {
                   >
                     Anterior
                   </button>
-                  {Array.from({ length: Math.min(totalPages, 5) }).map(
-                    (_, i) => {
-                      const p = i + 1;
+                  {(() => {
+                    const maxVisible = 5;
+                    let start = Math.max(1, page - Math.floor(maxVisible / 2));
+                    const end = Math.min(totalPages, start + maxVisible - 1);
+                    start = Math.max(1, end - maxVisible + 1);
+                    return Array.from({ length: end - start + 1 }).map((_, i) => {
+                      const p = start + i;
                       return (
                         <button
                           key={p}
@@ -272,8 +278,8 @@ function SearchContent() {
                           {p}
                         </button>
                       );
-                    }
-                  )}
+                    });
+                  })()}
                   <button
                     disabled={page >= totalPages}
                     onClick={() => updateUrl({ page: String(page + 1) })}

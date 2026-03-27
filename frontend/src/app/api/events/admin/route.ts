@@ -57,7 +57,7 @@ function transformEvent(row: Record<string, unknown>): Record<string, unknown> {
 export async function GET(req: NextRequest) {
   try {
     const user = await getUserFromRequest(req);
-    if (!user || user.role.toUpperCase() !== 'ADMIN') {
+    if (!user || (user.role || '').toUpperCase() !== 'ADMIN') {
       return NextResponse.json(
         { message: 'Unauthorized' },
         { status: 401 }

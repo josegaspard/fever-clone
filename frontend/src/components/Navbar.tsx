@@ -65,12 +65,13 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#111] border-b border-[#2a2a2a]">
+    <nav className="sticky top-0 z-50 border-b border-[#2a2a2a]" style={{ background: '#111111' }} role="navigation" aria-label="Navegación principal">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link
           href="/"
           className="text-2xl font-extrabold tracking-tight text-[#e63946] shrink-0"
+          aria-label="Fever - Ir al inicio"
         >
           FEVER
         </Link>
@@ -317,7 +318,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden bg-[#111] border-t border-[#2a2a2a] px-4 py-4 space-y-3">
+        <div className="md:hidden border-t border-[#2a2a2a] px-4 py-4 space-y-3" style={{ background: '#111111' }}>
           {/* Search */}
           <form onSubmit={handleSearch} className="flex items-center gap-2">
             <input

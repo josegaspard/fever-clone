@@ -16,9 +16,14 @@
 }
 
 body {
-  background: var(--color-background);
-  color: var(--color-foreground);
+  background: #0a0a0a;
+  color: #ffffff;
   font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Force dark navbar */
+nav {
+  background: #111111 !important;
 }
 
 /* Hide scrollbar for carousels */

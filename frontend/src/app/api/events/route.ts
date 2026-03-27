@@ -193,8 +193,10 @@ export async function GET(req: NextRequest) {
     }
 
     // Sorting
-    if (sortBy === 'price') {
+    if (sortBy === 'price' || sortBy === 'price_asc') {
       query = query.order('price', { ascending: true });
+    } else if (sortBy === 'price_desc') {
+      query = query.order('price', { ascending: false });
     } else if (sortBy === 'rating') {
       query = query.order('rating', { ascending: false, nullsFirst: false });
     } else if (sortBy === 'popularity') {
@@ -263,7 +265,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const user = await getUserFromRequest(req);
-    if (!user || user.role.toUpperCase() !== 'ADMIN') {
+    if (!user || (user.role || '').toUpperCase() !== 'ADMIN') {
       return NextResponse.json(
         { message: 'Unauthorized' },
         { status: 401 }
