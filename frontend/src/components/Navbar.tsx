@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { getCities, getPlans, City } from '@/lib/api';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function Navbar() {
   const { user, logout, loading } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const [cities, setCities] = useState<City[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>('');
@@ -80,7 +82,7 @@ export default function Navbar() {
         <div ref={cityRef} className="relative hidden md:block">
           <button
             onClick={() => setCityOpen(!cityOpen)}
-            className="flex items-center gap-1 text-sm text-gray-300 hover:text-white transition"
+            className="flex items-center gap-1 text-sm hover:text-[var(--fg)] transition"
           >
             <svg
               className="w-4 h-4"
@@ -138,6 +140,19 @@ export default function Navbar() {
 
         {/* Right section */}
         <div className="flex items-center gap-3">
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="hidden md:flex w-8 h-8 items-center justify-center rounded-lg hover:bg-[var(--card)] transition"
+            title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+          >
+            {theme === 'dark' ? (
+              <svg className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+            ) : (
+              <svg className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+            )}
+          </button>
+
           {/* Search */}
           {searchOpen ? (
             <form onSubmit={handleSearch} className="hidden md:flex items-center">
@@ -151,7 +166,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setSearchOpen(false)}
-                className="ml-2 text-gray-400 hover:text-white"
+                className="ml-2 hover:text-[var(--fg)]"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -161,7 +176,7 @@ export default function Navbar() {
           ) : (
             <button
               onClick={() => setSearchOpen(true)}
-              className="hidden md:block text-gray-400 hover:text-white transition"
+              className="hidden md:block hover:text-[var(--fg)] transition"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -285,7 +300,7 @@ export default function Navbar() {
                 <div className="flex items-center gap-2">
                   <Link
                     href="/auth/login"
-                    className="text-sm text-gray-300 hover:text-white transition"
+                    className="text-sm hover:text-[var(--fg)] transition"
                   >
                     Iniciar sesion
                   </Link>
@@ -302,7 +317,7 @@ export default function Navbar() {
 
           {/* Hamburger -- mobile */}
           <button
-            className="md:hidden text-gray-400 hover:text-white"
+            className="md:hidden hover:text-[var(--fg)]"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,7 +333,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-[#2a2a2a] px-4 py-4 space-y-3" style={{ background: '#111111' }}>
+        <div className="md:hidden border-t border-[#2a2a2a] px-4 py-4 space-y-3" style={{ background: 'var(--nav-bg)' }}>
           {/* Search */}
           <form onSubmit={handleSearch} className="flex items-center gap-2">
             <input

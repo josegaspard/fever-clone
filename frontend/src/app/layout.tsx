@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 import { ToastProvider } from '@/components/Toast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -91,7 +92,9 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${inter.variable} h-full antialiased`}>
       <head>
-        <meta name="theme-color" content="#0a0a0a" />
+        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+        <script dangerouslySetInnerHTML={{ __html: `try{const t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');if(t==='dark')document.documentElement.classList.add('dark')}catch(e){}` }} />
         <link rel="canonical" href="https://fever-clone.vercel.app" />
         <script
           type="application/ld+json"
@@ -102,14 +105,16 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-[#0a0a0a] text-white">
-        <AuthProvider>
-          <ToastProvider>
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </ToastProvider>
-        </AuthProvider>
+      <body className="min-h-full flex flex-col" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>
+        <ThemeProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <Navbar />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </ToastProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

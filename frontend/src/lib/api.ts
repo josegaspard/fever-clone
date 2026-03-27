@@ -286,6 +286,13 @@ export async function getMe(): Promise<User> {
   return fetchApi<User>('/auth/me');
 }
 
+export async function googleAuth(credential: string): Promise<AuthResponse> {
+  return fetchApi<AuthResponse>('/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ credential }),
+  });
+}
+
 // ── Favorites ──────────────────────────────────────────────────────────────
 
 export async function getFavorites(): Promise<Event[]> {
