@@ -164,13 +164,25 @@ export default function BuildDayPage() {
       const target = filters.activityCount * dayCount;
       const allEvents: Event[] = [];
 
-      // Fetch events
-      for (const catSlug of filters.categories) {
-        const res = await getEvents({ city: filters.city || undefined, category: catSlug, maxPrice, status: 'PUBLISHED', limit: 20, sortBy: 'rating' });
-        allEvents.push(...(res.data || []));
+      // Fetch ALL events for the city (no artificial limits)
+      let page = 1;
+      let hasMore = true;
+      while (hasMore) {
+        const res = await getEvents({ city: filters.city || undefined, maxPrice, status: 'PUBLISHED', limit: 50, page, sortBy: 'rating' });
+        const batch = res.data || [];
+        for (const ev of batch) {
+          if (!allEvents.find(e => e.id === ev.id)) {
+            // Filter by selected categories if any
+            if (filters.categories.length > 0 && ev.category && !filters.categories.includes(ev.category.slug)) continue;
+            allEvents.push(ev);
+          }
+        }
+        hasMore = batch.length === 50 && page < 5; // Safety limit: max 250 events
+        page++;
       }
+      // If category filter left us with too few, fetch all categories too
       if (allEvents.length < target * 2) {
-        const res = await getEvents({ city: filters.city || undefined, maxPrice, status: 'PUBLISHED', limit: 30, sortBy: 'popularity' });
+        const res = await getEvents({ city: filters.city || undefined, maxPrice, status: 'PUBLISHED', limit: 50, sortBy: 'popularity' });
         for (const ev of (res.data || [])) { if (!allEvents.find(e => e.id === ev.id)) allEvents.push(ev); }
       }
       const unique = allEvents.filter((e, i, a) => a.findIndex(x => x.id === e.id) === i);
