@@ -87,6 +87,21 @@ export default async function HomePage() {
     <div itemScope itemType="https://schema.org/WebPage">
       <HeroBanner />
 
+      {/* Build Day CTA */}
+      <section className="max-w-5xl mx-auto px-4 pt-16 pb-8">
+        <Link
+          href="/build-day"
+          className="block w-full p-6 md:p-8 rounded-2xl border-2 border-dashed transition-all hover:border-[#e63946] hover:shadow-lg group text-center"
+          style={{ borderColor: 'var(--border)', background: 'var(--card)' }}
+        >
+          <span className="text-4xl block mb-3">🎯</span>
+          <h2 className="text-xl md:text-2xl font-black mb-2 group-hover:text-[#e63946] transition">Arma tu Day perfecto</h2>
+          <p className="text-sm max-w-md mx-auto" style={{ color: 'var(--text-secondary)' }}>
+            Dinos con quién vas, tu presupuesto y qué te gusta, y te creamos rutas personalizadas con los mejores eventos.
+          </p>
+        </Link>
+      </section>
+
       {/* How it works */}
       <section className="max-w-5xl mx-auto px-4 py-16" aria-label="Cómo funciona">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">

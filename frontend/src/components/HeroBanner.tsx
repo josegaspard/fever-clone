@@ -75,12 +75,22 @@ export default function HeroBanner() {
           Crea tu <strong className="text-white font-semibold">Day perfecto</strong> en minutos.
         </p>
 
-        {/* Search */}
-        <div className="max-w-2xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: '300ms' }}>
+        {/* Search + Build Day */}
+        <div className="max-w-2xl mx-auto mb-6 animate-fade-in" style={{ animationDelay: '300ms' }}>
           <div className="relative">
             <SearchBar onSearch={handleSearch} large placeholder="¿Qué quieres hacer hoy?" />
             <div className="absolute -inset-1 bg-gradient-to-r from-[#e63946]/20 via-purple-500/10 to-[#e63946]/20 rounded-2xl blur-xl -z-10" />
           </div>
+        </div>
+
+        <div className="animate-fade-in mb-8" style={{ animationDelay: '380ms' }}>
+          <button
+            onClick={() => router.push('/build-day')}
+            className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-white text-black font-bold text-sm rounded-full hover:bg-gray-100 transition-all shadow-xl shadow-white/10 hover:shadow-white/20 hover:scale-[1.02]"
+          >
+            <svg className="w-5 h-5 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            Arma tu Day perfecto
+          </button>
         </div>
 
         {/* Category pills */}
