@@ -125,7 +125,7 @@ export default function NewEventPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Title */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Título *
             </label>
             <input
@@ -133,26 +133,26 @@ export default function NewEventPage() {
               required
               value={form.title}
               onChange={(e) => updateField('title', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             />
           </div>
 
           {/* Slug */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Slug
             </label>
             <input
               type="text"
               value={form.slug}
               onChange={(e) => updateField('slug', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             />
           </div>
 
           {/* Description */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Descripción *
             </label>
             <textarea
@@ -160,13 +160,13 @@ export default function NewEventPage() {
               rows={5}
               value={form.description}
               onChange={(e) => updateField('description', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946] resize-y"
+              className="w-full input-theme rounded-lg px-4 py-2.5 resize-y"
             />
           </div>
 
           {/* Short description */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Descripción corta
             </label>
             <input
@@ -175,13 +175,13 @@ export default function NewEventPage() {
               onChange={(e) =>
                 updateField('shortDescription', e.target.value)
               }
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             />
           </div>
 
           {/* Image URL */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               URL de imagen
             </label>
             <input
@@ -189,7 +189,7 @@ export default function NewEventPage() {
               value={form.image}
               onChange={(e) => updateField('image', e.target.value)}
               placeholder="https://..."
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             />
             {form.image && (
               <img
@@ -202,7 +202,7 @@ export default function NewEventPage() {
 
           {/* Price */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Precio *
             </label>
             <input
@@ -212,13 +212,13 @@ export default function NewEventPage() {
               step="0.01"
               value={form.price}
               onChange={(e) => updateField('price', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             />
           </div>
 
           {/* Original price */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Precio original
             </label>
             <input
@@ -227,13 +227,13 @@ export default function NewEventPage() {
               step="0.01"
               value={form.originalPrice}
               onChange={(e) => updateField('originalPrice', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             />
           </div>
 
           {/* Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Fecha *
             </label>
             <input
@@ -241,39 +241,39 @@ export default function NewEventPage() {
               required
               value={form.date}
               onChange={(e) => updateField('date', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             />
           </div>
 
           {/* End date */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Fecha fin
             </label>
             <input
               type="date"
               value={form.endDate}
               onChange={(e) => updateField('endDate', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             />
           </div>
 
           {/* Time */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Hora
             </label>
             <input
               type="time"
               value={form.time}
               onChange={(e) => updateField('time', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             />
           </div>
 
           {/* Duration */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Duración
             </label>
             <input
@@ -281,19 +281,19 @@ export default function NewEventPage() {
               placeholder="ej: 2 horas"
               value={form.duration}
               onChange={(e) => updateField('duration', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             />
           </div>
 
           {/* City */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Ciudad
             </label>
             <select
               value={form.cityId}
               onChange={(e) => updateField('cityId', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             >
               <option value="">Seleccionar ciudad</option>
               {cities.map((c) => (
@@ -306,13 +306,13 @@ export default function NewEventPage() {
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Categoría
             </label>
             <select
               value={form.categoryId}
               onChange={(e) => updateField('categoryId', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             >
               <option value="">Seleccionar categoría</option>
               {categories.map((c) => (
@@ -325,26 +325,26 @@ export default function NewEventPage() {
 
           {/* Address */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Dirección
             </label>
             <input
               type="text"
               value={form.address}
               onChange={(e) => updateField('address', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             />
           </div>
 
           {/* Status */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Estado
             </label>
             <select
               value={form.status}
               onChange={(e) => updateField('status', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             >
               <option value="DRAFT">Borrador</option>
               <option value="PUBLISHED">Publicado</option>
@@ -353,7 +353,7 @@ export default function NewEventPage() {
 
           {/* Capacity */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
               Aforo
             </label>
             <input
@@ -361,7 +361,7 @@ export default function NewEventPage() {
               min="0"
               value={form.capacity}
               onChange={(e) => updateField('capacity', e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#e63946]"
+              className="w-full input-theme rounded-lg px-4 py-2.5"
             />
           </div>
 
@@ -372,15 +372,16 @@ export default function NewEventPage() {
                 type="checkbox"
                 checked={form.featured}
                 onChange={(e) => updateField('featured', e.target.checked)}
-                className="w-4 h-4 rounded border-[#2a2a2a] bg-[#1a1a1a] text-[#e63946] focus:ring-[#e63946]"
+                className="w-4 h-4 rounded text-[#e63946] focus:ring-[#e63946]"
+                style={{ borderColor: 'var(--border)', background: 'var(--card)' }}
               />
-              <span className="text-sm text-gray-300">Evento destacado</span>
+              <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Evento destacado</span>
             </label>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-4 pt-4 border-t border-[#2a2a2a]">
+        <div className="flex items-center gap-4 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
           <button
             type="submit"
             disabled={submitting}
@@ -391,7 +392,8 @@ export default function NewEventPage() {
           <button
             type="button"
             onClick={() => router.push('/admin')}
-            className="px-6 py-3 bg-[#2a2a2a] hover:bg-[#3a3a3a] rounded-lg text-gray-300 transition"
+            className="px-6 py-3 rounded-lg transition"
+            style={{ background: 'var(--surface-2)', color: 'var(--text-secondary)' }}
           >
             Cancelar
           </button>

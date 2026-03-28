@@ -48,6 +48,7 @@ function transformEvent(row: Record<string, unknown>): Record<string, unknown> {
     lng: row.lng,
     cityId: row.city_id,
     categoryId: row.category_id,
+    videoUrl: row.video_url,
     organizerId: row.organizer_id,
     status: row.status,
     featured: row.featured,
@@ -297,6 +298,8 @@ export async function POST(req: NextRequest) {
       status: body.status ? body.status.toUpperCase() : 'DRAFT',
       featured: body.featured || false,
       capacity: body.capacity ? Number(body.capacity) : null,
+      video_url: body.videoUrl || null,
+      refund_policy_id: body.refundPolicyId || null,
     };
 
     const { data, error } = await supabase

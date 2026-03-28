@@ -69,10 +69,10 @@ export default function AdminPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-[#1a1a1a] rounded w-48" />
+          <div className="h-8 rounded w-48" style={{ background: 'var(--card)' }} />
           <div className="grid grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-24 bg-[#1a1a1a] rounded-xl" />
+              <div key={i} className="h-24 rounded-xl" style={{ background: 'var(--card)' }} />
             ))}
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function AdminPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Total eventos', value: stats.total, color: 'text-white' },
+          { label: 'Total eventos', value: stats.total, color: '' },
           {
             label: 'Publicados',
             value: stats.published,
@@ -106,14 +106,15 @@ export default function AdminPage() {
           {
             label: 'Archivados',
             value: stats.archived,
-            color: 'text-gray-400',
+            color: '',
           },
         ].map((stat) => (
           <div
             key={stat.label}
-            className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4"
+            className="rounded-xl p-4"
+            style={{ background: 'var(--card)', borderColor: 'var(--border)', borderWidth: '1px', borderStyle: 'solid' }}
           >
-            <p className="text-sm text-gray-400">{stat.label}</p>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{stat.label}</p>
             <p className={`text-2xl font-bold mt-1 ${stat.color}`}>
               {stat.value}
             </p>
@@ -122,7 +123,7 @@ export default function AdminPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 mb-6 bg-[#1a1a1a] rounded-lg p-1 inline-flex">
+      <div className="flex items-center gap-1 mb-6 rounded-lg p-1 inline-flex" style={{ background: 'var(--card)' }}>
         {(
           [
             { key: 'all', label: 'Todos' },
@@ -134,11 +135,8 @@ export default function AdminPage() {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`px-4 py-2 text-sm rounded-md transition ${
-              tab === t.key
-                ? 'bg-[#2a2a2a] text-white font-medium'
-                : 'text-gray-400 hover:text-white'
-            }`}
+            className={`px-4 py-2 text-sm rounded-md transition font-medium`}
+            style={tab === t.key ? { background: 'var(--surface-2)', color: 'var(--fg)' } : { color: 'var(--text-secondary)' }}
           >
             {t.label}
           </button>
@@ -149,18 +147,18 @@ export default function AdminPage() {
       {loading ? (
         <div className="space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-14 bg-[#1a1a1a] rounded-lg animate-pulse" />
+            <div key={i} className="h-14 rounded-lg animate-pulse" style={{ background: 'var(--card)' }} />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16" style={{ color: 'var(--text-secondary)' }}>
           No hay eventos en esta categoría.
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#2a2a2a] text-left text-gray-400">
+              <tr className="text-left" style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
                 <th className="pb-3 font-medium">Título</th>
                 <th className="pb-3 font-medium hidden md:table-cell">Ciudad</th>
                 <th className="pb-3 font-medium hidden md:table-cell">Categoría</th>
@@ -169,9 +167,9 @@ export default function AdminPage() {
                 <th className="pb-3 font-medium text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2a2a2a]">
+            <tbody>
               {filtered.map((event) => (
-                <tr key={event.id} className="hover:bg-[#1a1a1a] transition">
+                <tr key={event.id} className="table-row-theme transition hover:opacity-80">
                   <td className="py-3 pr-4">
                     <div className="flex items-center gap-3">
                       {event.image && (
@@ -181,15 +179,15 @@ export default function AdminPage() {
                           className="w-10 h-10 rounded-lg object-cover hidden sm:block"
                         />
                       )}
-                      <span className="font-medium text-white truncate max-w-[200px]">
+                      <span className="font-medium truncate max-w-[200px]" style={{ color: 'var(--fg)' }}>
                         {event.title}
                       </span>
                     </div>
                   </td>
-                  <td className="py-3 text-gray-400 hidden md:table-cell">
+                  <td className="py-3 hidden md:table-cell" style={{ color: 'var(--text-secondary)' }}>
                     {event.city?.name || '-'}
                   </td>
-                  <td className="py-3 text-gray-400 hidden md:table-cell">
+                  <td className="py-3 hidden md:table-cell" style={{ color: 'var(--text-secondary)' }}>
                     {event.category?.name || '-'}
                   </td>
                   <td className="py-3">
@@ -209,14 +207,15 @@ export default function AdminPage() {
                         : 'Archivado'}
                     </span>
                   </td>
-                  <td className="py-3 text-gray-400 hidden sm:table-cell">
+                  <td className="py-3 hidden sm:table-cell" style={{ color: 'var(--text-secondary)' }}>
                     {new Date(event.date).toLocaleDateString('es-ES')}
                   </td>
                   <td className="py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <Link
                         href={`/admin/events/${event.id}/edit`}
-                        className="px-3 py-1 bg-[#2a2a2a] hover:bg-[#3a3a3a] rounded-lg text-xs transition"
+                        className="px-3 py-1 rounded-lg text-xs transition"
+                        style={{ background: 'var(--surface-2)' }}
                       >
                         Editar
                       </Link>

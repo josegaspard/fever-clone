@@ -2,12 +2,21 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
+export type UserType = 'USER' | 'BUSINESS' | 'SUPERADMIN';
+
 export interface User {
   id: string;
   name: string;
   email: string;
   role: 'user' | 'admin';
+  userType: UserType;
   avatar?: string;
+  onboardingCompleted?: boolean;
+  companyName?: string;
+  companyDescription?: string;
+  companyLogo?: string;
+  companyWebsite?: string;
+  phone?: string;
 }
 
 export interface City {
@@ -33,6 +42,8 @@ export interface Event {
   description: string;
   shortDescription?: string;
   image?: string;
+  videoUrl?: string;
+  gallery?: string[];
   price: number;
   originalPrice?: number;
   date: string;
@@ -51,8 +62,32 @@ export interface Event {
   soldCount?: number;
   rating?: number;
   reviewCount?: number;
+  refundPolicyId?: string;
+  organizerId?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface RefundPolicy {
+  id: string;
+  businessId: string;
+  name: string;
+  description?: string;
+  daysBeforeEvent: number;
+  refundPercentage: number;
+  isDefault: boolean;
+  createdAt: string;
+}
+
+export interface AdminStats {
+  totalUsers: number;
+  totalEvents: number;
+  totalTickets: number;
+  totalRevenue: number;
+  usersByType: { type: string; count: number }[];
+  eventsByStatus: { status: string; count: number }[];
+  recentUsers: User[];
+  recentEvents: Event[];
 }
 
 export interface Review {
@@ -274,11 +309,29 @@ export async function login(
 export async function register(
   name: string,
   email: string,
-  password: string
+  password: string,
+  userType: UserType = 'USER',
+  companyName?: string
 ): Promise<AuthResponse> {
   return fetchApi<AuthResponse>('/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ name, email, password }),
+    body: JSON.stringify({ name, email, password, userType, companyName }),
+  });
+}
+
+export async function updateProfile(data: Partial<{
+  name: string;
+  avatar: string;
+  phone: string;
+  companyName: string;
+  companyDescription: string;
+  companyLogo: string;
+  companyWebsite: string;
+  onboardingCompleted: boolean;
+}>): Promise<User> {
+  return fetchApi<User>('/auth/me', {
+    method: 'PUT',
+    body: JSON.stringify(data),
   });
 }
 
@@ -481,4 +534,105 @@ export async function createCheckoutSession(data: {
     method: 'POST',
     body: JSON.stringify(data),
   });
+}
+
+// ── Super Admin ──────────────────────────────────────────────────────────
+
+export async function getAdminStats(): Promise<AdminStats> {
+  return fetchApi<AdminStats>('/admin/stats');
+}
+
+export async function getAdminUsers(params?: {
+  userType?: string;
+  page?: number;
+  limit?: number;
+  q?: string;
+}): Promise<PaginatedResponse<User>> {
+  const search = new URLSearchParams();
+  if (params) {
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') search.set(k, String(v));
+    });
+  }
+  const query = search.toString();
+  return fetchApi<PaginatedResponse<User>>(`/admin/users${query ? `?${query}` : ''}`);
+}
+
+export async function updateUserRole(userId: string, data: {
+  role?: string;
+  userType?: UserType;
+}): Promise<User> {
+  return fetchApi<User>(`/admin/users/${userId}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteUser(userId: string): Promise<void> {
+  return fetchApi<void>(`/admin/users/${userId}`, { method: 'DELETE' });
+}
+
+export async function getAllEventsAdmin(params?: {
+  status?: string;
+  page?: number;
+  limit?: number;
+  q?: string;
+}): Promise<PaginatedResponse<Event>> {
+  const search = new URLSearchParams();
+  if (params) {
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') search.set(k, String(v));
+    });
+  }
+  const query = search.toString();
+  return fetchApi<PaginatedResponse<Event>>(`/admin/events${query ? `?${query}` : ''}`);
+}
+
+// ── Business ─────────────────────────────────────────────────────────────
+
+export async function getBusinessEvents(params?: {
+  status?: string;
+  page?: number;
+  limit?: number;
+}): Promise<PaginatedResponse<Event>> {
+  const search = new URLSearchParams();
+  if (params) {
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') search.set(k, String(v));
+    });
+  }
+  const query = search.toString();
+  return fetchApi<PaginatedResponse<Event>>(`/business/events${query ? `?${query}` : ''}`);
+}
+
+export async function getBusinessStats(): Promise<{
+  totalEvents: number;
+  totalTicketsSold: number;
+  totalRevenue: number;
+  eventsByStatus: { status: string; count: number }[];
+  recentTickets: Ticket[];
+}> {
+  return fetchApi('/business/stats');
+}
+
+export async function getRefundPolicies(): Promise<RefundPolicy[]> {
+  return fetchApi<RefundPolicy[]>('/business/refund-policies');
+}
+
+export async function createRefundPolicy(data: Partial<RefundPolicy>): Promise<RefundPolicy> {
+  return fetchApi<RefundPolicy>('/business/refund-policies', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateRefundPolicy(id: string, data: Partial<RefundPolicy>): Promise<RefundPolicy> {
+  return fetchApi<RefundPolicy>(`/business/refund-policies/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteRefundPolicy(id: string): Promise<void> {
+  return fetchApi<void>(`/business/refund-policies/${id}`, { method: 'DELETE' });
 }

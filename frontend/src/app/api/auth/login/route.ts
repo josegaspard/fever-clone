@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
     const { data: user, error } = await supabase
       .from('users')
-      .select('id, email, name, role, avatar, password, created_at')
+      .select('id, email, name, role, avatar, password, user_type, onboarding_completed, company_name, created_at')
       .eq('email', email)
       .single();
 
@@ -44,6 +44,9 @@ export async function POST(req: NextRequest) {
         email: user.email,
         name: user.name,
         role: user.role,
+        userType: user.user_type || 'USER',
+        onboardingCompleted: user.onboarding_completed ?? false,
+        companyName: user.company_name,
         avatar: user.avatar,
         createdAt: user.created_at,
       },

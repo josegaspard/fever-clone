@@ -145,14 +145,14 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
       {/* Auth modal for non-logged users */}
       {showAuthModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowAuthModal(false)}>
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl p-8 w-full max-w-sm text-center space-y-5" onClick={(e) => e.stopPropagation()}>
+          <div className="rounded-2xl p-8 w-full max-w-sm text-center space-y-5" onClick={(e) => e.stopPropagation()} style={{ background: 'var(--card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)' }}>
             <div className="w-16 h-16 bg-[#e63946]/10 rounded-full flex items-center justify-center mx-auto">
               <svg className="w-8 h-8 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-white">Registrate para crear tu Day</h2>
-            <p className="text-sm text-gray-400">
+            <h2 className="text-xl font-bold" style={{ color: 'var(--fg)' }}>Registrate para crear tu Day</h2>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
               Crea tu cuenta gratis y organiza tu dia perfecto con los mejores eventos.
             </p>
             <div className="space-y-3">
@@ -164,14 +164,16 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
               </Link>
               <Link
                 href="/auth/login"
-                className="block w-full py-3 border border-[#2a2a2a] hover:border-gray-400 rounded-xl text-gray-300 font-medium transition text-center"
+                className="block w-full py-3 rounded-xl font-medium transition text-center"
+                style={{ borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
               >
                 Ya tengo cuenta
               </Link>
             </div>
             <button
               onClick={() => setShowAuthModal(false)}
-              className="text-xs text-gray-500 hover:text-gray-300 transition"
+              className="text-xs transition"
+              style={{ color: 'var(--text-tertiary)' }}
             >
               Cerrar
             </button>
@@ -209,7 +211,7 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
 
       {/* Dropdown */}
       {open && (
-        <div className={`absolute z-50 ${variant === 'icon' ? 'right-0 top-full mt-2' : 'left-0 right-0 top-full mt-2'} bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl shadow-2xl overflow-hidden min-w-[280px]`}>
+        <div className={`absolute z-50 ${variant === 'icon' ? 'right-0 top-full mt-2' : 'left-0 right-0 top-full mt-2'} rounded-xl shadow-2xl overflow-hidden min-w-[280px]`} style={{ background: 'var(--card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)' }}>
           {/* Success state */}
           {successPlanId ? (
             <div className="p-5 text-center space-y-3">
@@ -218,7 +220,7 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="text-sm font-semibold text-white">Agregado exitosamente</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--fg)' }}>Agregado exitosamente</p>
               <Link
                 href={`/plans/${successPlanId}`}
                 className="inline-block text-sm text-[#e63946] hover:underline font-medium"
@@ -230,25 +232,27 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
           ) : (
             <>
               {/* Time picker */}
-              <div className="p-3 border-b border-[#2a2a2a] space-y-2">
-                <p className="text-xs text-gray-400 font-medium">Horario</p>
+              <div className="p-3 space-y-2" style={{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: 'var(--border)' }}>
+                <p className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Horario</p>
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <label className="text-[10px] text-gray-500">Inicio</label>
+                    <label className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Inicio</label>
                     <input
                       type="time"
                       value={startTime}
                       onChange={(e) => setStartTime(e.target.value)}
-                      className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#e63946]"
+                      className="w-full rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#e63946]"
+                      style={{ background: 'var(--bg)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)', color: 'var(--fg)' }}
                     />
                   </div>
                   <div className="flex-1">
-                    <label className="text-[10px] text-gray-500">Fin</label>
+                    <label className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Fin</label>
                     <input
                       type="time"
                       value={endTime}
                       onChange={(e) => setEndTime(e.target.value)}
-                      className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#e63946]"
+                      className="w-full rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#e63946]"
+                      style={{ background: 'var(--bg)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)', color: 'var(--fg)' }}
                     />
                   </div>
                 </div>
@@ -270,7 +274,7 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
                     <div className="w-5 h-5 border-2 border-[#e63946] border-t-transparent rounded-full animate-spin mx-auto" />
                   </div>
                 ) : plans.length === 0 ? (
-                  <div className="p-3 text-center text-xs text-gray-400">
+                  <div className="p-3 text-center text-xs" style={{ color: 'var(--text-secondary)' }}>
                     No tienes Days aun. Crea uno nuevo.
                   </div>
                 ) : (
@@ -279,11 +283,11 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
                       key={plan.id}
                       onClick={() => handleAddToPlan(plan.id)}
                       disabled={adding}
-                      className="w-full text-left px-3 py-2.5 hover:bg-[#2a2a2a] transition flex items-center justify-between gap-2 disabled:opacity-50"
+                      className="w-full text-left px-3 py-2.5 transition flex items-center justify-between gap-2 disabled:opacity-50 hover:opacity-80"
                     >
                       <div>
-                        <p className="text-sm text-white">{plan.title}</p>
-                        <p className="text-[10px] text-gray-500">
+                        <p className="text-sm" style={{ color: 'var(--fg)' }}>{plan.title}</p>
+                        <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
                           {plan.planDate ? new Date(plan.planDate).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : ''}
                           {' '}&middot; {plan.items?.length || 0} actividades
                         </p>
@@ -301,14 +305,15 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
               </div>
 
               {/* Create new Day */}
-              <div className="border-t border-[#2a2a2a]">
+              <div style={{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: 'var(--border)' }}>
                 {showCreate ? (
                   <div className="p-3 space-y-2">
                     <input
                       value={newTitle}
                       onChange={(e) => setNewTitle(e.target.value)}
                       placeholder="Nombre de tu Day..."
-                      className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#e63946]"
+                      className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#e63946]"
+                      style={{ background: 'var(--bg)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)', color: 'var(--fg)' }}
                       autoFocus
                     />
                     <div className="flex gap-2">
@@ -325,7 +330,8 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
                       </button>
                       <button
                         onClick={() => setShowCreate(false)}
-                        className="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition"
+                        className="px-3 py-1.5 text-sm transition"
+                        style={{ color: 'var(--text-secondary)' }}
                       >
                         Cancelar
                       </button>
@@ -334,7 +340,7 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
                 ) : (
                   <button
                     onClick={() => setShowCreate(true)}
-                    className="w-full px-3 py-2.5 text-sm text-[#e63946] hover:bg-[#2a2a2a] transition text-left flex items-center gap-2"
+                    className="w-full px-3 py-2.5 text-sm text-[#e63946] transition text-left flex items-center gap-2 hover:opacity-80"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

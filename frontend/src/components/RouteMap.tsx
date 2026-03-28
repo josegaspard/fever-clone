@@ -45,7 +45,7 @@ export default function RouteMap({ items, onClose }: RouteMapProps) {
   return (
     <div className={`${expanded ? 'fixed inset-0 z-[100] bg-black/90 flex flex-col' : 'relative'}`}>
       {/* Header */}
-      <div className={`flex items-center justify-between ${expanded ? 'px-4 py-3 bg-[#0a0a0a]' : 'mb-3'}`}>
+      <div className={`flex items-center justify-between ${expanded ? 'px-4 py-3' : 'mb-3'}`} style={expanded ? { background: 'var(--bg)' } : undefined}>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-[#e63946]/10 rounded-lg flex items-center justify-center">
             <svg className="w-4 h-4 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,14 +53,15 @@ export default function RouteMap({ items, onClose }: RouteMapProps) {
             </svg>
           </div>
           <div>
-            <p className="text-sm font-semibold text-white">Ruta de tu Day</p>
-            <p className="text-xs text-gray-500">{withCoords.length} paradas</p>
+            <p className="text-sm font-semibold" style={{ color: 'var(--fg)' }}>Ruta de tu Day</p>
+            <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{withCoords.length} paradas</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setExpanded(!expanded)}
-            className="p-2 text-gray-400 hover:text-white transition rounded-lg hover:bg-white/5"
+            className="p-2 transition rounded-lg hover:bg-white/5"
+            style={{ color: 'var(--text-secondary)' }}
             title={expanded ? 'Minimizar' : 'Pantalla completa'}
           >
             {expanded ? (
@@ -70,7 +71,7 @@ export default function RouteMap({ items, onClose }: RouteMapProps) {
             )}
           </button>
           {onClose && !expanded && (
-            <button onClick={onClose} className="p-2 text-gray-400 hover:text-white transition rounded-lg hover:bg-white/5">
+            <button onClick={onClose} className="p-2 transition rounded-lg hover:bg-white/5" style={{ color: 'var(--text-secondary)' }}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           )}
@@ -78,7 +79,7 @@ export default function RouteMap({ items, onClose }: RouteMapProps) {
       </div>
 
       {/* Map */}
-      <div className={`${expanded ? 'flex-1' : ''} rounded-2xl overflow-hidden border border-[#1f1f1f]`} style={{ height: expanded ? undefined : height }}>
+      <div className={`${expanded ? 'flex-1' : ''} rounded-2xl overflow-hidden`} style={{ height: expanded ? undefined : height, borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)' }}>
         <iframe
           src={embedUrl}
           width="100%"
@@ -92,21 +93,21 @@ export default function RouteMap({ items, onClose }: RouteMapProps) {
       </div>
 
       {/* Stops list */}
-      <div className={`${expanded ? 'px-4 py-3 bg-[#0a0a0a] max-h-[25vh] overflow-y-auto' : 'mt-3'}`}>
+      <div className={`${expanded ? 'px-4 py-3 max-h-[25vh] overflow-y-auto' : 'mt-3'}`} style={expanded ? { background: 'var(--bg)' } : undefined}>
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {withCoords.map((item, idx) => (
             <div key={item.id} className="flex items-center shrink-0">
-              <div className="flex items-center gap-2 bg-[#141414] border border-[#1f1f1f] rounded-xl px-3 py-2">
+              <div className="flex items-center gap-2 rounded-xl px-3 py-2" style={{ background: 'var(--surface)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)' }}>
                 <div className="w-6 h-6 bg-[#e63946] rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0">
                   {idx + 1}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs text-white font-medium truncate max-w-[120px]">{item.event?.title || 'Evento'}</p>
-                  {item.startTime && <p className="text-[10px] text-gray-500">{item.startTime}</p>}
+                  <p className="text-xs font-medium truncate max-w-[120px]" style={{ color: 'var(--fg)' }}>{item.event?.title || 'Evento'}</p>
+                  {item.startTime && <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>{item.startTime}</p>}
                 </div>
               </div>
               {idx < withCoords.length - 1 && (
-                <svg className="w-4 h-4 text-gray-600 mx-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 mx-1 shrink-0" style={{ color: 'var(--text-tertiary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               )}
@@ -116,12 +117,13 @@ export default function RouteMap({ items, onClose }: RouteMapProps) {
       </div>
 
       {/* Open in Google Maps */}
-      <div className={`${expanded ? 'px-4 pb-4 bg-[#0a0a0a]' : 'mt-3'}`}>
+      <div className={`${expanded ? 'px-4 pb-4' : 'mt-3'}`} style={expanded ? { background: 'var(--bg)' } : undefined}>
         <a
           href={linkUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-3 bg-[#141414] border border-[#1f1f1f] hover:border-[#e63946]/30 rounded-xl text-sm text-gray-300 hover:text-white transition font-medium"
+          className="flex items-center justify-center gap-2 w-full py-3 hover:border-[#e63946]/30 rounded-xl text-sm transition font-medium"
+          style={{ background: 'var(--surface)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
           Abrir en Google Maps

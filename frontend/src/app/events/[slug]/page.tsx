@@ -88,6 +88,13 @@ export async function generateMetadata({
   const description = event.shortDescription
     || `${event.title} en ${cityName}. ${priceText}. ${event.description.slice(0, 140)}...`;
 
+  const eventUrl = `${BASE_URL}/events/${event.slug}`;
+  const dateFormatted = new Date(event.date).toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
   return {
     title,
     description,
@@ -100,26 +107,65 @@ export async function generateMetadata({
       'tickets',
       event.city?.country || '',
       'experiencias',
+      `${categoryName} en ${cityName}`,
+      `eventos ${cityName}`,
+      `${categoryName.toLowerCase()} ${dateFormatted}`,
+      'comprar entradas',
+      'planes',
     ].filter(Boolean),
     openGraph: {
       title,
       description,
-      type: 'website',
-      url: `${BASE_URL}/events/${event.slug}`,
+      type: 'article',
+      url: eventUrl,
       siteName: 'Fever',
       locale: 'es_ES',
+      publishedTime: event.createdAt,
+      modifiedTime: event.updatedAt,
+      section: categoryName,
+      tags: [categoryName, cityName, 'eventos', 'experiencias'],
       images: event.image
-        ? [{ url: event.image, width: 1200, height: 630, alt: event.title }]
+        ? [
+            {
+              url: event.image,
+              width: 1200,
+              height: 630,
+              alt: `${event.title} - ${categoryName} en ${cityName}`,
+              type: 'image/jpeg',
+            },
+          ]
         : [],
     },
     twitter: {
       card: 'summary_large_image',
+      site: '@fever',
+      creator: '@fever',
       title,
       description,
-      images: event.image ? [event.image] : [],
+      images: event.image
+        ? [
+            {
+              url: event.image,
+              width: 1200,
+              height: 630,
+              alt: `${event.title} - ${categoryName} en ${cityName}`,
+            },
+          ]
+        : [],
     },
     alternates: {
-      canonical: `${BASE_URL}/events/${event.slug}`,
+      canonical: eventUrl,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   };
 }
@@ -158,17 +204,28 @@ export default async function EventDetailPage({
     related = (relatedRows || []).map(transformEvent);
   }
 
+  // Determine availability based on capacity and sold count
+  const isSoldOut = event.capacity && event.soldCount && event.soldCount >= event.capacity;
+  const availabilityUrl = isSoldOut
+    ? 'https://schema.org/SoldOut'
+    : 'https://schema.org/InStock';
+
+  // Determine if this is a concert/music event for performer schema
+  const isConcert = event.category?.slug === 'conciertos' || event.category?.slug === 'musica' || event.category?.slug === 'concerts' || event.category?.slug === 'music';
+
   // JSON-LD structured data for Event (Schema.org)
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Event',
+    '@type': isConcert ? 'MusicEvent' : 'Event',
     name: event.title,
     description: event.shortDescription || event.description.slice(0, 300),
     startDate: event.date,
-    ...(event.endDate && { endDate: event.endDate }),
+    endDate: event.endDate || event.date,
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     image: event.image ? [event.image] : [],
+    url: `${BASE_URL}/events/${event.slug}`,
+    ...(event.duration && { duration: event.duration }),
     ...(event.address && {
       location: {
         '@type': 'Place',
@@ -193,9 +250,27 @@ export default async function EventDetailPage({
       url: `${BASE_URL}/events/${event.slug}`,
       price: event.price,
       priceCurrency: event.currency || 'MXN',
-      availability: 'https://schema.org/InStock',
+      availability: availabilityUrl,
       validFrom: event.createdAt,
+      ...(event.capacity && {
+        inventoryLevel: {
+          '@type': 'QuantitativeValue',
+          value: event.capacity - (event.soldCount || 0),
+        },
+      }),
     },
+    ...(event.originalPrice && event.originalPrice > event.price && {
+      priceSpecification: {
+        '@type': 'PriceSpecification',
+        price: event.price,
+        priceCurrency: event.currency || 'MXN',
+        eligibleTransactionVolume: {
+          '@type': 'PriceSpecification',
+          price: event.originalPrice,
+          priceCurrency: event.currency || 'MXN',
+        },
+      },
+    }),
     ...(event.rating && event.reviewCount && event.reviewCount > 0 && {
       aggregateRating: {
         '@type': 'AggregateRating',
@@ -205,47 +280,78 @@ export default async function EventDetailPage({
         worstRating: 1,
       },
     }),
-    performer: {
-      '@type': 'Organization',
-      name: 'Fever',
-    },
+    performer: isConcert
+      ? {
+          '@type': 'PerformingGroup',
+          name: event.title,
+        }
+      : {
+          '@type': 'Organization',
+          name: 'Fever',
+        },
     organizer: {
       '@type': 'Organization',
       name: 'Fever',
       url: BASE_URL,
+      logo: `${BASE_URL}/og-image.png`,
     },
+    inLanguage: 'es',
+    isAccessibleForFree: event.price === 0,
+    ...(event.capacity && {
+      maximumAttendeeCapacity: event.capacity,
+      remainingAttendeeCapacity: event.capacity - (event.soldCount || 0),
+    }),
   };
 
-  // BreadcrumbList structured data
+  // BreadcrumbList structured data (Home > City > Category > Event)
+  const breadcrumbItems = [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Inicio',
+      item: BASE_URL,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Eventos',
+      item: `${BASE_URL}/search`,
+    },
+  ];
+
+  let nextPosition = 3;
+
+  if (event.city) {
+    breadcrumbItems.push({
+      '@type': 'ListItem',
+      position: nextPosition,
+      name: `Eventos en ${event.city.name}`,
+      item: `${BASE_URL}/search?city=${event.city.slug}`,
+    });
+    nextPosition++;
+  }
+
+  if (event.category) {
+    breadcrumbItems.push({
+      '@type': 'ListItem',
+      position: nextPosition,
+      name: event.category.name,
+      item: `${BASE_URL}/search?category=${event.category.slug}`,
+    });
+    nextPosition++;
+  }
+
+  breadcrumbItems.push({
+    '@type': 'ListItem',
+    position: nextPosition,
+    name: event.title,
+    item: `${BASE_URL}/events/${event.slug}`,
+  });
+
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Inicio',
-        item: BASE_URL,
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Eventos',
-        item: `${BASE_URL}/search`,
-      },
-      ...(event.category ? [{
-        '@type': 'ListItem',
-        position: 3,
-        name: event.category.name,
-        item: `${BASE_URL}/search?category=${event.category.slug}`,
-      }] : []),
-      {
-        '@type': 'ListItem',
-        position: event.category ? 4 : 3,
-        name: event.title,
-        item: `${BASE_URL}/events/${event.slug}`,
-      },
-    ],
+    itemListElement: breadcrumbItems,
   };
 
   return (

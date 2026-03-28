@@ -44,8 +44,8 @@ export default function HeroBanner() {
 
       {/* Multi-layer overlay */}
       <div className="absolute inset-0 bg-black/60" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-[#0a0a0a]/50" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/40 via-transparent to-[#0a0a0a]/40" />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, var(--bg), transparent, color-mix(in srgb, var(--bg) 50%, transparent))' }} />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, color-mix(in srgb, var(--bg) 40%, transparent), transparent, color-mix(in srgb, var(--bg) 40%, transparent))' }} />
 
       {/* Animated particles */}
       <div className="absolute top-20 left-[10%] w-72 h-72 bg-[#e63946]/10 rounded-full blur-[100px] hero-glow" />
@@ -125,7 +125,7 @@ export default function HeroBanner() {
       </div>
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-32" style={{ background: 'linear-gradient(to top, var(--bg), transparent)' }} />
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">

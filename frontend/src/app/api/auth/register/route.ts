@@ -5,7 +5,7 @@ import { signToken } from '@/lib/auth-helpers';
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, userType, companyName } = await req.json();
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -13,6 +13,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    const validUserTypes = ['USER', 'BUSINESS'];
+    const finalUserType = validUserTypes.includes(userType) ? userType : 'USER';
 
     // Check if user already exists
     const { data: existing } = await supabase
@@ -37,8 +40,11 @@ export async function POST(req: NextRequest) {
         email,
         password: hashedPassword,
         role: 'user',
+        user_type: finalUserType,
+        onboarding_completed: false,
+        company_name: finalUserType === 'BUSINESS' ? companyName || null : null,
       })
-      .select('id, email, name, role, avatar, created_at')
+      .select('id, email, name, role, avatar, user_type, onboarding_completed, company_name, created_at')
       .single();
 
     if (error) {
@@ -57,6 +63,9 @@ export async function POST(req: NextRequest) {
         email: user.email,
         name: user.name,
         role: user.role,
+        userType: user.user_type || 'USER',
+        onboardingCompleted: user.onboarding_completed ?? false,
+        companyName: user.company_name,
         avatar: user.avatar,
         createdAt: user.created_at,
       },

@@ -69,12 +69,12 @@ export default function StarRating({
         })}
       </div>
       {rating > 0 && (
-        <span className={`${textSize} font-semibold text-white`}>
+        <span className={`${textSize} font-semibold`} style={{ color: 'var(--fg)' }}>
           {rating.toFixed(1)}
         </span>
       )}
       {count !== undefined && (
-        <span className={`${textSize} text-gray-400`}>
+        <span className={`${textSize}`} style={{ color: 'var(--text-secondary)' }}>
           ({count})
         </span>
       )}

@@ -70,10 +70,27 @@ export default function EventCard({
 
   return (
     <Link href={`/events/${event.slug}`} className="group block" aria-label={`${event.title} - ${event.city?.name || ''} - ${event.price === 0 ? 'Gratis' : `${currencySymbol}${event.price}`}`}>
-      <article className="card-hover bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#2a2a2a] transition-all duration-300 group-hover:border-[#e63946]/30">
-        {/* Image */}
+      <article className="card-hover rounded-xl overflow-hidden border transition-all duration-300 group-hover:border-[#e63946]/30" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
+        {/* Image / Video */}
         <div className="relative aspect-[3/4] overflow-hidden">
-          {event.image ? (
+          {event.videoUrl ? (
+            <div className="w-full h-full relative">
+              <video
+                src={event.videoUrl}
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()}
+                onMouseLeave={(e) => { const v = e.currentTarget as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
+                poster={event.image}
+              />
+              <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 z-10">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                Video
+              </div>
+            </div>
+          ) : event.image ? (
             <img
               src={event.image}
               alt={`${event.title} - ${event.category?.name || 'Evento'} en ${event.city?.name || ''}`}
@@ -81,9 +98,10 @@ export default function EventCard({
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a] flex items-center justify-center">
+            <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, var(--surface-2), var(--card))' }}>
               <svg
-                className="w-12 h-12 text-gray-600"
+                className="w-12 h-12"
+                style={{ color: 'var(--text-tertiary)' }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -142,19 +160,19 @@ export default function EventCard({
 
         {/* Content */}
         <div className="p-3">
-          <h3 className="text-sm font-semibold text-white line-clamp-2 leading-snug mb-1">
+          <h3 className="text-sm font-semibold line-clamp-2 leading-snug mb-1" style={{ color: 'var(--fg)' }}>
             {event.title}
           </h3>
-          <p className="text-xs text-gray-400 mb-2">
+          <p className="text-xs mb-2" style={{ color: 'var(--text-secondary)' }}>
             {event.city?.name} &middot; {formatDate(event.date)}
           </p>
           <div className="flex items-center gap-2">
             {event.originalPrice && event.originalPrice > event.price && (
-              <span className="text-xs text-gray-500 line-through">
+              <span className="text-xs line-through" style={{ color: 'var(--text-tertiary)' }}>
                 {currencySymbol}{event.originalPrice.toFixed(0)}
               </span>
             )}
-            <span className="text-sm font-bold text-white">
+            <span className="text-sm font-bold" style={{ color: 'var(--fg)' }}>
               {event.price === 0 ? (
                 <span className="text-green-400">Gratis</span>
               ) : (
@@ -176,12 +194,12 @@ export default function EventCard({
 // Skeleton loader
 export function EventCardSkeleton() {
   return (
-    <div className="bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#2a2a2a] animate-pulse">
-      <div className="aspect-[3/4] bg-[#2a2a2a]" />
+    <div className="rounded-xl overflow-hidden border animate-pulse" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
+      <div className="aspect-[3/4]" style={{ background: 'var(--surface-2)' }} />
       <div className="p-3 space-y-2">
-        <div className="h-4 bg-[#2a2a2a] rounded w-3/4" />
-        <div className="h-3 bg-[#2a2a2a] rounded w-1/2" />
-        <div className="h-4 bg-[#2a2a2a] rounded w-1/4" />
+        <div className="h-4 rounded w-3/4" style={{ background: 'var(--surface-2)' }} />
+        <div className="h-3 rounded w-1/2" style={{ background: 'var(--surface-2)' }} />
+        <div className="h-4 rounded w-1/4" style={{ background: 'var(--surface-2)' }} />
       </div>
     </div>
   );

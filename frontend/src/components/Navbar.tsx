@@ -8,7 +8,7 @@ import { getCities, getPlans, City } from '@/lib/api';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function Navbar() {
-  const { user, logout, loading } = useAuth();
+  const { user, logout, loading, isSuperAdmin, isBusiness } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const [cities, setCities] = useState<City[]>([]);
@@ -32,7 +32,7 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (user && !isBusiness && !isSuperAdmin) {
       getPlans()
         .then((res) => {
           const active = (res.data || []).filter(
@@ -44,7 +44,7 @@ export default function Navbar() {
     } else {
       setPlanCount(0);
     }
-  }, [user]);
+  }, [user, isBusiness, isSuperAdmin]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -66,8 +66,20 @@ export default function Navbar() {
     }
   };
 
+  const getDashboardLink = () => {
+    if (isSuperAdmin) return '/super-admin';
+    if (isBusiness) return '/business';
+    return null;
+  };
+
+  const getDashboardLabel = () => {
+    if (isSuperAdmin) return 'Super Admin';
+    if (isBusiness) return 'Panel Empresa';
+    return null;
+  };
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/[0.06]" role="navigation" aria-label="Navegación principal">
+    <nav className="sticky top-0 z-50 border-b border-white/[0.06]" role="navigation" aria-label="Navegacion principal">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link
@@ -84,52 +96,23 @@ export default function Navbar() {
             onClick={() => setCityOpen(!cityOpen)}
             className="flex items-center gap-1 text-sm hover:text-[var(--fg)] transition"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-              />
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             {selectedCity || 'Ciudad'}
-            <svg
-              className={`w-3 h-3 transition-transform ${cityOpen ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
+            <svg className={`w-3 h-3 transition-transform ${cityOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
           {cityOpen && (
-            <div className="absolute top-full mt-2 left-0 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl py-1 min-w-[180px]">
+            <div className="absolute top-full mt-2 left-0 border rounded-lg shadow-xl py-1 min-w-[180px]" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
               {cities.map((c) => (
                 <button
                   key={c.id}
-                  className={`block w-full text-left px-4 py-2 text-sm hover:bg-[#2a2a2a] transition ${
-                    selectedCity === c.name ? 'text-[#e63946]' : 'text-gray-300'
-                  }`}
-                  onClick={() => {
-                    setSelectedCity(c.name);
-                    setCityOpen(false);
-                  }}
+                  className="block w-full text-left px-4 py-2 text-sm transition hover:bg-[var(--card-hover)]"
+                  style={{ color: selectedCity === c.name ? '#e63946' : 'var(--text-secondary)' }}
+                  onClick={() => { setSelectedCity(c.name); setCityOpen(false); }}
                 >
                   {c.name}
                 </button>
@@ -161,59 +144,34 @@ export default function Navbar() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar eventos..."
-                className="bg-[#2a2a2a] text-white text-sm rounded-lg px-3 py-1.5 w-48 focus:outline-none focus:ring-1 focus:ring-[#e63946]"
+                className="input-theme text-sm rounded-lg px-3 py-1.5 w-48 focus:outline-none"
               />
-              <button
-                type="button"
-                onClick={() => setSearchOpen(false)}
-                className="ml-2 hover:text-[var(--fg)]"
-              >
+              <button type="button" onClick={() => setSearchOpen(false)} className="ml-2 hover:text-[var(--fg)]">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </form>
           ) : (
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="hidden md:block hover:text-[var(--fg)] transition"
-            >
+            <button onClick={() => setSearchOpen(true)} className="hidden md:block hover:text-[var(--fg)] transition">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
           )}
 
-          {/* Favorites */}
-          {user && (
-            <Link
-              href="/favorites"
-              className="text-gray-400 hover:text-[#e63946] transition"
-              title="Favoritos"
-            >
+          {/* Favorites - only for regular users */}
+          {user && !isBusiness && !isSuperAdmin && (
+            <Link href="/favorites" className="hover:text-[#e63946] transition" style={{ color: 'var(--text-secondary)' }} title="Favoritos">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </Link>
           )}
 
-          {/* Mis Days */}
-          {user && (
-            <Link
-              href="/plans"
-              className="hidden md:flex items-center gap-1 text-gray-400 hover:text-[#e63946] transition relative"
-              title="Mis Days"
-            >
+          {/* Mis Days - only for regular users */}
+          {user && !isBusiness && !isSuperAdmin && (
+            <Link href="/plans" className="hidden md:flex items-center gap-1 hover:text-[#e63946] transition relative" style={{ color: 'var(--text-secondary)' }} title="Mis Days">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -225,16 +183,26 @@ export default function Navbar() {
             </Link>
           )}
 
-          {/* My Tickets */}
-          {user && (
-            <Link
-              href="/tickets"
-              className="hidden md:block text-gray-400 hover:text-[#e63946] transition"
-              title="Mis Tickets"
-            >
+          {/* My Tickets - only for regular users */}
+          {user && !isBusiness && !isSuperAdmin && (
+            <Link href="/tickets" className="hidden md:block hover:text-[#e63946] transition" style={{ color: 'var(--text-secondary)' }} title="Mis Tickets">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
               </svg>
+            </Link>
+          )}
+
+          {/* Dashboard link for business/admin */}
+          {user && getDashboardLink() && (
+            <Link
+              href={getDashboardLink()!}
+              className="hidden md:flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg transition"
+              style={{ background: 'var(--card)', color: '#e63946', border: '1px solid var(--border)' }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+              {getDashboardLabel()}
             </Link>
           )}
 
@@ -245,51 +213,34 @@ export default function Navbar() {
                 <>
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="w-8 h-8 rounded-full bg-[#e63946] flex items-center justify-center text-sm font-bold"
+                    className="w-8 h-8 rounded-full bg-[#e63946] flex items-center justify-center text-sm font-bold text-white"
                   >
                     {user.name.charAt(0).toUpperCase()}
                   </button>
                   {userMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg shadow-xl py-1 min-w-[180px]">
-                      <div className="px-4 py-2 text-sm text-gray-400 border-b border-[#2a2a2a]">
-                        {user.name}
+                    <div className="absolute right-0 top-full mt-2 border rounded-lg shadow-xl py-1 min-w-[200px]" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
+                      <div className="px-4 py-2 text-sm border-b" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border)' }}>
+                        <div className="font-medium" style={{ color: 'var(--fg)' }}>{user.name}</div>
+                        <div className="text-xs mt-0.5">{user.email}</div>
+                        {isBusiness && <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400">EMPRESA</span>}
+                        {isSuperAdmin && <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400">SUPER ADMIN</span>}
                       </div>
-                      {user.role?.toUpperCase() === 'ADMIN' && (
-                        <Link
-                          href="/admin"
-                          className="block px-4 py-2 text-sm text-gray-300 hover:bg-[#2a2a2a]"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          Admin Panel
+                      {getDashboardLink() && (
+                        <Link href={getDashboardLink()!} className="block px-4 py-2 text-sm hover:bg-[var(--card-hover)] transition" style={{ color: '#e63946' }} onClick={() => setUserMenuOpen(false)}>
+                          {getDashboardLabel()}
                         </Link>
                       )}
-                      <Link
-                        href="/favorites"
-                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-[#2a2a2a]"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        Mis favoritos
-                      </Link>
-                      <Link
-                        href="/plans"
-                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-[#2a2a2a]"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        Mis Days
-                      </Link>
-                      <Link
-                        href="/tickets"
-                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-[#2a2a2a]"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        Mis tickets
-                      </Link>
+                      {!isBusiness && !isSuperAdmin && (
+                        <>
+                          <Link href="/favorites" className="block px-4 py-2 text-sm hover:bg-[var(--card-hover)] transition" style={{ color: 'var(--text-secondary)' }} onClick={() => setUserMenuOpen(false)}>Mis favoritos</Link>
+                          <Link href="/plans" className="block px-4 py-2 text-sm hover:bg-[var(--card-hover)] transition" style={{ color: 'var(--text-secondary)' }} onClick={() => setUserMenuOpen(false)}>Mis Days</Link>
+                          <Link href="/tickets" className="block px-4 py-2 text-sm hover:bg-[var(--card-hover)] transition" style={{ color: 'var(--text-secondary)' }} onClick={() => setUserMenuOpen(false)}>Mis tickets</Link>
+                        </>
+                      )}
                       <button
-                        onClick={() => {
-                          logout();
-                          setUserMenuOpen(false);
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-[#2a2a2a]"
+                        onClick={() => { logout(); setUserMenuOpen(false); }}
+                        className="block w-full text-left px-4 py-2 text-sm hover:bg-[var(--card-hover)] transition"
+                        style={{ color: 'var(--text-secondary)' }}
                       >
                         Cerrar sesion
                       </button>
@@ -298,16 +249,10 @@ export default function Navbar() {
                 </>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Link
-                    href="/auth/login"
-                    className="text-sm hover:text-[var(--fg)] transition"
-                  >
+                  <Link href="/auth/login" className="text-sm hover:text-[var(--fg)] transition" style={{ color: 'var(--text-secondary)' }}>
                     Iniciar sesion
                   </Link>
-                  <Link
-                    href="/auth/register"
-                    className="text-sm bg-[#e63946] hover:bg-[#c62d3a] px-3 py-1.5 rounded-lg transition"
-                  >
+                  <Link href="/auth/register" className="text-sm bg-[#e63946] hover:bg-[#c62d3a] text-white px-3 py-1.5 rounded-lg transition">
                     Registrarse
                   </Link>
                 </div>
@@ -316,10 +261,7 @@ export default function Navbar() {
           )}
 
           {/* Hamburger -- mobile */}
-          <button
-            className="md:hidden hover:text-[var(--fg)]"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
+          <button className="md:hidden hover:text-[var(--fg)]" onClick={() => setMenuOpen(!menuOpen)}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {menuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -333,97 +275,54 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-[#2a2a2a] px-4 py-4 space-y-3" style={{ background: 'var(--nav-bg)' }}>
-          {/* Search */}
+        <div className="md:hidden border-t px-4 py-4 space-y-3" style={{ background: 'var(--nav-bg)', borderColor: 'var(--border)' }}>
           <form onSubmit={handleSearch} className="flex items-center gap-2">
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar eventos..."
-              className="flex-1 bg-[#2a2a2a] text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#e63946]"
+              className="flex-1 input-theme text-sm rounded-lg px-3 py-2"
             />
           </form>
 
-          {/* City selector */}
           <div>
-            <p className="text-xs text-gray-500 mb-1">Ciudad</p>
+            <p className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Ciudad</p>
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="w-full bg-[#2a2a2a] text-white text-sm rounded-lg px-3 py-2"
+              className="w-full input-theme text-sm rounded-lg px-3 py-2"
             >
               {cities.map((c) => (
-                <option key={c.id} value={c.name}>
-                  {c.name}
-                </option>
+                <option key={c.id} value={c.name}>{c.name}</option>
               ))}
             </select>
           </div>
 
-          {/* Links */}
           {user ? (
             <>
-              <Link
-                href="/favorites"
-                className="block text-sm text-gray-300"
-                onClick={() => setMenuOpen(false)}
-              >
-                Mis favoritos
-              </Link>
-              <Link
-                href="/plans"
-                className="block text-sm text-gray-300 flex items-center gap-2"
-                onClick={() => setMenuOpen(false)}
-              >
-                Mis Days
-                {planCount > 0 && (
-                  <span className="w-5 h-5 bg-[#e63946] rounded-full text-[10px] font-bold flex items-center justify-center text-white">
-                    {planCount}
-                  </span>
-                )}
-              </Link>
-              <Link
-                href="/tickets"
-                className="block text-sm text-gray-300"
-                onClick={() => setMenuOpen(false)}
-              >
-                Mis tickets
-              </Link>
-              {user.role?.toUpperCase() === 'ADMIN' && (
-                <Link
-                  href="/admin"
-                  className="block text-sm text-gray-300"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Admin Panel
+              {getDashboardLink() && (
+                <Link href={getDashboardLink()!} className="block text-sm font-medium text-[#e63946]" onClick={() => setMenuOpen(false)}>
+                  {getDashboardLabel()}
                 </Link>
               )}
-              <button
-                onClick={() => {
-                  logout();
-                  setMenuOpen(false);
-                }}
-                className="block text-sm text-gray-300"
-              >
+              {!isBusiness && !isSuperAdmin && (
+                <>
+                  <Link href="/favorites" className="block text-sm" style={{ color: 'var(--text-secondary)' }} onClick={() => setMenuOpen(false)}>Mis favoritos</Link>
+                  <Link href="/plans" className="block text-sm flex items-center gap-2" style={{ color: 'var(--text-secondary)' }} onClick={() => setMenuOpen(false)}>
+                    Mis Days
+                    {planCount > 0 && <span className="w-5 h-5 bg-[#e63946] rounded-full text-[10px] font-bold flex items-center justify-center text-white">{planCount}</span>}
+                  </Link>
+                  <Link href="/tickets" className="block text-sm" style={{ color: 'var(--text-secondary)' }} onClick={() => setMenuOpen(false)}>Mis tickets</Link>
+                </>
+              )}
+              <button onClick={() => { logout(); setMenuOpen(false); }} className="block text-sm" style={{ color: 'var(--text-secondary)' }}>
                 Cerrar sesion
               </button>
             </>
           ) : (
             <>
-              <Link
-                href="/auth/login"
-                className="block text-sm text-gray-300"
-                onClick={() => setMenuOpen(false)}
-              >
-                Iniciar sesion
-              </Link>
-              <Link
-                href="/auth/register"
-                className="block text-sm text-[#e63946]"
-                onClick={() => setMenuOpen(false)}
-              >
-                Registrarse
-              </Link>
+              <Link href="/auth/login" className="block text-sm" style={{ color: 'var(--text-secondary)' }} onClick={() => setMenuOpen(false)}>Iniciar sesion</Link>
+              <Link href="/auth/register" className="block text-sm text-[#e63946]" onClick={() => setMenuOpen(false)}>Registrarse</Link>
             </>
           )}
         </div>

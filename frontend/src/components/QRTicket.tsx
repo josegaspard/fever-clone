@@ -58,7 +58,7 @@ export default function QRTicket({ ticket, onClose }: QRTicketProps) {
   return (
     <div className="max-w-sm mx-auto">
       {/* Ticket card */}
-      <div className="bg-gradient-to-br from-[#1a1a1a] to-[#111] border border-[#2a2a2a] rounded-2xl overflow-hidden">
+      <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)' }}>
         {/* Header gradient */}
         <div className="h-2 bg-gradient-to-r from-[#e63946] via-[#FFB800] to-[#e63946]" />
 
@@ -67,7 +67,8 @@ export default function QRTicket({ ticket, onClose }: QRTicketProps) {
           {onClose && (
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
+              className="absolute top-4 right-4 transition"
+              style={{ color: 'var(--text-secondary)' }}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -77,21 +78,21 @@ export default function QRTicket({ ticket, onClose }: QRTicketProps) {
 
           {/* Event info */}
           <div className="text-center space-y-2">
-            <h3 className="text-lg font-bold text-white">{ticket.event?.title}</h3>
-            <p className="text-sm text-gray-400">{formatDate(ticket.event?.date || '')}</p>
+            <h3 className="text-lg font-bold" style={{ color: 'var(--fg)' }}>{ticket.event?.title}</h3>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{formatDate(ticket.event?.date || '')}</p>
             {ticket.event?.time && (
-              <p className="text-sm text-gray-400">{ticket.event.time}</p>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{ticket.event.time}</p>
             )}
             {ticket.event?.address && (
-              <p className="text-xs text-gray-500">{ticket.event.address}</p>
+              <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{ticket.event.address}</p>
             )}
           </div>
 
           {/* Divider with holes */}
           <div className="relative flex items-center">
-            <div className="w-4 h-4 bg-[#0a0a0a] rounded-full -ml-8" />
-            <div className="flex-1 border-t border-dashed border-[#2a2a2a]" />
-            <div className="w-4 h-4 bg-[#0a0a0a] rounded-full -mr-8" />
+            <div className="w-4 h-4 rounded-full -ml-8" style={{ background: 'var(--bg)' }} />
+            <div className="flex-1 border-t border-dashed" style={{ borderColor: 'var(--border)' }} />
+            <div className="w-4 h-4 rounded-full -mr-8" style={{ background: 'var(--bg)' }} />
           </div>
 
           {/* QR-like visual */}
@@ -135,10 +136,10 @@ export default function QRTicket({ ticket, onClose }: QRTicketProps) {
 
             {/* Ticket code */}
             <div className="text-center">
-              <p className="font-mono text-lg font-bold tracking-[0.3em] text-white">
+              <p className="font-mono text-lg font-bold tracking-[0.3em]" style={{ color: 'var(--fg)' }}>
                 {ticket.qrCode}
               </p>
-              <p className="text-[10px] text-gray-500 mt-1">
+              <p className="text-[10px] mt-1" style={{ color: 'var(--text-tertiary)' }}>
                 Presenta este codigo en la entrada
               </p>
             </div>
@@ -154,7 +155,8 @@ export default function QRTicket({ ticket, onClose }: QRTicketProps) {
           {/* Download/Print button */}
           <button
             onClick={() => window.print()}
-            className="w-full py-2.5 border border-[#2a2a2a] rounded-xl text-sm text-gray-400 hover:text-white hover:border-gray-400 transition flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-xl text-sm transition flex items-center justify-center gap-2"
+            style={{ borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

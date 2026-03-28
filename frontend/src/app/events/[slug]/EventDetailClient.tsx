@@ -73,13 +73,13 @@ export default function EventDetailClient({ event, related }: Props) {
     <article>
       {/* Breadcrumb */}
       <nav className="max-w-7xl mx-auto px-4 pt-4 pb-2">
-        <ol className="flex items-center gap-1.5 text-xs text-gray-500 overflow-x-auto">
-          <li><Link href="/" className="hover:text-white transition">Inicio</Link></li>
-          <li className="text-gray-700">/</li>
-          <li><Link href="/search" className="hover:text-white transition">Eventos</Link></li>
-          {event.category && (<><li className="text-gray-700">/</li><li><Link href={`/search?category=${event.category.slug}`} className="hover:text-white transition">{event.category.name}</Link></li></>)}
-          <li className="text-gray-700">/</li>
-          <li className="text-gray-300 truncate max-w-[180px]">{event.title}</li>
+        <ol className="flex items-center gap-1.5 text-xs overflow-x-auto" style={{ color: 'var(--text-tertiary)' }}>
+          <li><Link href="/" className="hover:opacity-80 transition">Inicio</Link></li>
+          <li>/</li>
+          <li><Link href="/search" className="hover:opacity-80 transition">Eventos</Link></li>
+          {event.category && (<><li>/</li><li><Link href={`/search?category=${event.category.slug}`} className="hover:opacity-80 transition">{event.category.name}</Link></li></>)}
+          <li>/</li>
+          <li className="truncate max-w-[180px]" style={{ color: 'var(--text-secondary)' }}>{event.title}</li>
         </ol>
       </nav>
 
@@ -151,13 +151,14 @@ export default function EventDetailClient({ event, related }: Props) {
 
       {/* Action buttons - floating on mobile */}
       <div className="max-w-7xl mx-auto px-4 flex items-center gap-3 mb-6 -mt-2">
-        <button onClick={toggleFav} disabled={favLoading} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition ${isFav ? 'border-[#e63946] text-[#e63946] bg-[#e63946]/5' : 'border-[#1f1f1f] text-gray-400 hover:text-white hover:border-[#3a3a3a] bg-[#141414]'}`}>
+        <button onClick={toggleFav} disabled={favLoading} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition ${isFav ? 'border-[#e63946] text-[#e63946] bg-[#e63946]/5' : ''}`} style={!isFav ? { borderColor: 'var(--border)', color: 'var(--text-secondary)', background: 'var(--surface)' } : {}}>
           <svg className="w-4 h-4" fill={isFav ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
           {isFav ? 'Guardado' : 'Guardar'}
         </button>
         <button
           onClick={() => { if (navigator.share) navigator.share({ title: event.title, url: window.location.href }); else navigator.clipboard.writeText(window.location.href); }}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-[#1f1f1f] text-gray-400 hover:text-white hover:border-[#3a3a3a] bg-[#141414] transition"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition"
+          style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)', background: 'var(--surface)' }}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
           Compartir
@@ -170,7 +171,7 @@ export default function EventDetailClient({ event, related }: Props) {
           <div className="lg:col-span-2 space-y-8">
             {/* Category + Title */}
             {event.category && (
-              <Link href={`/search?category=${event.category.slug}`} className="inline-flex items-center gap-1.5 bg-[#141414] border border-[#1f1f1f] text-sm text-gray-300 px-3 py-1 rounded-full hover:border-[#e63946]/30 hover:text-[#e63946] transition">
+              <Link href={`/search?category=${event.category.slug}`} className="inline-flex items-center gap-1.5 text-sm px-3 py-1 rounded-full hover:border-[#e63946]/30 hover:text-[#e63946] transition" style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
                 {event.category.icon && <span>{event.category.icon}</span>}
                 {event.category.name}
               </Link>
@@ -183,7 +184,7 @@ export default function EventDetailClient({ event, related }: Props) {
               <div className="flex items-center gap-3">
                 <StarRating rating={event.rating} count={event.reviewCount} size="md" />
                 {event.soldCount !== undefined && event.soldCount > 0 && (
-                  <span className="text-xs text-gray-500 border-l border-[#2a2a2a] pl-3">{event.soldCount.toLocaleString()}+ asistentes</span>
+                  <span className="text-xs pl-3" style={{ color: 'var(--text-tertiary)', borderLeft: '1px solid var(--border)' }}>{event.soldCount.toLocaleString()}+ asistentes</span>
                 )}
               </div>
             )}
@@ -191,24 +192,24 @@ export default function EventDetailClient({ event, related }: Props) {
             {/* Info pills */}
             <div className="flex flex-wrap gap-3">
               {event.city && (
-                <Link href={`/search?city=${event.city.slug}`} className="flex items-center gap-2 bg-[#141414] border border-[#1f1f1f] rounded-xl px-4 py-2.5 text-sm text-gray-300 hover:border-[#3a3a3a] transition">
+                <Link href={`/search?city=${event.city.slug}`} className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm transition" style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
                   <svg className="w-4 h-4 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                   {event.city.name}
                 </Link>
               )}
-              <div className="flex items-center gap-2 bg-[#141414] border border-[#1f1f1f] rounded-xl px-4 py-2.5 text-sm text-gray-300">
+              <div className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
                 <svg className="w-4 h-4 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 <time dateTime={event.date}>{formatDate(event.date)}</time>
               </div>
               {event.time && (
-                <div className="flex items-center gap-2 bg-[#141414] border border-[#1f1f1f] rounded-xl px-4 py-2.5 text-sm text-gray-300">
+                <div className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
                   <svg className="w-4 h-4 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                   {event.time}
                 </div>
               )}
               {event.duration && (
-                <div className="flex items-center gap-2 bg-[#141414] border border-[#1f1f1f] rounded-xl px-4 py-2.5 text-sm text-gray-300">
-                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <div className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
+                  <svg className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                   {event.duration}
                 </div>
               )}
@@ -217,14 +218,14 @@ export default function EventDetailClient({ event, related }: Props) {
             {/* Description */}
             <section>
               <h2 className="text-xl font-bold mb-4">Sobre este evento</h2>
-              <div className="text-gray-300 leading-relaxed whitespace-pre-line text-[15px]">{event.description}</div>
+              <div className="leading-relaxed whitespace-pre-line text-[15px]" style={{ color: 'var(--text-secondary)' }}>{event.description}</div>
             </section>
 
             {/* Map & Location */}
             {event.address && (
               <section>
                 <h2 className="text-xl font-bold mb-4">Ubicación</h2>
-                <div className="bg-[#141414] border border-[#1f1f1f] rounded-2xl overflow-hidden">
+                <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                   {/* Embedded Map */}
                   {mapUrl ? (
                     <div className="map-container">
@@ -240,13 +241,13 @@ export default function EventDetailClient({ event, related }: Props) {
                       />
                     </div>
                   ) : (
-                    <div className="h-[200px] bg-[#111] flex items-center justify-center">
-                      <svg className="w-12 h-12 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+                    <div className="h-[200px] flex items-center justify-center" style={{ background: 'var(--surface)' }}>
+                      <svg className="w-12 h-12" style={{ color: 'var(--text-tertiary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
                     </div>
                   )}
                   <div className="p-5">
-                    <p className="text-white font-medium text-sm mb-1">{event.address}</p>
-                    {event.city && <p className="text-gray-500 text-xs mb-3">{event.city.name}, {event.city.country}</p>}
+                    <p className="font-medium text-sm mb-1" style={{ color: 'var(--fg)' }}>{event.address}</p>
+                    {event.city && <p className="text-xs mb-3" style={{ color: 'var(--text-tertiary)' }}>{event.city.name}, {event.city.country}</p>}
                     {mapsLink && (
                       <a href={mapsLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-[#e63946] hover:text-[#ff6b6b] transition font-medium">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
@@ -263,19 +264,19 @@ export default function EventDetailClient({ event, related }: Props) {
           <div className="lg:col-span-1">
             <div className="sticky top-20 space-y-4">
               {/* Price Card */}
-              <div className="bg-[#141414] border border-[#1f1f1f] rounded-2xl p-6 space-y-5">
+              <div className="rounded-2xl p-6 space-y-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                 {/* Price */}
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     {discount && <span className="bg-[#e63946] text-white text-xs font-bold px-2.5 py-1 rounded-lg">-{discount}%</span>}
                     {event.originalPrice && event.originalPrice > event.price && (
-                      <span className="text-gray-500 line-through text-sm">{cs}{event.originalPrice.toFixed(0)}</span>
+                      <span className="line-through text-sm" style={{ color: 'var(--text-tertiary)' }}>{cs}{event.originalPrice.toFixed(0)}</span>
                     )}
                   </div>
                   {isFree ? (
                     <span className="text-3xl font-black text-green-400">GRATIS</span>
                   ) : (
-                    <p className="text-3xl font-black text-white">{cs}{event.price.toFixed(0)} <span className="text-base font-medium text-gray-500">{cl}</span></p>
+                    <p className="text-3xl font-black" style={{ color: 'var(--fg)' }}>{cs}{event.price.toFixed(0)} <span className="text-base font-medium" style={{ color: 'var(--text-tertiary)' }}>{cl}</span></p>
                   )}
                 </div>
 
@@ -283,12 +284,12 @@ export default function EventDetailClient({ event, related }: Props) {
                 {capacityPercent !== null && (
                   <div>
                     <div className="flex justify-between text-xs mb-1.5">
-                      <span className="text-gray-400">{event.soldCount} vendidos</span>
-                      <span className={`font-semibold ${capacityPercent > 80 ? 'text-[#e63946]' : 'text-gray-400'}`}>
+                      <span style={{ color: 'var(--text-secondary)' }}>{event.soldCount} vendidos</span>
+                      <span className={`font-semibold ${capacityPercent > 80 ? 'text-[#e63946]' : ''}`} style={capacityPercent <= 80 ? { color: 'var(--text-secondary)' } : {}}>
                         {capacityPercent > 80 ? '¡Últimos lugares!' : `${100 - capacityPercent}% disponible`}
                       </span>
                     </div>
-                    <div className="w-full h-2 bg-[#1f1f1f] rounded-full overflow-hidden">
+                    <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
                       <div
                         className={`h-full rounded-full transition-all duration-1000 ${capacityPercent > 80 ? 'bg-[#e63946]' : 'bg-green-500'}`}
                         style={{ width: `${capacityPercent}%` }}
@@ -298,11 +299,11 @@ export default function EventDetailClient({ event, related }: Props) {
                 )}
 
                 {/* Info */}
-                <div className="space-y-3 text-sm border-t border-[#1f1f1f] pt-4">
-                  <div className="flex justify-between"><span className="text-gray-500">Fecha</span><span className="text-white font-medium text-right text-xs">{formatDate(event.date)}</span></div>
-                  {event.time && <div className="flex justify-between"><span className="text-gray-500">Hora</span><span className="text-white font-medium">{event.time}</span></div>}
-                  {event.duration && <div className="flex justify-between"><span className="text-gray-500">Duración</span><span className="text-white font-medium">{event.duration}</span></div>}
-                  {event.city && <div className="flex justify-between"><span className="text-gray-500">Ciudad</span><span className="text-white font-medium">{event.city.name}</span></div>}
+                <div className="space-y-3 text-sm pt-4" style={{ borderTop: '1px solid var(--border)' }}>
+                  <div className="flex justify-between"><span style={{ color: 'var(--text-tertiary)' }}>Fecha</span><span className="font-medium text-right text-xs" style={{ color: 'var(--fg)' }}>{formatDate(event.date)}</span></div>
+                  {event.time && <div className="flex justify-between"><span style={{ color: 'var(--text-tertiary)' }}>Hora</span><span className="font-medium" style={{ color: 'var(--fg)' }}>{event.time}</span></div>}
+                  {event.duration && <div className="flex justify-between"><span style={{ color: 'var(--text-tertiary)' }}>Duración</span><span className="font-medium" style={{ color: 'var(--fg)' }}>{event.duration}</span></div>}
+                  {event.city && <div className="flex justify-between"><span style={{ color: 'var(--text-tertiary)' }}>Ciudad</span><span className="font-medium" style={{ color: 'var(--fg)' }}>{event.city.name}</span></div>}
                 </div>
 
                 {/* CTAs */}
@@ -327,12 +328,12 @@ export default function EventDetailClient({ event, related }: Props) {
               </div>
 
               {/* Organizer card */}
-              <div className="bg-[#141414] border border-[#1f1f1f] rounded-2xl p-5">
+              <div className="rounded-2xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-[#e63946]/10 rounded-full flex items-center justify-center text-[#e63946] font-bold text-sm">F</div>
                   <div>
-                    <p className="text-sm font-semibold text-white">Fever</p>
-                    <p className="text-xs text-gray-500">Organizador verificado</p>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--fg)' }}>Fever</p>
+                    <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Organizador verificado</p>
                   </div>
                 </div>
               </div>
@@ -354,10 +355,10 @@ export default function EventDetailClient({ event, related }: Props) {
       </div>
 
       {/* Mobile sticky CTA */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-[#1f1f1f] px-4 py-3 flex items-center gap-3">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 backdrop-blur-lg px-4 py-3 flex items-center gap-3" style={{ background: 'var(--bg-opacity-95, var(--bg))', borderTop: '1px solid var(--border)' }}>
         <div className="flex-1">
-          <p className="text-xs text-gray-400">{isFree ? 'Evento gratuito' : 'Desde'}</p>
-          <p className="text-lg font-black text-white">{isFree ? 'GRATIS' : `${cs}${event.price.toFixed(0)} ${cl}`}</p>
+          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{isFree ? 'Evento gratuito' : 'Desde'}</p>
+          <p className="text-lg font-black" style={{ color: 'var(--fg)' }}>{isFree ? 'GRATIS' : `${cs}${event.price.toFixed(0)} ${cl}`}</p>
         </div>
         <button
           onClick={() => { if (!user) { router.push('/auth/login'); return; } alert('Agrega a tu Day para continuar.'); }}

@@ -50,9 +50,9 @@ export default function SharedPlanPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-[#1a1a1a] rounded w-64" />
-          <div className="h-4 bg-[#1a1a1a] rounded w-32" />
-          <div className="h-96 bg-[#1a1a1a] rounded-xl" />
+          <div className="h-8 rounded w-64" style={{ background: 'var(--card)' }} />
+          <div className="h-4 rounded w-32" style={{ background: 'var(--card)' }} />
+          <div className="h-96 rounded-xl" style={{ background: 'var(--card)' }} />
         </div>
       </div>
     );
@@ -62,10 +62,10 @@ export default function SharedPlanPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-24 text-center">
         <h1 className="text-2xl font-bold mb-2">Day no encontrado</h1>
-        <p className="text-gray-400 mb-6">{error}</p>
+        <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>{error}</p>
         <Link
           href="/"
-          className="px-6 py-2 bg-[#e63946] rounded-lg hover:bg-[#c62d3a] transition inline-block"
+          className="px-6 py-2 bg-[#e63946] rounded-lg hover:bg-[#c62d3a] text-white transition inline-block"
         >
           Ir al inicio
         </Link>
@@ -78,7 +78,7 @@ export default function SharedPlanPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
       {/* Shared badge */}
-      <div className="flex items-center gap-2 text-sm text-gray-400">
+      <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
         </svg>
@@ -87,18 +87,18 @@ export default function SharedPlanPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-white">{plan.title}</h1>
-        <p className="text-sm text-gray-400 mt-1">{formatDate(plan.planDate)}</p>
+        <h1 className="text-2xl md:text-3xl font-extrabold" style={{ color: 'var(--fg)' }}>{plan.title}</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{formatDate(plan.planDate)}</p>
         {plan.description && (
-          <p className="text-sm text-gray-300 mt-2">{plan.description}</p>
+          <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{plan.description}</p>
         )}
       </div>
 
       {/* Summary card */}
-      <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4 flex items-center justify-between">
+      <div className="rounded-xl p-4 flex items-center justify-between" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="flex items-center gap-4 text-sm">
-          <span className="text-gray-400">{plan.items?.length || 0} actividades</span>
-          <span className="text-white font-bold">{totalCost === 0 ? 'Gratis' : `$${totalCost.toFixed(2)} MXN`}</span>
+          <span style={{ color: 'var(--text-secondary)' }}>{plan.items?.length || 0} actividades</span>
+          <span className="font-bold" style={{ color: 'var(--fg)' }}>{totalCost === 0 ? 'Gratis' : `$${totalCost.toFixed(2)} MXN`}</span>
         </div>
       </div>
 
@@ -106,7 +106,7 @@ export default function SharedPlanPage() {
       <PlanTimeline planId={plan.id} items={plan.items || []} editable={false} />
 
       {/* CTAs */}
-      <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-[#2a2a2a]">
+      <div className="flex flex-col sm:flex-row gap-3 pt-6" style={{ borderTop: '1px solid var(--border)' }}>
         {user ? (
           <Link
             href="/plans"
@@ -124,7 +124,8 @@ export default function SharedPlanPage() {
             </Link>
             <Link
               href="/auth/login"
-              className="flex-1 border border-[#2a2a2a] hover:border-gray-400 py-3 rounded-xl text-sm font-medium text-gray-300 text-center transition"
+              className="flex-1 py-3 rounded-xl text-sm font-medium text-center transition"
+              style={{ border: '1px solid var(--border)', color: 'var(--text-secondary)' }}
             >
               Iniciar sesion
             </Link>

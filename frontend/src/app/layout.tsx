@@ -13,38 +13,80 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://fever-clone.vercel.app'),
   title: {
     default: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
     template: '%s | Fever',
   },
   description:
-    'Descubre experiencias únicas, conciertos, gastronomía, arte y más. Crea tu Day perfecto con eventos en Ciudad de México, Madrid, Barcelona, New York, London y Paris.',
+    'Descubre experiencias únicas, conciertos, gastronomía, arte y más. Crea tu Day perfecto con eventos en Ciudad de México, Madrid, Barcelona, New York, London y Paris. Compra entradas y tickets online.',
   keywords: [
     'eventos', 'experiencias', 'conciertos', 'teatro', 'gastronomía',
     'arte', 'festivales', 'CDMX', 'Madrid', 'Barcelona', 'planes',
-    'actividades', 'qué hacer', 'tickets', 'entradas',
+    'actividades', 'qué hacer', 'tickets', 'entradas', 'espectáculos',
+    'ocio', 'cultura', 'nightlife', 'vida nocturna', 'museos',
+    'exposiciones', 'talleres', 'workshops', 'New York', 'London',
+    'Paris', 'eventos cerca de mí', 'comprar entradas online',
+    'planes fin de semana', 'cosas que hacer', 'agenda cultural',
   ],
   authors: [{ name: 'Fever' }],
   creator: 'Fever',
+  publisher: 'Fever',
+  alternates: {
+    canonical: 'https://fever-clone.vercel.app',
+  },
+  manifest: '/manifest.json',
+  verification: {
+    google: 'GOOGLE_SITE_VERIFICATION_PLACEHOLDER',
+    other: {
+      'msvalidate.01': 'BING_SITE_VERIFICATION_PLACEHOLDER',
+      'yandex-verification': 'YANDEX_VERIFICATION_PLACEHOLDER',
+    },
+  },
   openGraph: {
     type: 'website',
     locale: 'es_ES',
     siteName: 'Fever',
     title: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
     description: 'Experiencias únicas, conciertos, gastronomía y más. Crea tu Day perfecto.',
-    images: [{ url: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1200&h=630&fit=crop', width: 1200, height: 630, alt: 'Fever - Eventos y experiencias' }],
+    url: 'https://fever-clone.vercel.app',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Fever - Descubre los mejores eventos y experiencias en tu ciudad',
+        type: 'image/png',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@fever',
+    creator: '@fever',
     title: 'Fever - Descubre los mejores planes en tu ciudad',
     description: 'Experiencias únicas, conciertos, gastronomía y más.',
-    images: ['https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1200&h=630&fit=crop'],
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Fever - Descubre los mejores eventos y experiencias en tu ciudad',
+      },
+    ],
   },
   robots: {
     index: true,
     follow: true,
-    googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 },
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
+  category: 'entertainment',
 };
 
 export default function RootLayout({
@@ -57,8 +99,12 @@ export default function RootLayout({
     '@type': 'WebSite',
     name: 'Fever',
     url: 'https://fever-clone.vercel.app',
-    description: 'Descubre los mejores planes y eventos en tu ciudad',
+    description: 'Descubre los mejores planes y eventos en tu ciudad. Conciertos, gastronomía, arte, festivales y experiencias únicas.',
     inLanguage: 'es',
+    publisher: {
+      '@type': 'Organization',
+      name: 'Fever',
+    },
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -74,19 +120,54 @@ export default function RootLayout({
     '@type': 'Organization',
     name: 'Fever',
     url: 'https://fever-clone.vercel.app',
-    logo: 'https://fever-clone.vercel.app/favicon.ico',
-    description: 'Plataforma de descubrimiento de eventos y experiencias en tu ciudad.',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://fever-clone.vercel.app/og-image.png',
+      width: 1200,
+      height: 630,
+    },
+    description: 'Plataforma de descubrimiento de eventos y experiencias en tu ciudad. Compra entradas para conciertos, teatro, gastronomía y más.',
+    foundingDate: '2024',
     sameAs: [
       'https://www.instagram.com/fever',
       'https://twitter.com/fever',
       'https://www.facebook.com/fever',
       'https://www.tiktok.com/@fever',
+      'https://www.youtube.com/@fever',
+      'https://www.linkedin.com/company/fever',
     ],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'customer service',
-      availableLanguage: ['Spanish', 'English'],
-    },
+    contactPoint: [
+      {
+        '@type': 'ContactPoint',
+        contactType: 'customer service',
+        availableLanguage: ['Spanish', 'English'],
+        url: 'https://fever-clone.vercel.app',
+      },
+    ],
+    areaServed: [
+      { '@type': 'City', name: 'Ciudad de México' },
+      { '@type': 'City', name: 'Madrid' },
+      { '@type': 'City', name: 'Barcelona' },
+      { '@type': 'City', name: 'New York' },
+      { '@type': 'City', name: 'London' },
+      { '@type': 'City', name: 'Paris' },
+    ],
+    knowsAbout: [
+      'Events', 'Concerts', 'Theater', 'Gastronomy', 'Art', 'Festivals',
+    ],
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Inicio',
+        item: 'https://fever-clone.vercel.app',
+      },
+    ],
   };
 
   return (
@@ -103,6 +184,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
       </head>
       <body className="min-h-full flex flex-col" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>

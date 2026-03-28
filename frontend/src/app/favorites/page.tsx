@@ -61,7 +61,8 @@ export default function FavoritesPage() {
       ) : events.length === 0 ? (
         <div className="text-center py-24">
           <svg
-            className="w-16 h-16 mx-auto text-gray-600 mb-4"
+            className="w-16 h-16 mx-auto mb-4"
+            style={{ color: 'var(--text-tertiary)' }}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -76,7 +77,7 @@ export default function FavoritesPage() {
           <h2 className="text-xl font-bold mb-2">
             Aún no tienes favoritos
           </h2>
-          <p className="text-gray-400 mb-6">
+          <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
             Explora eventos y guarda los que más te gusten.
           </p>
           <button

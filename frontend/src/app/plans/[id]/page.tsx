@@ -170,9 +170,9 @@ export default function PlanDetailPage() {
     return (
       <div className="max-w-5xl mx-auto px-4 py-12">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-[#1a1a1a] rounded w-64" />
-          <div className="h-4 bg-[#1a1a1a] rounded w-32" />
-          <div className="h-96 bg-[#1a1a1a] rounded-xl" />
+          <div className="h-8 rounded w-64" style={{ background: 'var(--card)' }} />
+          <div className="h-4 rounded w-32" style={{ background: 'var(--card)' }} />
+          <div className="h-96 rounded-xl" style={{ background: 'var(--card)' }} />
         </div>
       </div>
     );
@@ -182,10 +182,10 @@ export default function PlanDetailPage() {
     return (
       <div className="max-w-5xl mx-auto px-4 py-24 text-center">
         <h1 className="text-2xl font-bold mb-2">Day no encontrado</h1>
-        <p className="text-gray-400 mb-6">{error}</p>
+        <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>{error}</p>
         <button
           onClick={() => router.push('/plans')}
-          className="px-6 py-2 bg-[#e63946] rounded-lg hover:bg-[#c62d3a] transition"
+          className="px-6 py-2 bg-[#e63946] rounded-lg hover:bg-[#c62d3a] text-white transition"
         >
           Volver a mis Days
         </button>
@@ -198,12 +198,12 @@ export default function PlanDetailPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-        <Link href="/plans" className="hover:text-white transition">Mis Days</Link>
+      <nav className="flex items-center gap-2 text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
+        <Link href="/plans" className="hover:opacity-80 transition">Mis Days</Link>
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
-        <span className="text-white">{plan.title}</span>
+        <span style={{ color: 'var(--fg)' }}>{plan.title}</span>
       </nav>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -216,7 +216,7 @@ export default function PlanDetailPage() {
                 <input
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="flex-1 bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-2 text-xl font-bold text-white focus:outline-none focus:ring-1 focus:ring-[#e63946]"
+                  className="flex-1 input-theme rounded-lg px-4 py-2 text-xl font-bold focus:outline-none focus:ring-1 focus:ring-[#e63946]"
                   autoFocus
                   onKeyDown={(e) => e.key === 'Enter' && saveTitle()}
                 />
@@ -225,7 +225,7 @@ export default function PlanDetailPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </button>
-                <button onClick={() => setEditingTitle(false)} className="text-gray-400 hover:text-white">
+                <button onClick={() => setEditingTitle(false)} style={{ color: 'var(--text-secondary)' }} className="hover:opacity-80">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -233,13 +233,14 @@ export default function PlanDetailPage() {
               </div>
             ) : (
               <h1
-                className={`text-2xl md:text-3xl font-extrabold text-white ${isOwner ? 'cursor-pointer hover:text-[#e63946] transition' : ''}`}
+                className={`text-2xl md:text-3xl font-extrabold ${isOwner ? 'cursor-pointer hover:text-[#e63946] transition' : ''}`}
+                style={{ color: 'var(--fg)' }}
                 onClick={() => isOwner && setEditingTitle(true)}
               >
                 {plan.title}
               </h1>
             )}
-            <p className="text-sm text-gray-400 mt-1">{formatDate(plan.planDate)}</p>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{formatDate(plan.planDate)}</p>
           </div>
 
           {/* Description */}
@@ -249,17 +250,18 @@ export default function PlanDetailPage() {
                 value={editDesc}
                 onChange={(e) => setEditDesc(e.target.value)}
                 rows={2}
-                className="w-full bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#e63946] resize-none"
+                className="w-full input-theme rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#e63946] resize-none"
                 autoFocus
               />
               <div className="flex gap-2">
                 <button onClick={saveDesc} className="text-sm text-green-400 hover:underline">Guardar</button>
-                <button onClick={() => setEditingDesc(false)} className="text-sm text-gray-400 hover:underline">Cancelar</button>
+                <button onClick={() => setEditingDesc(false)} className="text-sm hover:underline" style={{ color: 'var(--text-secondary)' }}>Cancelar</button>
               </div>
             </div>
           ) : plan.description ? (
             <p
-              className={`text-sm text-gray-300 ${isOwner ? 'cursor-pointer hover:text-white transition' : ''}`}
+              className={`text-sm ${isOwner ? 'cursor-pointer hover:opacity-80 transition' : ''}`}
+              style={{ color: 'var(--text-secondary)' }}
               onClick={() => isOwner && setEditingDesc(true)}
             >
               {plan.description}
@@ -267,7 +269,8 @@ export default function PlanDetailPage() {
           ) : isOwner ? (
             <button
               onClick={() => setEditingDesc(true)}
-              className="text-sm text-gray-500 hover:text-gray-300 transition"
+              className="text-sm hover:opacity-80 transition"
+              style={{ color: 'var(--text-tertiary)' }}
             >
               + Agregar descripcion
             </button>
@@ -307,7 +310,8 @@ export default function PlanDetailPage() {
           {/* Add more */}
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 bg-[#1a1a1a] border border-[#2a2a2a] hover:border-[#e63946] px-5 py-3 rounded-xl text-sm text-gray-300 hover:text-white transition"
+            className="inline-flex items-center gap-2 hover:border-[#e63946] px-5 py-3 rounded-xl text-sm hover:opacity-80 transition"
+            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -322,24 +326,24 @@ export default function PlanDetailPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Cost breakdown */}
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 space-y-3">
-            <h3 className="text-sm font-semibold text-white">Resumen de costos</h3>
+          <div className="rounded-xl p-5 space-y-3" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--fg)' }}>Resumen de costos</h3>
             {(plan.items || []).map((item) => (
               <div key={item.id} className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2 min-w-0 mr-2">
-                  <span className="text-gray-400 truncate">{item.event?.title || 'Evento'}</span>
+                  <span className="truncate" style={{ color: 'var(--text-secondary)' }}>{item.event?.title || 'Evento'}</span>
                   {item.cost > 0 && !item.isPaid && (
                     <span className="text-[10px] text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded shrink-0">Pendiente</span>
                   )}
                 </div>
-                <span className="text-white shrink-0">
+                <span className="shrink-0" style={{ color: 'var(--fg)' }}>
                   {item.cost === 0 ? 'Gratis' : `$${item.cost.toFixed(2)} MXN`}
                 </span>
               </div>
             ))}
-            <div className="border-t border-[#2a2a2a] pt-3 flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-300">Total</span>
-              <span className="text-lg font-bold text-white">
+            <div className="pt-3 flex items-center justify-between" style={{ borderTop: '1px solid var(--border)' }}>
+              <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Total</span>
+              <span className="text-lg font-bold" style={{ color: 'var(--fg)' }}>
                 {plan.totalCost === 0 ? 'Gratis' : `$${plan.totalCost.toFixed(2)} MXN`}
               </span>
             </div>
@@ -347,13 +351,13 @@ export default function PlanDetailPage() {
 
           {/* Invite friends */}
           {isOwner && (
-            <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5">
+            <div className="rounded-xl p-5" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
               <InviteFriends planId={plan.id} />
             </div>
           )}
 
           {/* Share */}
-          <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5">
+          <div className="rounded-xl p-5" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
             <SharePlan shareCode={plan.shareCode} planTitle={plan.title} />
           </div>
         </div>

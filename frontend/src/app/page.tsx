@@ -26,6 +26,7 @@ function transformEvent(row: Record<string, unknown>) {
     lat: row.lat as number | undefined,
     lng: row.lng as number | undefined,
     currency: row.currency as string | undefined,
+    videoUrl: row.video_url as string | undefined,
     status: row.status as string,
     featured: row.featured as boolean,
     capacity: row.capacity as number | undefined,
@@ -39,9 +40,43 @@ function transformEvent(row: Record<string, unknown>) {
   };
 }
 
+const BASE_URL = 'https://fever-clone.vercel.app';
+
 export const metadata = {
   title: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
-  description: 'Explora conciertos, gastronomía, arte, festivales y más. Crea tu Day perfecto en Ciudad de México, Madrid, Barcelona, New York, London y Paris. Eventos gratuitos y de pago.',
+  description: 'Explora conciertos, gastronomía, arte, festivales y más. Crea tu Day perfecto en Ciudad de México, Madrid, Barcelona, New York, London y Paris. Eventos gratuitos y de pago. Compra entradas online.',
+  keywords: [
+    'eventos', 'conciertos', 'gastronomía', 'arte', 'festivales',
+    'planes', 'experiencias', 'entradas', 'tickets', 'CDMX',
+    'Madrid', 'Barcelona', 'New York', 'London', 'Paris',
+    'qué hacer hoy', 'eventos cerca de mí', 'comprar entradas',
+  ],
+  alternates: {
+    canonical: BASE_URL,
+  },
+  openGraph: {
+    title: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
+    description: 'Explora conciertos, gastronomía, arte, festivales y más. Crea tu Day perfecto.',
+    url: BASE_URL,
+    siteName: 'Fever',
+    type: 'website',
+    locale: 'es_ES',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Fever - Descubre los mejores eventos y experiencias',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@fever',
+    title: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
+    description: 'Explora conciertos, gastronomía, arte, festivales y más.',
+    images: ['/og-image.png'],
+  },
 };
 
 export default async function HomePage() {
@@ -83,8 +118,132 @@ export default async function HomePage() {
 
   const filteredCategoryEvents = categoryEvents.filter((c) => c.events.length > 0);
 
+  // JSON-LD ItemList for featured events (rich results)
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Eventos destacados en Fever',
+    description: 'Los mejores eventos y experiencias destacados en tu ciudad.',
+    numberOfItems: featured.length,
+    itemListElement: featured.map((event, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: event.title,
+      url: `${BASE_URL}/events/${event.slug}`,
+      image: event.image || '',
+      item: {
+        '@type': 'Event',
+        name: event.title,
+        startDate: event.date,
+        ...(event.endDate && { endDate: event.endDate }),
+        description: event.shortDescription || event.description?.slice(0, 200) || '',
+        image: event.image ? [event.image] : [],
+        url: `${BASE_URL}/events/${event.slug}`,
+        eventStatus: 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        ...(event.address && {
+          location: {
+            '@type': 'Place',
+            name: event.address,
+            address: {
+              '@type': 'PostalAddress',
+              addressLocality: event.city?.name || '',
+              addressCountry: event.city?.country || '',
+            },
+          },
+        }),
+        offers: {
+          '@type': 'Offer',
+          price: event.price,
+          priceCurrency: event.currency || 'MXN',
+          availability: 'https://schema.org/InStock',
+          url: `${BASE_URL}/events/${event.slug}`,
+        },
+        organizer: {
+          '@type': 'Organization',
+          name: 'Fever',
+          url: BASE_URL,
+        },
+      },
+    })),
+  };
+
+  // FAQ Schema for "How it works" section
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Como funciona Fever para explorar eventos?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Descubre experiencias unicas en tu ciudad: conciertos, gastronomia, arte y mas. Navega por categorias o busca eventos especificos para encontrar lo que te interesa.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Como puedo crear mi Day perfecto en Fever?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Agrega actividades a tu plan diario. Te mostramos la ruta y el costo total para que puedas organizar tu dia de la mejor manera.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Como obtengo mis entradas en Fever?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Obten tus tickets QR directamente en la app, comparte con amigos y vive un dia inolvidable. Puedes comprar entradas para conciertos, teatro, gastronomia y mas.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'En que ciudades esta disponible Fever?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Fever esta disponible en Ciudad de Mexico, Madrid, Barcelona, New York, London, Paris y muchas mas ciudades. Explora eventos en tu ciudad favorita.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Hay eventos gratuitos en Fever?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Si, Fever ofrece una seleccion de eventos gratuitos en todas las ciudades disponibles. Filtra por precio para encontrar experiencias sin costo.',
+        },
+      },
+    ],
+  };
+
+  // Homepage breadcrumb
+  const homeBreadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Inicio',
+        item: BASE_URL,
+      },
+    ],
+  };
+
   return (
     <div itemScope itemType="https://schema.org/WebPage">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeBreadcrumbJsonLd) }}
+      />
       <HeroBanner />
 
       {/* Build Day CTA */}
@@ -115,8 +274,8 @@ export default async function HomePage() {
           ].map((step, i) => (
             <div key={i} className="text-center space-y-3 animate-fade-in" style={{ animationDelay: `${i * 150}ms` }}>
               <div className="text-4xl">{step.icon}</div>
-              <h3 className="text-lg font-bold text-white">{step.title}</h3>
-              <p className="text-sm text-gray-400">{step.desc}</p>
+              <h3 className="text-lg font-bold" style={{ color: 'var(--fg)' }}>{step.title}</h3>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{step.desc}</p>
             </div>
           ))}
         </div>
@@ -175,7 +334,7 @@ export default async function HomePage() {
         {/* Popular cities */}
         {cities.length > 0 && (
           <section aria-label="Ciudades populares">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
+            <h2 className="text-xl md:text-2xl font-bold mb-4" style={{ color: 'var(--fg)' }}>
               Ciudades populares
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -183,7 +342,8 @@ export default async function HomePage() {
                 <Link
                   key={city.id}
                   href={`/search?city=${city.slug}`}
-                  className="group relative aspect-[4/3] rounded-xl overflow-hidden border border-[#2a2a2a]"
+                  className="group relative aspect-[4/3] rounded-xl overflow-hidden border"
+                  style={{ borderColor: 'var(--border)' }}
                 >
                   {city.image ? (
                     <img

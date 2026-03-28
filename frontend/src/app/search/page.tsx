@@ -104,11 +104,11 @@ function SearchContent() {
         {/* Filters sidebar */}
         <aside className="lg:w-64 shrink-0 space-y-6">
           <div>
-            <h3 className="text-sm font-semibold text-gray-300 mb-2">Ciudad</h3>
+            <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Ciudad</h3>
             <select
               value={city}
               onChange={(e) => updateUrl({ city: e.target.value })}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm rounded-lg px-3 py-2"
+              className="w-full input-theme text-sm px-3 py-2"
             >
               <option value="">Todas las ciudades</option>
               {cities.map((c) => (
@@ -120,11 +120,11 @@ function SearchContent() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-gray-300 mb-2">Categoria</h3>
+            <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Categoria</h3>
             <select
               value={category}
               onChange={(e) => updateUrl({ category: e.target.value })}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm rounded-lg px-3 py-2"
+              className="w-full input-theme text-sm px-3 py-2"
             >
               <option value="">Todas las categorias</option>
               {categories.map((c) => (
@@ -136,7 +136,7 @@ function SearchContent() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-gray-300 mb-2">
+            <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
               Rango de precio
             </h3>
             <div className="flex items-center gap-2">
@@ -145,25 +145,25 @@ function SearchContent() {
                 placeholder="Min"
                 value={minPrice}
                 onChange={(e) => updateUrl({ minPrice: e.target.value })}
-                className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm rounded-lg px-3 py-2"
+                className="w-full input-theme text-sm px-3 py-2"
               />
-              <span className="text-gray-500">-</span>
+              <span style={{ color: 'var(--text-tertiary)' }}>-</span>
               <input
                 type="number"
                 placeholder="Max"
                 value={maxPrice}
                 onChange={(e) => updateUrl({ maxPrice: e.target.value })}
-                className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm rounded-lg px-3 py-2"
+                className="w-full input-theme text-sm px-3 py-2"
               />
             </div>
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-gray-300 mb-2">Puntuacion minima</h3>
+            <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Puntuacion minima</h3>
             <select
               value={rating}
               onChange={(e) => updateUrl({ rating: e.target.value })}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm rounded-lg px-3 py-2"
+              className="w-full input-theme text-sm px-3 py-2"
             >
               <option value="">Cualquier puntuacion</option>
               <option value="4">4+ estrellas</option>
@@ -174,11 +174,11 @@ function SearchContent() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-gray-300 mb-2">Ordenar por</h3>
+            <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Ordenar por</h3>
             <select
               value={sortBy}
               onChange={(e) => updateUrl({ sortBy: e.target.value })}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm rounded-lg px-3 py-2"
+              className="w-full input-theme text-sm px-3 py-2"
             >
               <option value="">Fecha (predeterminado)</option>
               <option value="price_asc">Precio: menor a mayor</option>
@@ -190,12 +190,12 @@ function SearchContent() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-gray-300 mb-2">Fecha</h3>
+            <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Fecha</h3>
             <input
               type="date"
               value={date}
               onChange={(e) => updateUrl({ date: e.target.value })}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white text-sm rounded-lg px-3 py-2"
+              className="w-full input-theme text-sm px-3 py-2"
             />
           </div>
 
@@ -221,7 +221,8 @@ function SearchContent() {
           ) : events.length === 0 ? (
             <div className="text-center py-24">
               <svg
-                className="w-16 h-16 mx-auto text-gray-600 mb-4"
+                className="w-16 h-16 mx-auto mb-4"
+                style={{ color: 'var(--text-tertiary)' }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -236,7 +237,7 @@ function SearchContent() {
               <h2 className="text-xl font-bold mb-2">
                 No se encontraron resultados
               </h2>
-              <p className="text-gray-400">
+              <p style={{ color: 'var(--text-secondary)' }}>
                 Intenta con otros filtros o terminos de busqueda.
               </p>
             </div>
@@ -254,7 +255,8 @@ function SearchContent() {
                   <button
                     disabled={page <= 1}
                     onClick={() => updateUrl({ page: String(page - 1) })}
-                    className="px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg text-sm disabled:opacity-40 hover:bg-[#2a2a2a] transition"
+                    className="px-3 py-2 rounded-lg text-sm disabled:opacity-40 hover:opacity-80 transition"
+                    style={{ background: 'var(--card)', borderColor: 'var(--border)', borderWidth: '1px', borderStyle: 'solid' }}
                   >
                     Anterior
                   </button>
@@ -272,8 +274,9 @@ function SearchContent() {
                           className={`w-10 h-10 rounded-lg text-sm font-medium transition ${
                             p === page
                               ? 'bg-[#e63946] text-white'
-                              : 'bg-[#1a1a1a] border border-[#2a2a2a] hover:bg-[#2a2a2a]'
+                              : 'hover:opacity-80'
                           }`}
+                          style={p === page ? undefined : { background: 'var(--card)', borderColor: 'var(--border)', borderWidth: '1px', borderStyle: 'solid' }}
                         >
                           {p}
                         </button>
@@ -283,7 +286,8 @@ function SearchContent() {
                   <button
                     disabled={page >= totalPages}
                     onClick={() => updateUrl({ page: String(page + 1) })}
-                    className="px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg text-sm disabled:opacity-40 hover:bg-[#2a2a2a] transition"
+                    className="px-3 py-2 rounded-lg text-sm disabled:opacity-40 hover:opacity-80 transition"
+                    style={{ background: 'var(--card)', borderColor: 'var(--border)', borderWidth: '1px', borderStyle: 'solid' }}
                   >
                     Siguiente
                   </button>

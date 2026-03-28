@@ -47,7 +47,7 @@ export default function SearchBar({
 
   return (
     <form onSubmit={handleSubmit} className="relative w-full">
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+      <div className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary)' }}>
         <svg
           className={large ? 'w-5 h-5' : 'w-4 h-4'}
           fill="none"
@@ -67,9 +67,10 @@ export default function SearchBar({
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        className={`w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e63946] focus:border-transparent transition ${
+        className={`w-full rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e63946] focus:border-transparent transition ${
           large ? 'pl-12 pr-4 py-4 text-lg' : 'pl-10 pr-4 py-2.5 text-sm'
         }`}
+        style={{ background: 'var(--input-bg)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)', color: 'var(--fg)' }}
       />
     </form>
   );
