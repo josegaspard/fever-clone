@@ -3,9 +3,7 @@ import Stripe from 'stripe';
 import { getUserFromRequest } from '@/lib/auth-helpers';
 import { supabase } from '@/lib/supabase';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {
-  apiVersion: '2025-04-30.basil' as Stripe.LatestApiVersion,
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: NextRequest) {
   try {
@@ -73,8 +71,9 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ url: session.url, sessionId: session.id });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Stripe checkout error:', error);
-    return NextResponse.json({ message: 'Error creating checkout session' }, { status: 500 });
+    const msg = error instanceof Error ? error.message : 'Error creating checkout session';
+    return NextResponse.json({ message: msg }, { status: 500 });
   }
 }

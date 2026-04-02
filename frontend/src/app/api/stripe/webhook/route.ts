@@ -2,14 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { supabase } from '@/lib/supabase';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {
-  apiVersion: '2025-04-30.basil' as Stripe.LatestApiVersion,
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 function generateQRCode(eventId: string | number, userId: string | number): string {
   const ts = Date.now();
   const rand = Math.random().toString(36).substring(2, 10);
-  return `CTX-${eventId}-${userId}-${ts}-${rand}`;
+  return `FEVER-${eventId}-${userId}-${ts}-${rand}`;
 }
 
 export async function POST(req: NextRequest) {
