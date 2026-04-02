@@ -123,6 +123,11 @@ function LoginForm() {
                 className="w-full input-theme rounded-xl px-4 py-3 text-sm"
                 placeholder="••••••••"
               />
+              <div className="mt-1.5 text-right">
+                <Link href="/auth/forgot-password" className="text-xs text-[#e63946] hover:underline">
+                  ¿Olvidaste tu contraseña?
+                </Link>
+              </div>
             </div>
 
             <button

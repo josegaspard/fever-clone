@@ -420,7 +420,7 @@ export default function BusinessOnboardingPage() {
       <main className="flex-1 flex flex-col max-w-2xl w-full mx-auto px-4 sm:px-6 py-8">
         {/* Error banner */}
         {error && (
-          <div className="mb-6 rounded-xl px-4 py-3 text-sm font-medium bg-red-500/10 border border-red-500/30 text-red-400 animate-fade-in">
+          <div className="mb-6 rounded-xl px-4 py-3 text-sm font-medium bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 animate-fade-in">
             {error}
           </div>
         )}
@@ -612,7 +612,7 @@ function Step1Company({
           required
         />
         {showNameError && (
-          <p className="mt-1 text-xs text-red-400">El nombre es obligatorio</p>
+          <p className="mt-1 text-xs text-red-600 dark:text-red-400">El nombre es obligatorio</p>
         )}
       </div>
 
@@ -886,7 +886,7 @@ function Step3Event({
           </p>
         )}
         {showTitleError && (
-          <p className="mt-1 text-xs text-red-400">El titulo es obligatorio</p>
+          <p className="mt-1 text-xs text-red-600 dark:text-red-400">El titulo es obligatorio</p>
         )}
       </div>
 
@@ -907,7 +907,7 @@ function Step3Event({
           required
         />
         {showDescError && (
-          <p className="mt-1 text-xs text-red-400">La descripcion es obligatoria</p>
+          <p className="mt-1 text-xs text-red-600 dark:text-red-400">La descripcion es obligatoria</p>
         )}
       </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, Suspense } from 'react';
+import { useEffect, useState, useCallback, Suspense, lazy } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   getEvents,
@@ -13,6 +13,8 @@ import {
 import EventCard, { EventCardSkeleton } from '@/components/EventCard';
 import SearchBar from '@/components/SearchBar';
 
+const EventsMap = lazy(() => import('@/components/EventsMap'));
+
 // Note: metadata for this page is set via the parent layout since this is a client component
 
 function SearchContent() {
@@ -24,6 +26,7 @@ function SearchContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
+  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
 
   // Read filters from URL
   const q = searchParams.get('q') || '';
@@ -90,19 +93,30 @@ function SearchContent() {
   }, [q, city, category, minPrice, maxPrice, date, featured, rating, sortBy, page]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Search bar */}
-      <div className="max-w-2xl mx-auto mb-8">
-        <SearchBar
-          initialValue={q}
-          onSearch={(val) => updateUrl({ q: val })}
-          large
-        />
+    <div>
+      {/* Search hero */}
+      <div className="relative py-12 md:py-16 mb-8" style={{ background: 'linear-gradient(135deg, var(--surface-2) 0%, var(--card) 100%)' }}>
+        <div className="max-w-3xl mx-auto px-4 text-center">
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-2" style={{ color: 'var(--fg)' }}>
+            {q ? `Resultados para "${q}"` : category ? `Eventos de ${category}` : city ? `Eventos en ${city}` : 'Explorar eventos'}
+          </h1>
+          <p className="text-sm mb-8" style={{ color: 'var(--text-secondary)' }}>
+            Descubre experiencias unicas en tu ciudad
+          </p>
+          <div className="max-w-2xl mx-auto">
+            <SearchBar
+              initialValue={q}
+              onSearch={(val) => updateUrl({ q: val })}
+              large
+            />
+          </div>
+        </div>
       </div>
 
+      <div className="max-w-7xl mx-auto px-4 pb-12">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters sidebar */}
-        <aside className="lg:w-64 shrink-0 space-y-6">
+        <aside className="lg:w-64 shrink-0 space-y-6 lg:sticky lg:top-24 lg:self-start">
           <div>
             <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Ciudad</h3>
             <select
@@ -191,6 +205,36 @@ function SearchContent() {
 
           <div>
             <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Fecha</h3>
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {(() => {
+                const now = new Date();
+                const todayStr = now.toISOString().split('T')[0];
+                const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+                const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                const dayOfWeek = now.getDay();
+                const daysUntilSat = (6 - dayOfWeek + 7) % 7 || 7;
+                const saturday = new Date(now); saturday.setDate(now.getDate() + daysUntilSat);
+                const sunday = new Date(saturday); sunday.setDate(saturday.getDate() + 1);
+                const endOfWeek = new Date(now); endOfWeek.setDate(now.getDate() + (7 - dayOfWeek));
+
+                const quickDates = [
+                  { label: 'Hoy', value: todayStr },
+                  { label: 'Manana', value: tomorrowStr },
+                  { label: 'Este finde', value: saturday.toISOString().split('T')[0] },
+                  { label: 'Esta semana', value: todayStr },
+                ];
+                return quickDates.map((qd) => (
+                  <button
+                    key={qd.label}
+                    onClick={() => updateUrl({ date: qd.value })}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${date === qd.value ? 'bg-[#e63946] text-white' : ''}`}
+                    style={date !== qd.value ? { background: 'var(--surface-2)', color: 'var(--text-secondary)' } : {}}
+                  >
+                    {qd.label}
+                  </button>
+                ));
+              })()}
+            </div>
             <input
               type="date"
               value={date}
@@ -212,6 +256,29 @@ function SearchContent() {
 
         {/* Results */}
         <div className="flex-1">
+          {/* View toggle */}
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              {!loading && events.length > 0 && `${events.length} eventos encontrados`}
+            </p>
+            <div className="flex rounded-lg p-0.5" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${viewMode === 'grid' ? 'bg-[#e63946] text-white' : ''}`}
+                style={viewMode !== 'grid' ? { color: 'var(--text-secondary)' } : {}}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+              </button>
+              <button
+                onClick={() => setViewMode('map')}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${viewMode === 'map' ? 'bg-[#e63946] text-white' : ''}`}
+                style={viewMode !== 'map' ? { color: 'var(--text-secondary)' } : {}}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+              </button>
+            </div>
+          </div>
+
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {Array.from({ length: 12 }).map((_, i) => (
@@ -243,11 +310,17 @@ function SearchContent() {
             </div>
           ) : (
             <>
+              {viewMode === 'map' ? (
+                <Suspense fallback={<div className="h-[500px] rounded-2xl shimmer" />}>
+                  <EventsMap events={events} height="600px" />
+                </Suspense>
+              ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {events.map((event) => (
                   <EventCard key={event.id} event={event} />
                 ))}
               </div>
+              )}
 
               {/* Pagination */}
               {totalPages > 1 && (
@@ -296,6 +369,7 @@ function SearchContent() {
             </>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

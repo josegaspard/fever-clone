@@ -7,6 +7,9 @@ import { useAuth } from '@/context/AuthContext';
 import { getEvents, getCategories, getCities, Event, Category, City, createPlan, addPlanItem } from '@/lib/api';
 import { useToast } from '@/components/Toast';
 import EventCard from '@/components/EventCard';
+import { lazy, Suspense } from 'react';
+
+const EventsMap = lazy(() => import('@/components/EventsMap'));
 
 type Step = 'who' | 'where' | 'when' | 'budget' | 'vibes' | 'results';
 type GroupType = 'solo' | 'pareja' | 'amigos' | 'familia';
@@ -326,10 +329,10 @@ export default function BuildDayPage() {
   const sel = (on: boolean) => ({ background: on ? 'var(--card)' : 'var(--surface)', borderColor: on ? '#e63946' : 'var(--border)' });
 
   return (
-    <div className="min-h-screen pb-28" style={{ background: 'var(--bg)' }}>
+    <div className="min-h-screen pb-32 sm:pb-28" style={{ background: 'var(--bg)' }}>
       {/* Progress */}
       <div className="sticky top-16 z-40" style={{ background: 'var(--nav-bg)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-2xl mx-auto px-4 py-3">
+        <div className="max-w-2xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3">
           <div className="flex items-center justify-between mb-2">
             <button onClick={goBack} className={`text-sm font-medium flex items-center gap-1 transition ${stepIndex === 0 ? 'opacity-0 pointer-events-none' : ''}`} style={{ color: 'var(--text-secondary)' }}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>Atrás
@@ -341,13 +344,13 @@ export default function BuildDayPage() {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-5 sm:py-8">
 
         {/* STEP 1: WHO */}
         {step === 'who' && (
-          <div className="animate-fade-in space-y-8">
-            <div className="text-center"><span className="text-5xl block mb-4">👋</span><h1 className="text-3xl md:text-4xl font-black tracking-tight mb-2">¿Con quién vas?</h1><p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Personalizaremos todo para tu grupo</p></div>
-            <div className="grid grid-cols-2 gap-3">
+          <div className="animate-fade-in space-y-6 sm:space-y-8">
+            <div className="text-center"><span className="text-4xl sm:text-5xl block mb-3 sm:mb-4">👋</span><h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight mb-2">¿Con quién vas?</h1><p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>Personalizaremos todo para tu grupo</p></div>
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
               {([
                 { value: 'solo' as const, label: 'Solo yo', icon: '🧑', desc: 'Un día para mí' },
                 { value: 'pareja' as const, label: 'En pareja', icon: '💑', desc: 'Romántico y especial' },
@@ -355,17 +358,17 @@ export default function BuildDayPage() {
                 { value: 'familia' as const, label: 'En familia', icon: '👨‍👩‍👧‍👦', desc: 'Todas las edades' },
               ]).map(opt => (
                 <button key={opt.value} onClick={() => setFilters(f => ({ ...f, group: opt.value, people: opt.value === 'solo' ? 1 : opt.value === 'pareja' ? 2 : 4 }))}
-                  className={`p-5 rounded-2xl border-2 text-left transition-all hover:scale-[1.02] ${filters.group === opt.value ? 'border-[#e63946] shadow-lg shadow-[#e63946]/10 scale-[1.02]' : ''}`} style={sel(filters.group === opt.value)}>
-                  <span className="text-3xl">{opt.icon}</span><p className="font-bold text-sm mt-2">{opt.label}</p><p className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>{opt.desc}</p>
+                  className={`p-3.5 sm:p-5 rounded-2xl border-2 text-left transition-all hover:scale-[1.02] ${filters.group === opt.value ? 'border-[#e63946] shadow-lg shadow-[#e63946]/10 scale-[1.02]' : ''}`} style={sel(filters.group === opt.value)}>
+                  <span className="text-2xl sm:text-3xl">{opt.icon}</span><p className="font-bold text-xs sm:text-sm mt-1.5 sm:mt-2">{opt.label}</p><p className="text-[11px] sm:text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>{opt.desc}</p>
                 </button>
               ))}
             </div>
             {(filters.group === 'amigos' || filters.group === 'familia') && (
-              <div className="flex items-center justify-center gap-5 animate-fade-in">
-                <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Personas:</span>
-                <button onClick={() => setFilters(f => ({ ...f, people: Math.max(2, f.people - 1) }))} className="w-11 h-11 rounded-full border-2 flex items-center justify-center text-xl font-bold transition hover:border-[#e63946]" style={{ borderColor: 'var(--border)', background: 'var(--card)' }}>−</button>
-                <span className="text-3xl font-black w-10 text-center tabular-nums">{filters.people}</span>
-                <button onClick={() => setFilters(f => ({ ...f, people: Math.min(20, f.people + 1) }))} className="w-11 h-11 rounded-full border-2 flex items-center justify-center text-xl font-bold transition hover:border-[#e63946]" style={{ borderColor: 'var(--border)', background: 'var(--card)' }}>+</button>
+              <div className="flex items-center justify-center gap-4 sm:gap-5 animate-fade-in">
+                <span className="text-xs sm:text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Personas:</span>
+                <button onClick={() => setFilters(f => ({ ...f, people: Math.max(2, f.people - 1) }))} className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 flex items-center justify-center text-lg sm:text-xl font-bold transition hover:border-[#e63946]" style={{ borderColor: 'var(--border)', background: 'var(--card)' }}>−</button>
+                <span className="text-2xl sm:text-3xl font-black w-8 sm:w-10 text-center tabular-nums">{filters.people}</span>
+                <button onClick={() => setFilters(f => ({ ...f, people: Math.min(20, f.people + 1) }))} className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 flex items-center justify-center text-lg sm:text-xl font-bold transition hover:border-[#e63946]" style={{ borderColor: 'var(--border)', background: 'var(--card)' }}>+</button>
               </div>
             )}
           </div>
@@ -538,6 +541,13 @@ export default function BuildDayPage() {
                           </div>
                         ))}
                       </div>
+                    </div>
+
+                    {/* Route Map */}
+                    <div className="px-5 pb-3">
+                      <Suspense fallback={<div className="h-[250px] rounded-xl shimmer" />}>
+                        <EventsMap events={[]} routeEvents={sr.events} showRoute height="250px" />
+                      </Suspense>
                     </div>
 
                     {/* Cards */}

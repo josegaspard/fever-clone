@@ -25,6 +25,15 @@ const NAV_LINKS = [
     ),
   },
   {
+    href: '/business/scanner',
+    label: 'Scanner',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+      </svg>
+    ),
+  },
+  {
     href: '/business/analytics',
     label: 'Analiticas',
     icon: (
@@ -78,10 +87,10 @@ export default function BusinessLayout({ children }: { children: React.ReactNode
   const sidebar = (
     <aside
       className="flex flex-col h-full"
-      style={{ width: 280, background: '#111111', borderRight: '1px solid var(--border)' }}
+      style={{ width: 280, background: 'var(--sidebar-bg)', borderRight: '1px solid var(--sidebar-border)' }}
     >
       {/* Company branding */}
-      <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
+      <div className="p-5 border-b" style={{ borderColor: 'var(--sidebar-border)' }}>
         <div className="flex items-center gap-3">
           {user.companyLogo ? (
             <img
@@ -98,10 +107,10 @@ export default function BusinessLayout({ children }: { children: React.ReactNode
             </div>
           )}
           <div className="min-w-0">
-            <p className="text-white font-semibold text-sm truncate">
+            <p className="font-semibold text-sm truncate" style={{ color: 'var(--sidebar-text)' }}>
               {user.companyName || user.name}
             </p>
-            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+            <p className="text-xs" style={{ color: 'var(--sidebar-text-muted)' }}>
               Panel de negocio
             </p>
           </div>
@@ -119,10 +128,10 @@ export default function BusinessLayout({ children }: { children: React.ReactNode
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
               style={{
                 background: active ? 'rgba(230,57,70,0.1)' : 'transparent',
-                color: active ? '#e63946' : 'var(--text-secondary)',
+                color: active ? '#e63946' : 'var(--sidebar-text-muted)',
               }}
               onMouseEnter={(e) => {
-                if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                if (!active) e.currentTarget.style.background = 'var(--sidebar-hover)';
               }}
               onMouseLeave={(e) => {
                 if (!active) e.currentTarget.style.background = 'transparent';
@@ -149,30 +158,33 @@ export default function BusinessLayout({ children }: { children: React.ReactNode
       </nav>
 
       {/* User info + logout */}
-      <div className="p-4 border-t" style={{ borderColor: 'var(--border)' }}>
+      <div className="p-4 border-t" style={{ borderColor: 'var(--sidebar-border)' }}>
         <div className="flex items-center gap-3">
           {user.avatar ? (
             <img src={user.avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
           ) : (
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
-              style={{ background: '#2a2a2a' }}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+              style={{ background: 'var(--avatar-fallback)', color: 'var(--sidebar-text-muted)' }}
             >
               {(user.name || 'U').charAt(0).toUpperCase()}
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-white text-sm font-medium truncate">{user.name}</p>
+            <p className="text-sm font-medium truncate" style={{ color: 'var(--sidebar-text)' }}>{user.name}</p>
             <p className="text-xs truncate" style={{ color: 'var(--text-tertiary)' }}>
               {user.email}
             </p>
           </div>
           <button
             onClick={logout}
-            className="p-2 rounded-lg transition hover:bg-white/5"
+            className="p-2 rounded-lg transition"
+            style={{ color: 'var(--sidebar-text-muted)' }}
             title="Cerrar sesion"
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--sidebar-hover)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <svg className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
           </button>
@@ -184,12 +196,13 @@ export default function BusinessLayout({ children }: { children: React.ReactNode
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
       {/* Mobile hamburger */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-3" style={{ background: '#111111', borderBottom: '1px solid var(--border)' }}>
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-3" style={{ background: 'var(--sidebar-bg)', borderBottom: '1px solid var(--sidebar-border)' }}>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 rounded-lg hover:bg-white/10 transition"
+          className="p-2 rounded-lg transition"
+          style={{ color: 'var(--sidebar-text)' }}
         >
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {sidebarOpen ? (
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             ) : (
@@ -197,7 +210,7 @@ export default function BusinessLayout({ children }: { children: React.ReactNode
             )}
           </svg>
         </button>
-        <span className="text-white font-semibold text-sm">
+        <span className="font-semibold text-sm" style={{ color: 'var(--sidebar-text)' }}>
           {user.companyName || user.name}
         </span>
       </div>

@@ -86,10 +86,10 @@ export default function PlanTimeline({
 
   const statusTextColor = (s: string) => {
     switch (s) {
-      case 'confirmed': return 'bg-green-500/10 text-green-400';
-      case 'pending': return 'bg-yellow-500/10 text-yellow-400';
-      case 'free': return 'bg-blue-500/10 text-blue-400';
-      default: return 'bg-gray-500/10 text-gray-400';
+      case 'confirmed': return 'bg-green-500/10 text-green-600 dark:text-green-400';
+      case 'pending': return 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400';
+      case 'free': return 'bg-blue-500/10 text-blue-600 dark:text-blue-400';
+      default: return 'bg-gray-500/10 text-gray-600 dark:text-gray-400';
     }
   };
 

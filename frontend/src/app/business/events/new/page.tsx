@@ -55,6 +55,8 @@ export default function NewBusinessEventPage() {
     featured: false,
     capacity: '',
     refundPolicyId: '',
+    metaTitle: '',
+    metaDescription: '',
   });
 
   useEffect(() => {
@@ -148,7 +150,7 @@ export default function NewBusinessEventPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex-1 space-y-6">
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-xl p-4">
+            <div className="bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm rounded-xl p-4">
               {error}
             </div>
           )}
@@ -590,6 +592,46 @@ export default function NewBusinessEventPage() {
                 Evento destacado
               </span>
             </label>
+          </div>
+
+          {/* SEO */}
+          <div
+            className="rounded-2xl border p-6 space-y-5"
+            style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-5 h-5 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" strokeWidth={2}/><line x1="21" y1="21" x2="16.65" y2="16.65" strokeWidth={2}/></svg>
+              <h3 className="text-sm font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>SEO</h3>
+            </div>
+            <div>
+              <label className={labelClass} style={{ color: 'var(--text-secondary)' }}>
+                Meta titulo <span className="text-xs font-normal" style={{ color: 'var(--text-tertiary)' }}>(max 60 chars)</span>
+              </label>
+              <input value={form.metaTitle} onChange={(e) => updateField('metaTitle', e.target.value)} placeholder={form.title || 'Titulo para buscadores'} maxLength={70} className={inputClass} />
+              <div className="flex justify-between mt-1">
+                <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Se usa el titulo del evento si esta vacio</span>
+                <span className={`text-[10px] font-medium ${(form.metaTitle || form.title).length > 60 ? 'text-red-600 dark:text-red-400' : ''}`} style={(form.metaTitle || form.title).length <= 60 ? { color: 'var(--text-tertiary)' } : {}}>{(form.metaTitle || form.title).length}/60</span>
+              </div>
+            </div>
+            <div>
+              <label className={labelClass} style={{ color: 'var(--text-secondary)' }}>
+                Meta descripcion <span className="text-xs font-normal" style={{ color: 'var(--text-tertiary)' }}>(max 160 chars)</span>
+              </label>
+              <textarea value={form.metaDescription} onChange={(e) => updateField('metaDescription', e.target.value)} placeholder={form.shortDescription || form.description?.slice(0, 160) || 'Descripcion para buscadores'} maxLength={170} rows={3} className={inputClass} style={{ resize: 'vertical' }} />
+              <div className="flex justify-between mt-1">
+                <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Se usa la descripcion corta si esta vacio</span>
+                <span className={`text-[10px] font-medium ${(form.metaDescription || form.shortDescription || '').length > 160 ? 'text-red-600 dark:text-red-400' : ''}`} style={(form.metaDescription || form.shortDescription || '').length <= 160 ? { color: 'var(--text-tertiary)' } : {}}>{(form.metaDescription || form.shortDescription || '').length}/160</span>
+              </div>
+            </div>
+            {/* Google SERP Preview */}
+            <div className="rounded-xl p-4" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+              <p className="text-[10px] font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-tertiary)' }}>Vista previa en Google</p>
+              <div>
+                <p className="text-sm truncate" style={{ color: '#1a0dab' }}>{form.metaTitle || form.title || 'Titulo del evento'} | Fever</p>
+                <p className="text-xs truncate" style={{ color: '#006621' }}>fever-clone.vercel.app/events/{form.slug || 'slug-del-evento'}</p>
+                <p className="text-xs line-clamp-2 mt-0.5" style={{ color: 'var(--text-secondary)' }}>{form.metaDescription || form.shortDescription || form.description?.slice(0, 160) || 'Descripcion del evento que aparecera en los resultados de busqueda...'}</p>
+              </div>
+            </div>
           </div>
 
           {/* Submit */}

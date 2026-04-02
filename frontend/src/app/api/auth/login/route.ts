@@ -2,8 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { supabase } from '@/lib/supabase';
 import { signToken } from '@/lib/auth-helpers';
+import { rateLimit, rateLimitResponse, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
+  // Rate limit: 10 login attempts per minute per IP
+  const ip = getClientIp(req);
+  const rl = rateLimit(`login:${ip}`, { windowMs: 60_000, max: 10 });
+  if (!rl.success) return rateLimitResponse();
+
   try {
     const { email, password } = await req.json();
 

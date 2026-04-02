@@ -26,7 +26,13 @@ export default function Navbar() {
     getCities()
       .then((c) => {
         setCities(c);
-        if (c.length > 0) setSelectedCity(c[0].name);
+        // Use saved city from localStorage (set by HeroBanner geolocation)
+        const saved = typeof window !== 'undefined' ? localStorage.getItem('fever-city') : null;
+        if (saved) {
+          const match = c.find(city => city.slug === saved);
+          if (match) { setSelectedCity(match.name); return; }
+        }
+        // Don't auto-select - show "Ciudad" placeholder
       })
       .catch(() => {});
   }, []);
@@ -79,7 +85,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/[0.06]" role="navigation" aria-label="Navegacion principal">
+    <nav className="sticky top-0 z-50 border-b" style={{ borderColor: 'var(--nav-border)' }} role="navigation" aria-label="Navegacion principal">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link
@@ -112,7 +118,7 @@ export default function Navbar() {
                   key={c.id}
                   className="block w-full text-left px-4 py-2 text-sm transition hover:bg-[var(--card-hover)]"
                   style={{ color: selectedCity === c.name ? '#e63946' : 'var(--text-secondary)' }}
-                  onClick={() => { setSelectedCity(c.name); setCityOpen(false); }}
+                  onClick={() => { setSelectedCity(c.name); setCityOpen(false); localStorage.setItem('fever-city', c.slug); router.push(`/${c.slug}`); }}
                 >
                   {c.name}
                 </button>
@@ -159,6 +165,15 @@ export default function Navbar() {
               </svg>
             </button>
           )}
+
+          {/* Blog link - visible to all */}
+          <Link
+            href="/blog"
+            className="hidden md:block text-sm hover:text-[var(--fg)] transition"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Blog
+          </Link>
 
           {/* Favorites - only for regular users */}
           {user && !isBusiness && !isSuperAdmin && (
@@ -222,14 +237,15 @@ export default function Navbar() {
                       <div className="px-4 py-2 text-sm border-b" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border)' }}>
                         <div className="font-medium" style={{ color: 'var(--fg)' }}>{user.name}</div>
                         <div className="text-xs mt-0.5">{user.email}</div>
-                        {isBusiness && <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400">EMPRESA</span>}
-                        {isSuperAdmin && <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400">SUPER ADMIN</span>}
+                        {isBusiness && <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-600 dark:text-green-400">EMPRESA</span>}
+                        {isSuperAdmin && <span className="inline-block mt-1 text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-600 dark:text-red-400">SUPER ADMIN</span>}
                       </div>
                       {getDashboardLink() && (
                         <Link href={getDashboardLink()!} className="block px-4 py-2 text-sm hover:bg-[var(--card-hover)] transition" style={{ color: '#e63946' }} onClick={() => setUserMenuOpen(false)}>
                           {getDashboardLabel()}
                         </Link>
                       )}
+                      <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-[var(--card-hover)] transition" style={{ color: 'var(--text-secondary)' }} onClick={() => setUserMenuOpen(false)}>Mi perfil</Link>
                       {!isBusiness && !isSuperAdmin && (
                         <>
                           <Link href="/favorites" className="block px-4 py-2 text-sm hover:bg-[var(--card-hover)] transition" style={{ color: 'var(--text-secondary)' }} onClick={() => setUserMenuOpen(false)}>Mis favoritos</Link>
@@ -298,8 +314,22 @@ export default function Navbar() {
             </select>
           </div>
 
+          {/* Theme toggle - mobile */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-2 text-sm"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            {theme === 'dark' ? '☀️' : '🌙'} {theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+          </button>
+
+          <hr style={{ borderColor: 'var(--border)' }} />
+
           {user ? (
             <>
+              <Link href="/profile" className="block text-sm font-medium" style={{ color: 'var(--fg)' }} onClick={() => setMenuOpen(false)}>
+                Mi perfil
+              </Link>
               {getDashboardLink() && (
                 <Link href={getDashboardLink()!} className="block text-sm font-medium text-[#e63946]" onClick={() => setMenuOpen(false)}>
                   {getDashboardLabel()}

@@ -100,9 +100,9 @@ export default function AdminPage() {
           {
             label: 'Publicados',
             value: stats.published,
-            color: 'text-green-400',
+            color: 'text-green-600 dark:text-green-400',
           },
-          { label: 'Borradores', value: stats.draft, color: 'text-yellow-400' },
+          { label: 'Borradores', value: stats.draft, color: 'text-yellow-600 dark:text-yellow-400' },
           {
             label: 'Archivados',
             value: stats.archived,
@@ -194,10 +194,10 @@ export default function AdminPage() {
                     <span
                       className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
                         s(event.status) === 'PUBLISHED'
-                          ? 'bg-green-500/10 text-green-400'
+                          ? 'bg-green-500/10 text-green-600 dark:text-green-400'
                           : s(event.status) === 'DRAFT'
-                          ? 'bg-yellow-500/10 text-yellow-400'
-                          : 'bg-gray-500/10 text-gray-400'
+                          ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'
+                          : 'bg-gray-500/10 text-gray-600 dark:text-gray-400'
                       }`}
                     >
                       {s(event.status) === 'PUBLISHED'
@@ -222,7 +222,7 @@ export default function AdminPage() {
                       <button
                         onClick={() => handleDelete(event.id)}
                         disabled={deleting === event.id}
-                        className="px-3 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-xs transition disabled:opacity-50"
+                        className="px-3 py-1 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 rounded-lg text-xs transition disabled:opacity-50"
                       >
                         {deleting === event.id ? '...' : 'Eliminar'}
                       </button>

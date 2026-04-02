@@ -216,7 +216,7 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
           {successPlanId ? (
             <div className="p-5 text-center space-y-3">
               <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mx-auto">
-                <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
@@ -257,7 +257,7 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
                   </div>
                 </div>
                 {isFree ? (
-                  <span className="inline-block text-xs font-bold text-green-400 bg-green-400/10 px-2 py-0.5 rounded">
+                  <span className="inline-block text-xs font-bold text-green-600 dark:text-green-400 bg-green-400/10 px-2 py-0.5 rounded">
                     GRATIS
                   </span>
                 ) : (
@@ -294,7 +294,7 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
                       </div>
                       <span className={`text-xs font-bold px-2 py-1 rounded-lg shrink-0 ${
                         isFree
-                          ? 'bg-green-500/10 text-green-400'
+                          ? 'bg-green-500/10 text-green-600 dark:text-green-400'
                           : 'bg-[#e63946]/10 text-[#e63946]'
                       }`}>
                         {isFree ? 'Gratis' : `$${event.price.toFixed(2)}`}

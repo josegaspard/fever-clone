@@ -40,6 +40,7 @@ export default function Footer() {
               <li><Link href="/search?category=gastronomia" className="footer-link">Gastronomía</Link></li>
               <li><Link href="/search?category=arte" className="footer-link">Arte</Link></li>
               <li><Link href="/search?maxPrice=0" className="footer-link">Eventos gratis</Link></li>
+              <li><Link href="/blog" className="footer-link">Blog</Link></li>
             </ul>
           </nav>
 
@@ -47,12 +48,12 @@ export default function Footer() {
           <nav aria-label="Ciudades">
             <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-secondary)' }}>Ciudades</h4>
             <ul className="space-y-2 text-sm" style={{ color: 'var(--text-tertiary)' }}>
-              <li><Link href="/search?city=cdmx" className="footer-link">Ciudad de México</Link></li>
-              <li><Link href="/search?city=madrid" className="footer-link">Madrid</Link></li>
-              <li><Link href="/search?city=barcelona" className="footer-link">Barcelona</Link></li>
-              <li><Link href="/search?city=new-york" className="footer-link">New York</Link></li>
-              <li><Link href="/search?city=london" className="footer-link">London</Link></li>
-              <li><Link href="/search?city=paris" className="footer-link">Paris</Link></li>
+              <li><Link href="/cdmx" className="footer-link">Ciudad de Mexico</Link></li>
+              <li><Link href="/madrid" className="footer-link">Madrid</Link></li>
+              <li><Link href="/barcelona" className="footer-link">Barcelona</Link></li>
+              <li><Link href="/new-york" className="footer-link">New York</Link></li>
+              <li><Link href="/london" className="footer-link">London</Link></li>
+              <li><Link href="/paris" className="footer-link">Paris</Link></li>
             </ul>
           </nav>
 
@@ -74,13 +75,13 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Fever. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-            <Link href="/search" className="footer-legal-link">
-              Términos y condiciones
+            <Link href="/legal/terms" className="footer-legal-link">
+              Terminos y condiciones
             </Link>
-            <Link href="/search" className="footer-legal-link">
-              Política de privacidad
+            <Link href="/legal/privacy" className="footer-legal-link">
+              Politica de privacidad
             </Link>
-            <Link href="/search" className="footer-legal-link">
+            <Link href="/legal/cookies" className="footer-legal-link">
               Cookies
             </Link>
           </div>

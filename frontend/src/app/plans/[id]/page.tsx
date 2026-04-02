@@ -220,7 +220,7 @@ export default function PlanDetailPage() {
                   autoFocus
                   onKeyDown={(e) => e.key === 'Enter' && saveTitle()}
                 />
-                <button onClick={saveTitle} className="text-green-400 hover:text-green-300">
+                <button onClick={saveTitle} className="text-green-600 dark:text-green-400 hover:text-green-500 dark:hover:text-green-300">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
@@ -254,7 +254,7 @@ export default function PlanDetailPage() {
                 autoFocus
               />
               <div className="flex gap-2">
-                <button onClick={saveDesc} className="text-sm text-green-400 hover:underline">Guardar</button>
+                <button onClick={saveDesc} className="text-sm text-green-600 dark:text-green-400 hover:underline">Guardar</button>
                 <button onClick={() => setEditingDesc(false)} className="text-sm hover:underline" style={{ color: 'var(--text-secondary)' }}>Cancelar</button>
               </div>
             </div>
@@ -333,7 +333,7 @@ export default function PlanDetailPage() {
                 <div className="flex items-center gap-2 min-w-0 mr-2">
                   <span className="truncate" style={{ color: 'var(--text-secondary)' }}>{item.event?.title || 'Evento'}</span>
                   {item.cost > 0 && !item.isPaid && (
-                    <span className="text-[10px] text-yellow-400 bg-yellow-400/10 px-1.5 py-0.5 rounded shrink-0">Pendiente</span>
+                    <span className="text-[10px] text-yellow-600 dark:text-yellow-400 bg-yellow-500/10 px-1.5 py-0.5 rounded shrink-0">Pendiente</span>
                   )}
                 </div>
                 <span className="shrink-0" style={{ color: 'var(--fg)' }}>

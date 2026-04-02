@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
@@ -6,34 +6,52 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { ToastProvider } from '@/components/Toast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import CookieBanner from '@/components/CookieBanner';
+import Analytics from '@/components/Analytics';
 
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
+  display: 'swap',
+  preload: true,
 });
 
+const BASE_URL = 'https://fever-clone.vercel.app';
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+  ],
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://fever-clone.vercel.app'),
+  metadataBase: new URL(BASE_URL),
   title: {
     default: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
     template: '%s | Fever',
   },
   description:
-    'Descubre experiencias únicas, conciertos, gastronomía, arte y más. Crea tu Day perfecto con eventos en Ciudad de México, Madrid, Barcelona, New York, London y Paris. Compra entradas y tickets online.',
+    'Descubre experiencias unicas, conciertos, gastronomia, arte y mas. Crea tu Day perfecto con eventos en Ciudad de Mexico, Madrid, Barcelona, New York, London y Paris. Compra entradas y tickets online.',
   keywords: [
-    'eventos', 'experiencias', 'conciertos', 'teatro', 'gastronomía',
+    'eventos', 'experiencias', 'conciertos', 'teatro', 'gastronomia',
     'arte', 'festivales', 'CDMX', 'Madrid', 'Barcelona', 'planes',
-    'actividades', 'qué hacer', 'tickets', 'entradas', 'espectáculos',
+    'actividades', 'que hacer', 'tickets', 'entradas', 'espectaculos',
     'ocio', 'cultura', 'nightlife', 'vida nocturna', 'museos',
     'exposiciones', 'talleres', 'workshops', 'New York', 'London',
-    'Paris', 'eventos cerca de mí', 'comprar entradas online',
+    'Paris', 'eventos cerca de mi', 'comprar entradas online',
     'planes fin de semana', 'cosas que hacer', 'agenda cultural',
   ],
-  authors: [{ name: 'Fever' }],
+  authors: [{ name: 'Fever', url: BASE_URL }],
   creator: 'Fever',
   publisher: 'Fever',
+  formatDetection: { telephone: false },
   alternates: {
-    canonical: 'https://fever-clone.vercel.app',
+    canonical: BASE_URL,
+    languages: { 'es': BASE_URL },
   },
   manifest: '/manifest.json',
   verification: {
@@ -48,8 +66,8 @@ export const metadata: Metadata = {
     locale: 'es_ES',
     siteName: 'Fever',
     title: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
-    description: 'Experiencias únicas, conciertos, gastronomía y más. Crea tu Day perfecto.',
-    url: 'https://fever-clone.vercel.app',
+    description: 'Experiencias unicas, conciertos, gastronomia y mas. Crea tu Day perfecto.',
+    url: BASE_URL,
     images: [
       {
         url: '/og-image.png',
@@ -65,7 +83,7 @@ export const metadata: Metadata = {
     site: '@fever',
     creator: '@fever',
     title: 'Fever - Descubre los mejores planes en tu ciudad',
-    description: 'Experiencias únicas, conciertos, gastronomía y más.',
+    description: 'Experiencias unicas, conciertos, gastronomia y mas.',
     images: [
       {
         url: '/og-image.png',
@@ -98,8 +116,8 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Fever',
-    url: 'https://fever-clone.vercel.app',
-    description: 'Descubre los mejores planes y eventos en tu ciudad. Conciertos, gastronomía, arte, festivales y experiencias únicas.',
+    url: BASE_URL,
+    description: 'Descubre los mejores planes y eventos en tu ciudad. Conciertos, gastronomia, arte, festivales y experiencias unicas.',
     inLanguage: 'es',
     publisher: {
       '@type': 'Organization',
@@ -109,7 +127,7 @@ export default function RootLayout({
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: 'https://fever-clone.vercel.app/search?q={search_term_string}',
+        urlTemplate: `${BASE_URL}/search?q={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },
@@ -119,14 +137,14 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Fever',
-    url: 'https://fever-clone.vercel.app',
+    url: BASE_URL,
     logo: {
       '@type': 'ImageObject',
-      url: 'https://fever-clone.vercel.app/og-image.png',
+      url: `${BASE_URL}/og-image.png`,
       width: 1200,
       height: 630,
     },
-    description: 'Plataforma de descubrimiento de eventos y experiencias en tu ciudad. Compra entradas para conciertos, teatro, gastronomía y más.',
+    description: 'Plataforma de descubrimiento de eventos y experiencias en tu ciudad. Compra entradas para conciertos, teatro, gastronomia y mas.',
     foundingDate: '2024',
     sameAs: [
       'https://www.instagram.com/fever',
@@ -141,11 +159,11 @@ export default function RootLayout({
         '@type': 'ContactPoint',
         contactType: 'customer service',
         availableLanguage: ['Spanish', 'English'],
-        url: 'https://fever-clone.vercel.app',
+        url: BASE_URL,
       },
     ],
     areaServed: [
-      { '@type': 'City', name: 'Ciudad de México' },
+      { '@type': 'City', name: 'Ciudad de Mexico' },
       { '@type': 'City', name: 'Madrid' },
       { '@type': 'City', name: 'Barcelona' },
       { '@type': 'City', name: 'New York' },
@@ -157,26 +175,19 @@ export default function RootLayout({
     ],
   };
 
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Inicio',
-        item: 'https://fever-clone.vercel.app',
-      },
-    ],
-  };
-
   return (
     <html lang="es" className={`${inter.variable} h-full antialiased`}>
       <head>
-        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+        {/* Preconnect to critical origins */}
+        <link rel="preconnect" href="https://sywvdaaldijpzhedbopr.supabase.co" />
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://videos.pexels.com" />
+        <link rel="dns-prefetch" href="https://accounts.google.com" />
+
+        {/* Theme flash prevention */}
         <script dangerouslySetInnerHTML={{ __html: `try{const t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');if(t==='dark')document.documentElement.classList.add('dark')}catch(e){}` }} />
-        <link rel="canonical" href="https://fever-clone.vercel.app" />
+
+        {/* Structured data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -184,10 +195,6 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
       </head>
       <body className="min-h-full flex flex-col" style={{ background: 'var(--bg)', color: 'var(--fg)' }}>
@@ -197,6 +204,8 @@ export default function RootLayout({
               <Navbar />
               <main className="flex-1">{children}</main>
               <Footer />
+              <CookieBanner />
+              <Analytics />
             </ToastProvider>
           </AuthProvider>
         </ThemeProvider>

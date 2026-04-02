@@ -53,9 +53,9 @@ export default function TicketsPage() {
   };
 
   const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-    ACTIVE: { label: 'Activo', color: 'text-green-400', bg: 'bg-green-400/10' },
-    USED: { label: 'Usado', color: 'text-gray-400', bg: 'bg-gray-400/10' },
-    CANCELLED: { label: 'Cancelado', color: 'text-red-400', bg: 'bg-red-400/10' },
+    ACTIVE: { label: 'Activo', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-500/10' },
+    USED: { label: 'Usado', color: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-500/10' },
+    CANCELLED: { label: 'Cancelado', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500/10' },
   };
 
   if (authLoading || !user) {

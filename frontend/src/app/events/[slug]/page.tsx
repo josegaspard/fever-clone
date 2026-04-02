@@ -4,7 +4,8 @@ import { supabase } from '@/lib/supabase';
 import { Event } from '@/lib/api';
 import EventDetailClient from './EventDetailClient';
 
-export const dynamic = 'force-dynamic';
+// ISR: revalidate every 5 minutes
+export const revalidate = 300;
 
 const BASE_URL = 'https://fever-clone.vercel.app';
 
@@ -84,8 +85,13 @@ export async function generateMetadata({
   const categoryName = event.category?.name || 'Evento';
   const priceText = event.price === 0 ? 'Gratis' : `Desde $${event.price} ${event.currency || 'MXN'}`;
 
-  const title = `${event.title} - ${categoryName} en ${cityName}`;
-  const description = event.shortDescription
+  // Use custom SEO fields if available, otherwise auto-generate
+  const eventAny = row as Record<string, unknown>;
+  const customMetaTitle = eventAny.meta_title as string | undefined;
+  const customMetaDesc = eventAny.meta_description as string | undefined;
+
+  const title = customMetaTitle || `${event.title} - ${categoryName} en ${cityName}`;
+  const description = customMetaDesc || event.shortDescription
     || `${event.title} en ${cityName}. ${priceText}. ${event.description.slice(0, 140)}...`;
 
   const eventUrl = `${BASE_URL}/events/${event.slug}`;
@@ -190,19 +196,43 @@ export default async function EventDetailPage({
 
   const event = transformEvent(row);
 
-  // Fetch related events
-  let related: Event[] = [];
-  if (event.category) {
-    const { data: relatedRows } = await supabase
-      .from('events')
-      .select('*, cities(*), categories(*)')
-      .eq('status', 'PUBLISHED')
-      .eq('category_id', Number(event.category.id))
-      .neq('id', Number(event.id))
-      .order('date', { ascending: true })
-      .limit(12);
-    related = (relatedRows || []).map(transformEvent);
-  }
+  // Fetch related events and venue data in parallel
+  const venueId = (row as Record<string, unknown>).venue_id as number | null;
+
+  const [relatedResult, venueResult] = await Promise.all([
+    event.category
+      ? supabase
+          .from('events')
+          .select('*, cities(*), categories(*)')
+          .eq('status', 'PUBLISHED')
+          .eq('category_id', Number(event.category.id))
+          .neq('id', Number(event.id))
+          .order('date', { ascending: true })
+          .limit(12)
+      : Promise.resolve({ data: null }),
+    venueId
+      ? supabase
+          .from('venues')
+          .select('id, slug, name, short_description, logo, verified, follower_count, category')
+          .eq('id', venueId)
+          .single()
+      : Promise.resolve({ data: null }),
+  ]);
+
+  const related: Event[] = (relatedResult.data || []).map(transformEvent);
+
+  const venueRow = venueResult.data as Record<string, unknown> | null;
+  const venueInfo = venueRow
+    ? {
+        slug: venueRow.slug as string,
+        name: venueRow.name as string,
+        shortDescription: venueRow.short_description as string | undefined,
+        logo: venueRow.logo as string | undefined,
+        verified: venueRow.verified as boolean,
+        followerCount: venueRow.follower_count as number,
+        category: venueRow.category as string | undefined,
+      }
+    : null;
 
   // Determine availability based on capacity and sold count
   const isSoldOut = event.capacity && event.soldCount && event.soldCount >= event.capacity;
@@ -364,7 +394,7 @@ export default async function EventDetailPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <EventDetailClient event={event} related={related} />
+      <EventDetailClient event={event} related={related} venue={venueInfo} />
     </>
   );
 }

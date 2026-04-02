@@ -1,0 +1,33 @@
+# Fever - Event Discovery Platform
+
+> Fever is a leading event discovery and ticket sales platform operating in 6 major cities worldwide.
+
+## About
+Fever helps users discover and book the best events, experiences, concerts, gastronomy, art exhibitions, and festivals in their city. Users can create personalized day plans ("Days") combining multiple events into optimized itineraries.
+
+## Cities
+- Ciudad de Mexico (CDMX), Mexico
+- Madrid, Spain
+- Barcelona, Spain
+- New York, USA
+- London, UK
+- Paris, France
+
+## Features
+- Event discovery by city, category, price, and date
+- AI-powered Day Builder for personalized itineraries
+- QR ticketing system
+- Reviews and ratings
+- Route optimization between events
+- Shareable day plans with friends
+
+## Event Categories
+Concerts, Gastronomy, Art, Festivals, Theater, Nightlife, Museums, Workshops, Exhibitions, Sports
+
+## Pricing
+Events range from free to premium experiences. Users can filter by price range.
+
+## Links
+- Homepage: https://fever-clone.vercel.app
+- Search Events: https://fever-clone.vercel.app/search
+- Build a Day: https://fever-clone.vercel.app/build-day

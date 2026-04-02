@@ -43,6 +43,25 @@ const navItems = [
     ),
   },
   {
+    label: 'Blog',
+    href: '/super-admin/blog',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Crear con IA',
+    href: '/super-admin/ai-creator',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2L14.09 8.26L20 9.27L15.55 13.97L16.91 20L12 16.9L7.09 20L8.45 13.97L4 9.27L9.91 8.26L12 2Z" />
+      </svg>
+    ),
+  },
+  {
     label: 'SEO',
     href: '/super-admin/seo',
     icon: (
@@ -104,9 +123,9 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
           width: 44,
           height: 44,
           borderRadius: 12,
-          background: '#111111',
-          border: '1px solid #222',
-          color: '#fff',
+          background: 'var(--sidebar-bg)',
+          border: '1px solid var(--sidebar-border)',
+          color: 'var(--sidebar-text)',
           cursor: 'pointer',
           alignItems: 'center',
           justifyContent: 'center',
@@ -148,8 +167,8 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
         style={{
           width: 280,
           minHeight: '100vh',
-          background: '#111111',
-          borderRight: '1px solid #1f1f1f',
+          background: 'var(--sidebar-bg)',
+          borderRight: '1px solid var(--sidebar-border)',
           display: 'flex',
           flexDirection: 'column',
           position: 'fixed',
@@ -161,7 +180,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
         }}
       >
         {/* Logo */}
-        <div style={{ padding: '28px 24px 20px', borderBottom: '1px solid #1f1f1f' }}>
+        <div style={{ padding: '28px 24px 20px', borderBottom: '1px solid var(--sidebar-border)' }}>
           <Link href="/super-admin" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
               width: 36,
@@ -182,7 +201,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
               <div style={{ color: '#e63946', fontWeight: 800, fontSize: 18, letterSpacing: -0.5, lineHeight: 1.1 }}>
                 FEVER
               </div>
-              <div style={{ color: '#666', fontSize: 11, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase' }}>
+              <div style={{ color: 'var(--sidebar-text-muted)', fontSize: 11, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase' }}>
                 Admin Panel
               </div>
             </div>
@@ -206,21 +225,21 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
                   textDecoration: 'none',
                   fontSize: 14,
                   fontWeight: active ? 600 : 500,
-                  color: active ? '#fff' : '#888',
+                  color: active ? '#e63946' : 'var(--sidebar-text-muted)',
                   background: active ? 'rgba(230,57,70,0.12)' : 'transparent',
                   transition: 'all 0.2s',
                   position: 'relative',
                 }}
                 onMouseEnter={(e) => {
                   if (!active) {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-                    e.currentTarget.style.color = '#ccc';
+                    e.currentTarget.style.background = 'var(--sidebar-hover)';
+                    e.currentTarget.style.color = 'var(--sidebar-text)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!active) {
                     e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#888';
+                    e.currentTarget.style.color = 'var(--sidebar-text-muted)';
                   }
                 }}
               >
@@ -246,7 +265,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
         </nav>
 
         {/* User info & logout */}
-        <div style={{ padding: '16px 16px 24px', borderTop: '1px solid #1f1f1f' }}>
+        <div style={{ padding: '16px 16px 24px', borderTop: '1px solid var(--sidebar-border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
             <div style={{
               width: 40,
@@ -263,10 +282,10 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
               {(user.name || 'A').charAt(0).toUpperCase()}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ color: '#fff', fontWeight: 600, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ color: 'var(--sidebar-text)', fontWeight: 600, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user.name}
               </div>
-              <div style={{ color: '#666', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ color: 'var(--sidebar-text-muted)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user.email}
               </div>
             </div>
@@ -277,9 +296,9 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
               width: '100%',
               padding: '10px 16px',
               borderRadius: 10,
-              border: '1px solid #2a2a2a',
+              border: '1px solid var(--sidebar-border)',
               background: 'transparent',
-              color: '#888',
+              color: 'var(--sidebar-text-muted)',
               fontSize: 13,
               fontWeight: 500,
               cursor: 'pointer',
@@ -294,8 +313,8 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
               e.currentTarget.style.color = '#e63946';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#2a2a2a';
-              e.currentTarget.style.color = '#888';
+              e.currentTarget.style.borderColor = 'var(--sidebar-border)';
+              e.currentTarget.style.color = 'var(--sidebar-text-muted)';
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

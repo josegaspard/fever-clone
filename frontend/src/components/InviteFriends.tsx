@@ -48,9 +48,9 @@ export default function InviteFriends({ planId }: InviteFriendsProps) {
   }
 
   const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-    PENDING: { label: 'Pendiente', color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
-    ACCEPTED: { label: 'Aceptado', color: 'text-green-400', bg: 'bg-green-400/10' },
-    DECLINED: { label: 'Rechazado', color: 'text-red-400', bg: 'bg-red-400/10' },
+    PENDING: { label: 'Pendiente', color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-500/10' },
+    ACCEPTED: { label: 'Aceptado', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-500/10' },
+    DECLINED: { label: 'Rechazado', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500/10' },
   };
 
   return (

@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { supabase } from '@/lib/supabase';
 import { signToken } from '@/lib/auth-helpers';
+import { rateLimit, rateLimitResponse, getClientIp } from '@/lib/rate-limit';
+import { sendWelcomeEmail } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
+  // Rate limit: 5 registrations per minute per IP
+  const ip = getClientIp(req);
+  const rl = rateLimit(`register:${ip}`, { windowMs: 60_000, max: 5 });
+  if (!rl.success) return rateLimitResponse();
+
   try {
     const { name, email, password, userType, companyName } = await req.json();
 
@@ -55,6 +62,9 @@ export async function POST(req: NextRequest) {
     }
 
     const token = signToken(user.id);
+
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(user.email, user.name).catch(() => {});
 
     return NextResponse.json({
       token,

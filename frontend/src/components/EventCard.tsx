@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { Event, addFavorite, removeFavorite } from '@/lib/api';
 import StarRating from './StarRating';
@@ -70,7 +71,7 @@ export default function EventCard({
 
   return (
     <Link href={`/events/${event.slug}`} className="group block" aria-label={`${event.title} - ${event.city?.name || ''} - ${event.price === 0 ? 'Gratis' : `${currencySymbol}${event.price}`}`}>
-      <article className="card-hover rounded-xl overflow-hidden border transition-all duration-300 group-hover:border-[#e63946]/30" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
+      <article className="event-card-premium rounded-xl overflow-hidden border transition-all duration-300" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
         {/* Image / Video */}
         <div className="relative aspect-[3/4] overflow-hidden">
           {event.videoUrl ? (
@@ -80,22 +81,32 @@ export default function EventCard({
                 muted
                 loop
                 playsInline
+                preload="none"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()}
                 onMouseLeave={(e) => { const v = e.currentTarget as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
                 poster={event.image}
               />
-              <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 z-10">
+              {/* Play button overlay */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-60 group-hover:opacity-0 transition-opacity duration-300">
+                <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
+                  <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
+              {/* Video badge */}
+              <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 z-10">
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 Video
               </div>
             </div>
           ) : event.image ? (
-            <img
+            <Image
               src={event.image}
               alt={`${event.title} - ${event.category?.name || 'Evento'} en ${event.city?.name || ''}`}
+              fill
+              sizes="(max-width: 640px) 160px, (max-width: 768px) 200px, 220px"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
               loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, var(--surface-2), var(--card))' }}>
@@ -116,10 +127,17 @@ export default function EventCard({
             </div>
           )}
 
-          {/* Discount badge */}
+          {/* Discount badge - more prominent */}
           {discount && (
-            <div className="absolute top-3 left-3 bg-[#e63946] text-white text-xs font-bold px-2 py-1 rounded-lg">
+            <div className="absolute top-3 left-3 text-white text-xs font-bold px-2.5 py-1 rounded-lg z-10" style={{ background: 'linear-gradient(135deg, #e63946, #ff6b6b)' }}>
               &minus;{discount}%
+            </div>
+          )}
+
+          {/* GRATIS badge - prominent green gradient */}
+          {event.price === 0 && !discount && (
+            <div className="absolute top-3 left-3 text-white text-xs font-bold px-3 py-1 rounded-lg z-10 uppercase tracking-wide" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+              Gratis
             </div>
           )}
 
@@ -139,6 +157,7 @@ export default function EventCard({
           <button
             onClick={toggleFav}
             className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center transition hover:bg-black/60"
+            aria-label={fav ? 'Quitar de favoritos' : 'Agregar a favoritos'}
           >
             <svg
               className={`w-4 h-4 transition ${
@@ -163,22 +182,38 @@ export default function EventCard({
           <h3 className="text-sm font-semibold line-clamp-2 leading-snug mb-1" style={{ color: 'var(--fg)' }}>
             {event.title}
           </h3>
-          <p className="text-xs mb-2" style={{ color: 'var(--text-secondary)' }}>
-            {event.city?.name} &middot; {formatDate(event.date)}
+          <p className="text-xs mb-2 flex items-center gap-1" style={{ color: 'var(--text-secondary)' }}>
+            {/* Location pin icon */}
+            <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span>{event.city?.name}</span>
+            <span>&middot;</span>
+            <span>{formatDate(event.date)}</span>
           </p>
+          {/* Price display - more prominent */}
           <div className="flex items-center gap-2">
             {event.originalPrice && event.originalPrice > event.price && (
-              <span className="text-xs line-through" style={{ color: 'var(--text-tertiary)' }}>
+              <span className="text-xs line-through font-medium" style={{ color: 'var(--text-tertiary)' }}>
                 {currencySymbol}{event.originalPrice.toFixed(0)}
               </span>
             )}
             <span className="text-sm font-bold" style={{ color: 'var(--fg)' }}>
               {event.price === 0 ? (
-                <span className="text-green-400">Gratis</span>
+                <span className="text-green-600 dark:text-green-400 font-extrabold">Gratis</span>
               ) : (
-                `${currencySymbol}${event.price.toFixed(0)} ${currencyLabel}`
+                <>
+                  <span className={discount ? 'text-[#e63946]' : ''}>{currencySymbol}{event.price.toFixed(0)}</span>
+                  <span className="text-xs font-normal ml-1" style={{ color: 'var(--text-tertiary)' }}>{currencyLabel}</span>
+                </>
               )}
             </span>
+            {discount && (
+              <span className="text-[10px] font-bold text-[#e63946] bg-[#e63946]/10 px-1.5 py-0.5 rounded">
+                -{discount}%
+              </span>
+            )}
           </div>
           {event.rating !== undefined && event.rating > 0 && (
             <div className="mt-1">

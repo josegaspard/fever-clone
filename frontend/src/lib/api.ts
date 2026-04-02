@@ -636,3 +636,55 @@ export async function updateRefundPolicy(id: string, data: Partial<RefundPolicy>
 export async function deleteRefundPolicy(id: string): Promise<void> {
   return fetchApi<void>(`/business/refund-policies/${id}`, { method: 'DELETE' });
 }
+
+// ── Venues ──────────────────────────────────────────────────────────────────
+
+export interface Venue {
+  id: string;
+  slug: string;
+  name: string;
+  description?: string;
+  shortDescription?: string;
+  logo?: string;
+  coverImage?: string;
+  category?: string;
+  address?: string;
+  lat?: number;
+  lng?: number;
+  phone?: string;
+  email?: string;
+  website?: string;
+  instagram?: string;
+  twitter?: string;
+  facebook?: string;
+  tiktok?: string;
+  rating?: number;
+  reviewCount?: number;
+  followerCount?: number;
+  verified?: boolean;
+  featured?: boolean;
+  city?: City | null;
+  eventsCount?: number;
+}
+
+export async function getVenues(params?: { city?: string; category?: string; featured?: boolean }): Promise<Venue[]> {
+  const search = new URLSearchParams();
+  if (params) Object.entries(params).forEach(([k, v]) => { if (v !== undefined) search.set(k, String(v)); });
+  return fetchApi<Venue[]>(`/venues${search.toString() ? `?${search}` : ''}`);
+}
+
+export async function getVenue(slug: string): Promise<Venue> {
+  return fetchApi<Venue>(`/venues/${slug}`);
+}
+
+export async function followVenue(slug: string): Promise<{ following: boolean; followerCount: number }> {
+  return fetchApi(`/venues/${slug}/follow`, { method: 'POST' });
+}
+
+export async function checkFollow(slug: string): Promise<{ following: boolean; notifications: boolean }> {
+  return fetchApi(`/venues/${slug}/follow`);
+}
+
+export async function getVenueEvents(slug: string): Promise<Event[]> {
+  return fetchApi<Event[]>(`/venues/${slug}/events`);
+}

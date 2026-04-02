@@ -21,6 +21,7 @@ export default function BusinessEventsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [statusChanging, setStatusChanging] = useState<string | null>(null);
+  const [exporting, setExporting] = useState<string | null>(null);
 
   const loadEvents = useCallback(async () => {
     setLoading(true);
@@ -72,6 +73,36 @@ export default function BusinessEventsPage() {
       alert('Error al cambiar el estado');
     } finally {
       setStatusChanging(null);
+    }
+  };
+
+  const handleExport = async (eventId: string) => {
+    setExporting(eventId);
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const res = await fetch(`/api/business/export?eventId=${eventId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: 'Error al exportar' }));
+        alert(err.message || 'Error al exportar');
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const disposition = res.headers.get('Content-Disposition') || '';
+      const match = disposition.match(/filename="?([^"]+)"?/);
+      a.download = match ? match[1] : `asistentes_${eventId}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert('Error al exportar asistentes');
+    } finally {
+      setExporting(null);
     }
   };
 
@@ -323,6 +354,21 @@ export default function BusinessEventsPage() {
                     >
                       Ver
                     </Link>
+                    <button
+                      onClick={() => handleExport(event.id)}
+                      disabled={exporting === event.id}
+                      className="px-3 py-1.5 rounded-lg text-xs font-medium transition disabled:opacity-50"
+                      style={{ background: 'var(--surface-2)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+                      title="Exportar asistentes CSV"
+                    >
+                      {exporting === event.id ? (
+                        '...'
+                      ) : (
+                        <svg className="w-3.5 h-3.5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                      )}
+                    </button>
                     {/* Status toggle */}
                     {s(event.status) === 'DRAFT' && (
                       <button
