@@ -398,10 +398,10 @@ export default function SuperAdminEvents() {
 
             {/* Actions */}
             <div style={{ display: 'flex', gap: 12 }}>
-              <button type="submit" disabled={saving} style={{ padding: '12px 28px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg, #e63946, #d32836)', color: '#fff', fontWeight: 700, fontSize: 14, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1 }}>
+              <button type="submit" disabled={saving} style={{ padding: '12px 28px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg, #e63946, #d32836)', color: '#fff', fontWeight: 700, fontSize: 14, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1, minHeight: 44 }}>
                 {saving ? 'Guardando...' : editingId ? 'Guardar cambios' : 'Crear evento'}
               </button>
-              <button type="button" onClick={() => setShowForm(false)} style={{ padding: '12px 28px', borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>Cancelar</button>
+              <button type="button" onClick={() => setShowForm(false)} style={{ padding: '12px 28px', borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)', fontWeight: 600, fontSize: 14, cursor: 'pointer', minHeight: 44 }}>Cancelar</button>
             </div>
           </form>
         </div>
@@ -422,7 +422,7 @@ export default function SuperAdminEvents() {
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: '1 1 280px', maxWidth: 400 }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }}><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-          <input type="text" placeholder="Buscar por titulo..." value={search} onChange={e => setSearch(e.target.value)} className="input-theme" style={{ width: '100%', padding: '10px 14px 10px 42px', borderRadius: 10, fontSize: 14, outline: 'none' }} />
+          <input type="text" placeholder="Buscar por titulo..." value={search} onChange={e => setSearch(e.target.value)} className="input-theme" style={{ width: '100%', padding: '10px 14px 10px 42px', borderRadius: 10, fontSize: 16, outline: 'none' }} />
         </div>
         {selectedIds.size > 0 && (
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', background: 'rgba(230,57,70,0.08)', borderRadius: 10, padding: '6px 14px', border: '1px solid rgba(230,57,70,0.2)' }}>

@@ -164,7 +164,7 @@ export default async function BlogPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="animate-fade-in">
+      <div className="animate-fade-in overflow-x-hidden">
         {/* Hero */}
         <section
           className="border-b"
@@ -192,7 +192,7 @@ export default async function BlogPage({
             <nav className="flex gap-2 mb-10 overflow-x-auto scrollbar-hide pb-2 sm:flex-wrap" aria-label="Filtrar por categoria">
               <Link
                 href="/blog"
-                className="px-4 py-2 rounded-full text-sm font-medium border transition"
+                className="px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium border transition shrink-0 inline-flex items-center"
                 style={{
                   background: !activeCategory ? '#e63946' : 'var(--card)',
                   color: !activeCategory ? '#fff' : 'var(--text-secondary)',
@@ -205,7 +205,7 @@ export default async function BlogPage({
                 <Link
                   key={cat}
                   href={`/blog?category=${cat}`}
-                  className="px-4 py-2 rounded-full text-sm font-medium border transition"
+                  className="px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium border transition shrink-0 inline-flex items-center"
                   style={{
                     background: activeCategory === cat ? '#e63946' : 'var(--card)',
                     color: activeCategory === cat ? '#fff' : 'var(--text-secondary)',
@@ -297,15 +297,15 @@ export default async function BlogPage({
                       </p>
                     )}
                     <div
-                      className="flex items-center gap-4 text-sm"
+                      className="flex items-center gap-2 sm:gap-4 text-sm flex-wrap"
                       style={{ color: 'var(--text-tertiary)' }}
                     >
                       <span>{featuredPost.author_name}</span>
-                      <span aria-hidden="true">-</span>
+                      <span aria-hidden="true" className="hidden sm:inline">-</span>
                       <time dateTime={featuredPost.created_at}>
                         {formatDate(featuredPost.created_at)}
                       </time>
-                      <span aria-hidden="true">-</span>
+                      <span aria-hidden="true" className="hidden sm:inline">-</span>
                       <span>{featuredPost.reading_time} min de lectura</span>
                     </div>
                   </div>

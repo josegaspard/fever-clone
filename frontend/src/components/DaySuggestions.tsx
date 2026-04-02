@@ -205,136 +205,43 @@ export default function DaySuggestions({ planId, currentEventIds, citySlug, onIt
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-2">
             {filtered.map((event) => (
               <div
                 key={event.id}
-                className="group relative flex gap-3 rounded-xl p-3 transition-all duration-200"
-                style={{
-                  background: 'var(--card)',
-                  border: '1px solid var(--border)',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--text-tertiary)';
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
-                  (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-                }}
+                className="flex items-center gap-3 rounded-xl p-3 transition-all hover:opacity-90"
+                style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
               >
                 {/* Thumbnail */}
-                <div className="w-[72px] h-[72px] rounded-lg overflow-hidden shrink-0 relative">
+                <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 relative">
                   {event.image ? (
-                    <Image
-                      src={event.image}
-                      alt={event.title}
-                      fill
-                      sizes="72px"
-                      className="object-cover"
-                    />
+                    <Image src={event.image} alt={event.title} fill sizes="56px" className="object-cover" />
                   ) : (
-                    <div
-                      className="w-full h-full flex items-center justify-center text-xl"
-                      style={{ background: 'var(--surface)' }}
-                    >
-                      {currentTabMeta.icon}
-                    </div>
+                    <div className="w-full h-full flex items-center justify-center text-lg" style={{ background: 'var(--surface)' }}>{currentTabMeta.icon}</div>
                   )}
-                  {/* Price badge overlaid on image */}
-                  <div
-                    className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[9px] font-bold"
-                    style={{
-                      background: event.price === 0 ? '#2a9d8f' : 'rgba(0,0,0,0.75)',
-                      color: '#fff',
-                      backdropFilter: 'blur(4px)',
-                    }}
-                  >
-                    {event.price === 0 ? 'Gratis' : `${cs(event)}${event.price.toFixed(0)}`}
-                  </div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 min-w-0 flex flex-col justify-between">
-                  <div>
-                    <p
-                      className="text-[13px] font-semibold leading-tight line-clamp-2"
-                      style={{ color: 'var(--fg)' }}
-                    >
-                      {event.title}
-                    </p>
-                    <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                      {event.category?.name && (
-                        <span
-                          className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium"
-                          style={{
-                            background: 'var(--surface)',
-                            color: 'var(--text-secondary)',
-                            border: '1px solid var(--border)',
-                          }}
-                        >
-                          {event.category.name}
-                        </span>
-                      )}
-                      <span
-                        className="inline-flex items-center gap-0.5 text-[10px]"
-                        style={{ color: 'var(--text-tertiary)' }}
-                      >
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        {getTimeEstimate(event.category?.slug)}
-                      </span>
-                    </div>
-                  </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold line-clamp-1" style={{ color: 'var(--fg)' }}>{event.title}</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
+                    {event.category?.name || ''} · {getTimeEstimate(event.category?.slug)}
+                  </p>
+                </div>
 
-                  {/* Action button */}
-                  <div className="mt-1.5">
-                    <button
-                      onClick={() => handleAdd(event)}
-                      disabled={adding === event.id}
-                      className="w-full py-1.5 text-[11px] font-bold rounded-lg text-white transition-all duration-200 hover:opacity-90 disabled:opacity-50"
-                      style={{
-                        background: event.price === 0
-                          ? 'linear-gradient(135deg, #2a9d8f, #21867a)'
-                          : 'linear-gradient(135deg, #e63946, #c62d3a)',
-                      }}
-                    >
-                      {adding === event.id ? (
-                        <span className="inline-flex items-center gap-1">
-                          <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                          </svg>
-                          Agregando...
-                        </span>
-                      ) : event.price === 0 ? (
-                        <span className="inline-flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                          </svg>
-                          Agregar a mi Day
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2.5}
-                              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"
-                            />
-                          </svg>
-                          Comprar {cs(event)}{event.price.toFixed(0)}
-                        </span>
-                      )}
-                    </button>
-                  </div>
+                {/* Price + Action */}
+                <div className="shrink-0 text-right">
+                  <p className="text-xs font-bold mb-1" style={{ color: event.price === 0 ? '#2a9d8f' : 'var(--fg)' }}>
+                    {event.price === 0 ? 'Gratis' : `${cs(event)}${event.price.toFixed(0)}`}
+                  </p>
+                  <button
+                    onClick={() => handleAdd(event)}
+                    disabled={adding === event.id}
+                    className="px-3 py-1.5 text-[11px] font-bold rounded-lg text-white transition hover:opacity-90 disabled:opacity-50"
+                    style={{ background: event.price === 0 ? '#2a9d8f' : '#e63946' }}
+                  >
+                    {adding === event.id ? '...' : event.price === 0 ? '+ Agregar' : 'Comprar'}
+                  </button>
                 </div>
               </div>
             ))}

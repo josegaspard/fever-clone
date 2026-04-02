@@ -102,7 +102,7 @@ export default function BlogAdminPage() {
         </div>
         <Link
           href="/super-admin/blog/new"
-          className="btn-primary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold"
+          className="btn-primary inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold min-h-[44px]"
           style={{ textDecoration: 'none' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

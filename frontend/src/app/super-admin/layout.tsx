@@ -235,6 +235,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
                   textDecoration: 'none',
                   fontSize: 14,
                   fontWeight: active ? 600 : 500,
+                  minHeight: 44,
                   color: active ? '#e63946' : 'var(--sidebar-text-muted)',
                   background: active ? 'rgba(230,57,70,0.12)' : 'transparent',
                   transition: 'all 0.2s',
@@ -304,12 +305,13 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
             onClick={logout}
             style={{
               width: '100%',
-              padding: '10px 16px',
+              padding: '12px 16px',
               borderRadius: 10,
               border: '1px solid var(--sidebar-border)',
               background: 'transparent',
               color: 'var(--sidebar-text-muted)',
-              fontSize: 13,
+              fontSize: 14,
+              minHeight: 44,
               fontWeight: 500,
               cursor: 'pointer',
               display: 'flex',
@@ -368,7 +370,12 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
             padding-top: 72px;
           }
           .sa-main > div {
-            padding: 16px 16px 48px !important;
+            padding: 16px 12px 48px !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .sa-main > div {
+            padding: 12px 8px 48px !important;
           }
         }
       `}</style>
