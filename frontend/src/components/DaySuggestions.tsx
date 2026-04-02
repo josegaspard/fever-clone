@@ -205,42 +205,37 @@ export default function DaySuggestions({ planId, currentEventIds, citySlug, onIt
             </p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {filtered.map((event) => (
               <div
                 key={event.id}
-                className="flex items-center gap-3 rounded-xl p-3 transition-all hover:opacity-90"
+                className="group rounded-xl overflow-hidden transition-all hover:shadow-lg"
                 style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
               >
-                {/* Thumbnail */}
-                <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 relative">
+                {/* Image */}
+                <div className="relative aspect-[4/3] overflow-hidden">
                   {event.image ? (
-                    <Image src={event.image} alt={event.title} fill sizes="56px" className="object-cover" />
+                    <Image src={event.image} alt={event.title} fill sizes="(max-width:640px) 50vw, (max-width:1024px) 33vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-lg" style={{ background: 'var(--surface)' }}>{currentTabMeta.icon}</div>
+                    <div className="w-full h-full flex items-center justify-center text-2xl" style={{ background: 'var(--surface)' }}>{currentTabMeta.icon}</div>
                   )}
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold line-clamp-1" style={{ color: 'var(--fg)' }}>{event.title}</p>
-                  <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
-                    {event.category?.name || ''} · {getTimeEstimate(event.category?.slug)}
-                  </p>
-                </div>
-
-                {/* Price + Action */}
-                <div className="shrink-0 text-right">
-                  <p className="text-xs font-bold mb-1" style={{ color: event.price === 0 ? '#2a9d8f' : 'var(--fg)' }}>
+                  <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md text-[11px] font-bold text-white" style={{ background: event.price === 0 ? '#2a9d8f' : 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}>
                     {event.price === 0 ? 'Gratis' : `${cs(event)}${event.price.toFixed(0)}`}
+                  </div>
+                </div>
+                {/* Info */}
+                <div className="p-2.5">
+                  <p className="text-xs font-bold line-clamp-2 leading-tight" style={{ color: 'var(--fg)' }}>{event.title}</p>
+                  <p className="text-[10px] mt-1" style={{ color: 'var(--text-tertiary)' }}>
+                    {event.category?.name || ''} · {getTimeEstimate(event.category?.slug)}
                   </p>
                   <button
                     onClick={() => handleAdd(event)}
                     disabled={adding === event.id}
-                    className="px-3 py-1.5 text-[11px] font-bold rounded-lg text-white transition hover:opacity-90 disabled:opacity-50"
+                    className="w-full mt-2 py-2 text-[11px] font-bold rounded-lg text-white transition hover:opacity-90 disabled:opacity-50"
                     style={{ background: event.price === 0 ? '#2a9d8f' : '#e63946' }}
                   >
-                    {adding === event.id ? '...' : event.price === 0 ? '+ Agregar' : 'Comprar'}
+                    {adding === event.id ? '...' : event.price === 0 ? '+ Agregar a mi Day' : 'Comprar y agregar'}
                   </button>
                 </div>
               </div>
