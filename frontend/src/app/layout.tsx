@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import CookieBanner from '@/components/CookieBanner';
 import Analytics from '@/components/Analytics';
 import ScrollToTop from '@/components/ScrollToTop';
+import CityFilterProvider from '@/components/CityFilterProvider';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -195,12 +196,14 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <ToastProvider>
-              <Navbar />
-              <ScrollToTop />
-              <main className="flex-1">{children}</main>
-              <Footer />
-              <CookieBanner />
-              <Analytics />
+              <CityFilterProvider>
+                <Navbar />
+                <ScrollToTop />
+                <main className="flex-1">{children}</main>
+                <Footer />
+                <CookieBanner />
+                <Analytics />
+              </CityFilterProvider>
             </ToastProvider>
           </AuthProvider>
         </ThemeProvider>

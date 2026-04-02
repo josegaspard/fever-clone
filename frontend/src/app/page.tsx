@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Event } from '@/lib/api';
 import HeroBanner from '@/components/HeroBanner';
 import EventCarousel from '@/components/EventCarousel';
+import FilteredCarousel from '@/components/FilteredCarousel';
 import VideoEventCard from '@/components/VideoEventCard';
 import EventsMap from '@/components/EventsMap';
 
@@ -689,7 +690,7 @@ export default async function HomePage() {
       {/* FEATURED EVENTS CAROUSEL                                           */}
       {/* ================================================================== */}
       <div className="max-w-7xl mx-auto px-4 pt-16">
-        <EventCarousel title="&#128293; Destacados" events={featured} loading={false} viewAllHref="/search?featured=true" />
+        <FilteredCarousel title="&#128293; Destacados" events={featured} loading={false} viewAllHref="/search?featured=true" />
       </div>
 
       {/* ================================================================== */}
@@ -743,7 +744,7 @@ export default async function HomePage() {
         )}
 
         {freeEvents.length > 0 && (
-          <EventCarousel title="&#127873; Eventos gratuitos" events={freeEvents} loading={false} viewAllHref="/search?maxPrice=0" />
+          <FilteredCarousel title="&#127873; Eventos gratuitos" events={freeEvents} loading={false} viewAllHref="/search?maxPrice=0" />
         )}
       </div>
 
@@ -812,11 +813,11 @@ export default async function HomePage() {
       {/* ================================================================== */}
       <div className="max-w-7xl mx-auto px-4 space-y-16 py-8">
         {popularEvents.length > 0 && (
-          <EventCarousel title="&#127942; Los mas populares" events={popularEvents} loading={false} viewAllHref="/search?sortBy=popularity" />
+          <FilteredCarousel title="&#127942; Los mas populares" events={popularEvents} loading={false} viewAllHref="/search?sortBy=popularity" />
         )}
 
         {filteredCategoryEvents.map(({ category, events }) => (
-          <EventCarousel
+          <FilteredCarousel
             key={category.id}
             title={`${category.icon || ''} ${category.name}`}
             events={events}
