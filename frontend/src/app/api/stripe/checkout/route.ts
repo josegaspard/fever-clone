@@ -1,31 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
 import { getUserFromRequest } from '@/lib/auth-helpers';
 import { supabase } from '@/lib/supabase';
 
-function getStripe() {
+async function stripeRequest(endpoint: string, body: Record<string, string>) {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error('STRIPE_SECRET_KEY not configured');
-  return new Stripe(key);
-}
 
-// Temporary diagnostic endpoint - remove after fixing
-export async function GET() {
-  try {
-    const key = process.env.STRIPE_SECRET_KEY;
-    if (!key) return NextResponse.json({ error: 'STRIPE_SECRET_KEY is missing', envKeys: Object.keys(process.env).filter(k => k.includes('STRIPE')) });
-    const stripe = new Stripe(key);
-    const balance = await stripe.balance.retrieve();
-    return NextResponse.json({ ok: true, keyPrefix: key.substring(0, 12) + '...', currency: balance.available?.[0]?.currency });
-  } catch (e: unknown) {
-    return NextResponse.json({ error: e instanceof Error ? e.message : 'unknown', stack: e instanceof Error ? e.stack?.split('\n').slice(0, 3) : null });
-  }
+  const res = await fetch(`https://api.stripe.com/v1${endpoint}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${key}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams(body).toString(),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || `Stripe error ${res.status}`);
+  return data;
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const stripe = getStripe();
-
     const user = await getUserFromRequest(req);
     if (!user) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
@@ -53,41 +49,34 @@ export async function POST(req: NextRequest) {
     }
 
     const currency = (event.currency || 'MXN').toLowerCase();
-    const unitAmount = Math.round(event.price * 100); // Stripe uses cents
-
+    const unitAmount = Math.round(event.price * 100);
     const origin = req.headers.get('origin') || 'https://fever-clone.vercel.app';
 
-    // Redirect to the plan page if buying within a plan, otherwise to tickets
     const successUrl = planId
       ? `${origin}/plans/${planId}?success=true&session_id={CHECKOUT_SESSION_ID}`
       : `${origin}/tickets?success=true&session_id={CHECKOUT_SESSION_ID}`;
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'payment',
-      line_items: [
-        {
-          price_data: {
-            currency,
-            product_data: {
-              name: event.title,
-              images: event.image ? [event.image] : [],
-              description: `Entrada para ${event.title}`,
-            },
-            unit_amount: unitAmount,
-          },
-          quantity: 1,
-        },
-      ],
-      metadata: {
-        userId: String(user.id),
-        eventId: String(eventId),
-        planItemId: planItemId ? String(planItemId) : '',
-        planId: planId ? String(planId) : '',
-      },
-      success_url: successUrl,
-      cancel_url: `${origin}/events/${event.slug}?cancelled=true`,
-    });
+    const params: Record<string, string> = {
+      'payment_method_types[0]': 'card',
+      'mode': 'payment',
+      'line_items[0][price_data][currency]': currency,
+      'line_items[0][price_data][product_data][name]': event.title,
+      'line_items[0][price_data][product_data][description]': `Entrada para ${event.title}`,
+      'line_items[0][price_data][unit_amount]': String(unitAmount),
+      'line_items[0][quantity]': '1',
+      'metadata[userId]': String(user.id),
+      'metadata[eventId]': String(eventId),
+      'success_url': successUrl,
+      'cancel_url': `${origin}/events/${event.slug}?cancelled=true`,
+    };
+
+    if (event.image) {
+      params['line_items[0][price_data][product_data][images][0]'] = event.image;
+    }
+    if (planItemId) params['metadata[planItemId]'] = String(planItemId);
+    if (planId) params['metadata[planId]'] = String(planId);
+
+    const session = await stripeRequest('/checkout/sessions', params);
 
     return NextResponse.json({ url: session.url, sessionId: session.id });
   } catch (error: unknown) {
