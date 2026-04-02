@@ -79,6 +79,11 @@ export async function PATCH(
       }
     }
 
+    // Handle gallery as JSON array
+    if (body.gallery !== undefined) {
+      updateData.gallery = Array.isArray(body.gallery) ? body.gallery : [];
+    }
+
     updateData.updated_at = new Date().toISOString();
 
     const { data, error } = await supabase

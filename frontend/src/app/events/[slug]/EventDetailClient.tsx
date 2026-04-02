@@ -144,19 +144,13 @@ export default function EventDetailClient({ event, related, venue }: Props) {
   const cl = event.currency || 'MXN';
   const hasVideo = !!(event.videoUrl);
 
-  // ---- Gallery ----
+  // ---- Gallery (only real images) ----
   const gallery: string[] = [];
   if (event.image) gallery.push(event.image);
   const eventAny = event as unknown as Record<string, unknown>;
-  if (Array.isArray(eventAny.gallery)) gallery.push(...(eventAny.gallery as string[]));
-  if (gallery.length < 4 && event.image) {
-    const seeds = ['concert', 'festival', 'art', 'night', 'city'];
-    while (gallery.length < 5) {
-      gallery.push(
-        `https://images.unsplash.com/photo-${1500000000000 + gallery.length * 1000}?w=800&h=500&fit=crop&q=80`
-      );
-      if (gallery.length < 5)
-        gallery.push(`https://picsum.photos/seed/${seeds[gallery.length % seeds.length]}/800/500`);
+  if (Array.isArray(eventAny.gallery)) {
+    for (const img of eventAny.gallery as string[]) {
+      if (img && !gallery.includes(img)) gallery.push(img);
     }
   }
 

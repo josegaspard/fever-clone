@@ -8,6 +8,7 @@ import { useToast } from '@/components/Toast';
 
 interface Category { id: string; name: string; slug: string; icon?: string }
 interface City { id: string; name: string; slug: string; country: string }
+interface VenueOption { id: string; slug: string; name: string; category?: string }
 
 const CURRENCIES = ['MXN', 'USD', 'EUR', 'GBP'];
 const STATUSES = ['PUBLISHED', 'DRAFT', 'ARCHIVED'];
@@ -35,6 +36,7 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
 
 const emptyForm = {
   title: '', slug: '', description: '', shortDescription: '', image: '', videoUrl: '',
+  gallery: [] as string[], galleryInput: '',
   price: '', originalPrice: '', currency: 'MXN', date: '', endDate: '', time: '', duration: '',
   address: '', lat: '', lng: '', cityId: '', categoryId: '', venueId: '',
   status: 'DRAFT', featured: false, capacity: '', metaTitle: '', metaDescription: '',
@@ -66,6 +68,7 @@ export default function SuperAdminEvents() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [cities, setCities] = useState<City[]>([]);
+  const [venues, setVenues] = useState<VenueOption[]>([]);
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const headers: Record<string, string> = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
@@ -86,12 +89,14 @@ export default function SuperAdminEvents() {
   useEffect(() => { loadEvents(); }, [loadEvents]);
 
   useEffect(() => {
-    Promise.all([fetch('/api/categories'), fetch('/api/cities')])
-      .then(async ([catRes, citRes]) => {
+    Promise.all([fetch('/api/categories'), fetch('/api/cities'), fetch('/api/venues')])
+      .then(async ([catRes, citRes, venRes]) => {
         const cats = await catRes.json();
         const cits = await citRes.json();
+        const vens = await venRes.json();
         setCategories(Array.isArray(cats) ? cats : []);
         setCities(Array.isArray(cits) ? cits : []);
+        setVenues(Array.isArray(vens) ? vens : []);
       }).catch(() => {});
   }, []);
 
@@ -115,17 +120,21 @@ export default function SuperAdminEvents() {
 
   const openEdit = (ev: Event) => {
     setEditingId(ev.id);
+    const evAny = ev as unknown as Record<string, unknown>;
+    const gal = Array.isArray(evAny.gallery) ? (evAny.gallery as string[]) : [];
     setForm({
       title: ev.title || '', slug: ev.slug || '', description: ev.description || '',
       shortDescription: ev.shortDescription || '', image: ev.image || '', videoUrl: ev.videoUrl || '',
+      gallery: gal, galleryInput: '',
       price: ev.price?.toString() || '0', originalPrice: ev.originalPrice?.toString() || '',
       currency: ev.currency || 'MXN', date: ev.date ? ev.date.split('T')[0] : '',
       endDate: ev.endDate ? ev.endDate.split('T')[0] : '', time: ev.time || '',
       duration: ev.duration || '', address: ev.address || '',
       lat: ev.lat?.toString() || '', lng: ev.lng?.toString() || '',
       cityId: ev.city?.id?.toString() || '', categoryId: ev.category?.id?.toString() || '',
-      venueId: '', status: ev.status || 'DRAFT', featured: ev.featured || false,
-      capacity: ev.capacity?.toString() || '', metaTitle: '', metaDescription: '',
+      venueId: (evAny.venueId as string)?.toString() || '', status: ev.status || 'DRAFT',
+      featured: ev.featured || false, capacity: ev.capacity?.toString() || '',
+      metaTitle: (evAny.metaTitle as string) || '', metaDescription: (evAny.metaDescription as string) || '',
     });
     setShowForm(true);
   };
@@ -135,8 +144,10 @@ export default function SuperAdminEvents() {
     if (!form.title || !form.slug) { showToast('Titulo y slug son requeridos', 'error'); return; }
     setSaving(true);
     try {
+      const { galleryInput: _gi, ...formRest } = form;
       const body = {
-        ...form,
+        ...formRest,
+        gallery: form.gallery.filter(Boolean),
         price: form.price ? Number(form.price) : 0,
         originalPrice: form.originalPrice ? Number(form.originalPrice) : null,
         capacity: form.capacity ? Number(form.capacity) : null,
@@ -237,14 +248,60 @@ export default function SuperAdminEvents() {
               <textarea style={{ ...inputStyle, minHeight: 100, resize: 'vertical' }} value={form.description} onChange={e => updateField('description', e.target.value)} />
             </div>
 
-            {/* Media */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 20 }}>
+            {/* Media - Image principal + Video */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 16 }}>
               <div>
-                <label style={labelStyle}>Imagen (URL)</label>
-                <input style={inputStyle} value={form.image} onChange={e => updateField('image', e.target.value)} />
+                <label style={labelStyle}>Imagen principal (URL)</label>
+                <input style={inputStyle} value={form.image} onChange={e => updateField('image', e.target.value)} placeholder="https://..." />
                 {form.image && <div style={{ marginTop: 8, height: 50, width: 80, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}><Image src={form.image} alt="" width={80} height={50} style={{ objectFit: 'cover', width: '100%', height: '100%' }} /></div>}
               </div>
-              <div><label style={labelStyle}>Video (URL)</label><input style={inputStyle} value={form.videoUrl} onChange={e => updateField('videoUrl', e.target.value)} /></div>
+              <div>
+                <label style={labelStyle}>Video (URL .mp4)</label>
+                <input style={inputStyle} value={form.videoUrl} onChange={e => updateField('videoUrl', e.target.value)} placeholder="https://...video.mp4" />
+                {form.videoUrl && <div style={{ marginTop: 8, fontSize: 12, color: '#22c55e', fontWeight: 600 }}>Video configurado</div>}
+              </div>
+              <div>
+                <label style={labelStyle}>Venue / Organizador</label>
+                <select style={inputStyle} value={form.venueId} onChange={e => updateField('venueId', e.target.value)}>
+                  <option value="">Sin venue</option>
+                  {venues.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {/* Gallery - Multiple images */}
+            <div style={{ marginBottom: 20, padding: 16, borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <label style={labelStyle}>Galeria de fotos ({form.gallery.length} imagenes)</label>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                <input
+                  style={{ ...inputStyle, flex: 1 }}
+                  value={form.galleryInput}
+                  onChange={e => setForm(f => ({ ...f, galleryInput: e.target.value }))}
+                  placeholder="Pega URL de imagen y presiona Agregar"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      if (form.galleryInput.trim()) {
+                        setForm(f => ({ ...f, gallery: [...f.gallery, f.galleryInput.trim()], galleryInput: '' }));
+                      }
+                    }
+                  }}
+                />
+                <button type="button" onClick={() => {
+                  if (form.galleryInput.trim()) setForm(f => ({ ...f, gallery: [...f.gallery, f.galleryInput.trim()], galleryInput: '' }));
+                }} style={{ padding: '10px 16px', borderRadius: 10, border: 'none', background: '#e63946', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' }}>+ Agregar</button>
+              </div>
+              {form.gallery.length > 0 && (
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {form.gallery.map((url, i) => (
+                    <div key={i} style={{ position: 'relative', width: 80, height: 60, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      <Image src={url} alt={`Gallery ${i + 1}`} width={80} height={60} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+                      <button type="button" onClick={() => setForm(f => ({ ...f, gallery: f.gallery.filter((_, idx) => idx !== i) }))} style={{ position: 'absolute', top: 2, right: 2, width: 18, height: 18, borderRadius: '50%', background: 'rgba(239,68,68,0.9)', color: '#fff', border: 'none', fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>x</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {form.gallery.length === 0 && <p style={{ fontSize: 12, color: 'var(--text-tertiary)', margin: 0 }}>Sin imagenes en la galeria. Agrega URLs arriba.</p>}
             </div>
 
             {/* Price */}
