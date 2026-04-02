@@ -208,33 +208,76 @@ export default function PlanTimeline({
               </div>
             </div>
             {/* Travel route card between items */}
-            {idx < sorted.length - 1 && (
-              <div className="relative flex gap-4 mb-0">
-                <div className="flex flex-col items-center">
-                  <div className="w-0.5 flex-1 border-l-2 border-dashed ml-[0.3rem]" style={{ minHeight: '40px', borderColor: 'var(--border)' }} />
-                </div>
-                <div className="flex-1 py-1">
-                  <a
-                    href={getMapsUrl(item, sorted[idx + 1])}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 hover:border-[#e63946]/50 rounded-lg px-3 py-2.5 transition group"
-                    style={{ background: 'var(--surface)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'var(--border)' }}
-                  >
-                    <span className="text-lg">&#x1F697;</span>
-                    <div className="flex-1">
-                      <p className="text-xs transition" style={{ color: 'var(--text-secondary)' }}>Ver ruta en Google Maps</p>
-                      {travelMin && (
-                        <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>~{travelMin} min en auto</p>
+            {idx < sorted.length - 1 && (() => {
+              const fromEv = item.event as Record<string, unknown> | null;
+              const toEv = sorted[idx + 1].event as Record<string, unknown> | null;
+              const fLat = Number(fromEv?.lat), fLng = Number(fromEv?.lng);
+              const tLat = Number(toEv?.lat), tLng = Number(toEv?.lng);
+              const hasCoords = !isNaN(fLat) && !isNaN(tLat) && fromEv?.lat && toEv?.lat;
+              // Haversine distance
+              const dist = hasCoords ? (() => {
+                const R = 6371, dLa = (tLat - fLat) * Math.PI / 180, dLo = (tLng - fLng) * Math.PI / 180;
+                const a = Math.sin(dLa / 2) ** 2 + Math.cos(fLat * Math.PI / 180) * Math.cos(tLat * Math.PI / 180) * Math.sin(dLo / 2) ** 2;
+                return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+              })() : null;
+              const distStr = dist ? (dist < 1 ? `${Math.round(dist * 1000)}m` : `${dist.toFixed(1)}km`) : null;
+              const walkMin = dist ? Math.max(2, Math.round(dist / 5 * 60)) : null;
+              const busMin = dist ? Math.max(3, Math.round(dist / 18 * 60)) : null;
+              const metroMin = dist ? Math.max(5, Math.round(dist / 30 * 60)) : null;
+              const uberMin = dist ? Math.max(3, Math.round(dist / 25 * 60)) : null;
+              const mapsUrl = getMapsUrl(item, sorted[idx + 1]);
+
+              return (
+                <div className="relative flex gap-4 mb-0">
+                  <div className="flex flex-col items-center">
+                    <div className="w-0.5 flex-1 border-l-2 border-dashed ml-[0.3rem]" style={{ minHeight: '40px', borderColor: 'var(--border)' }} />
+                  </div>
+                  <div className="flex-1 py-1">
+                    <div className="rounded-xl px-3 py-2.5" style={{ background: 'var(--surface)', border: '1px dashed var(--border)' }}>
+                      {distStr && (
+                        <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: 'var(--card)', color: 'var(--text-secondary)' }}>
+                            📍 {distStr}
+                          </span>
+                          {walkMin && walkMin <= 30 && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: 'var(--card)', color: '#2a9d8f' }}>
+                              🚶 {walkMin} min
+                            </span>
+                          )}
+                          {busMin && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: 'var(--card)', color: '#3b82f6' }}>
+                              🚌 {busMin} min
+                            </span>
+                          )}
+                          {metroMin && dist && dist > 2 && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: 'var(--card)', color: '#8b5cf6' }}>
+                              🚇 {metroMin} min
+                            </span>
+                          )}
+                          {uberMin && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: 'var(--card)', color: '#f59e0b' }}>
+                              🚗 {uberMin} min
+                            </span>
+                          )}
+                        </div>
                       )}
+                      <a
+                        href={mapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-[10px] font-medium hover:underline transition"
+                        style={{ color: '#3b82f6' }}
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                        </svg>
+                        Ver ruta en Google Maps
+                      </a>
                     </div>
-                    <svg className="w-4 h-4 group-hover:text-[#e63946] transition" style={{ color: 'var(--text-tertiary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  </a>
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         );
       })}

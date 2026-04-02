@@ -332,7 +332,7 @@ function SheetContent({
         <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
           <div className="w-12 h-12 border-3 border-[#e63946] border-t-transparent rounded-full animate-spin" />
           <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-            {isFree ? 'Reservando tu entrada...' : 'Preparando tu pago...'}
+            {isFree ? 'Reservando tu entrada...' : 'Preparando tu Day perfecto...'}
           </p>
         </div>
       )}
@@ -424,6 +424,28 @@ function SheetContent({
                 </div>
               )}
 
+              {/* Perfect Day upsell */}
+              <div className="rounded-xl p-3.5" style={{ background: 'linear-gradient(135deg, rgba(230,57,70,0.06), rgba(42,157,143,0.06))', border: '1px solid var(--border)' }}>
+                <p className="text-xs font-bold mb-2" style={{ color: 'var(--fg)' }}>Arma tu Day perfecto</p>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-base">🍽️</span>
+                    <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Cena antes</span>
+                  </div>
+                  <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>|</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-base">🍸</span>
+                    <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Drinks despues</span>
+                  </div>
+                  <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>|</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-base">📍</span>
+                    <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Actividades cerca</span>
+                  </div>
+                </div>
+                <p className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>Compra tu entrada y te ayudamos a armar el dia perfecto</p>
+              </div>
+
               {/* Security badges */}
               <div className="flex items-center gap-4 pt-1">
                 <div className="flex items-center gap-1.5">
@@ -460,8 +482,8 @@ function SheetContent({
               }}
             >
               {isFree
-                ? 'Reservar gratis'
-                : `Pagar ${cs}${total.toFixed(2)} ${cl}`
+                ? 'Reservar y armar mi Day'
+                : `Comprar y armar mi Day`
               }
             </button>
             <button
