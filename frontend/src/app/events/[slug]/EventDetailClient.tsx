@@ -188,18 +188,14 @@ export default function EventDetailClient({ event, related, venue }: Props) {
       : '#2a9d8f';
 
   // ---- Highlights ----
-  const highlights: { icon: string; label: string; color: string }[] = [];
-  if (event.featured) highlights.push({ icon: '\u2B50', label: 'Evento destacado', color: '#f4a261' });
-  if (discount) highlights.push({ icon: '\uD83D\uDCB0', label: `${discount}% de descuento`, color: '#e63946' });
+  const highlights: { icon: string; label: string }[] = [];
+  if (event.featured) highlights.push({ icon: '\u2B50', label: 'Evento destacado' });
+  if (discount) highlights.push({ icon: '\uD83D\uDCB0', label: `${discount}% de descuento` });
   if (capacityPercent !== null && capacityPercent > 70)
-    highlights.push({
-      icon: '\uD83D\uDD25',
-      label: `Solo quedan ${100 - capacityPercent}% de lugares`,
-      color: '#e76f51',
-    });
+    highlights.push({ icon: '\uD83D\uDD25', label: `Solo quedan ${100 - capacityPercent}% de lugares` });
   if (event.rating && event.rating >= 4.0)
-    highlights.push({ icon: '\u2B50', label: `${event.rating.toFixed(1)} de calificacion`, color: '#2a9d8f' });
-  if (isFree) highlights.push({ icon: '\uD83C\uDF89', label: 'Entrada gratuita', color: '#2a9d8f' });
+    highlights.push({ icon: '\u2B50', label: `${event.rating.toFixed(1)} de calificacion` });
+  if (isFree) highlights.push({ icon: '\uD83C\uDF89', label: 'Entrada gratuita' });
 
   // ---- Description toggle ----
   const descriptionText = event.description || '';
@@ -482,72 +478,47 @@ export default function EventDetailClient({ event, related, venue }: Props) {
               ref={setSectionRef('section-facts')}
               className={sectionClass('section-facts')}
             >
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2.5">
                 {event.city && (
                   <Link
                     href={`/search?city=${event.city.slug}`}
-                    className="flex items-center gap-2.5 rounded-2xl px-4 py-3 text-sm font-medium transition hover:scale-[1.02]"
-                    style={{ background: 'rgba(42,157,143,0.1)', color: '#2a9d8f' }}
+                    className="flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-medium transition hover:opacity-80"
+                    style={{ background: 'var(--surface)', color: 'var(--fg)', border: '1px solid var(--border)' }}
                   >
-                    <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--text-secondary)' }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                     {event.city.name}
                   </Link>
                 )}
                 <div
-                  className="flex items-center gap-2.5 rounded-2xl px-4 py-3 text-sm font-medium"
-                  style={{ background: 'rgba(230,57,70,0.08)', color: '#e63946' }}
+                  className="flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-medium"
+                  style={{ background: 'var(--surface)', color: 'var(--fg)', border: '1px solid var(--border)' }}
                 >
-                  <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--text-secondary)' }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <time dateTime={event.date}>{formatDateShort(event.date)}</time>
                 </div>
                 {event.time && (
                   <div
-                    className="flex items-center gap-2.5 rounded-2xl px-4 py-3 text-sm font-medium"
-                    style={{ background: 'rgba(244,162,97,0.12)', color: '#f4a261' }}
+                    className="flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-medium"
+                    style={{ background: 'var(--surface)', color: 'var(--fg)', border: '1px solid var(--border)' }}
                   >
-                    <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--text-secondary)' }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     {event.time}
                   </div>
                 )}
                 {event.duration && (
                   <div
-                    className="flex items-center gap-2.5 rounded-2xl px-4 py-3 text-sm font-medium"
-                    style={{ background: 'rgba(108,117,125,0.1)', color: 'var(--text-secondary)' }}
+                    className="flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-medium"
+                    style={{ background: 'var(--surface)', color: 'var(--fg)', border: '1px solid var(--border)' }}
                   >
-                    <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--text-secondary)' }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     {event.duration}
                   </div>
@@ -562,18 +533,18 @@ export default function EventDetailClient({ event, related, venue }: Props) {
                 ref={setSectionRef('section-highlights')}
                 className={sectionClass('section-highlights')}
               >
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
                   {highlights.map((h, i) => (
                     <div
                       key={i}
-                      className="rounded-2xl px-4 py-3.5 text-center transition hover:scale-[1.03]"
+                      className="rounded-xl px-3.5 py-3 text-center transition hover:opacity-80"
                       style={{
-                        background: `${h.color}10`,
-                        border: `1px solid ${h.color}25`,
+                        background: 'var(--surface)',
+                        border: '1px solid var(--border)',
                       }}
                     >
-                      <span className="text-2xl block mb-1">{h.icon}</span>
-                      <span className="text-xs font-semibold" style={{ color: h.color }}>
+                      <span className="text-xl block mb-1">{h.icon}</span>
+                      <span className="text-xs font-semibold" style={{ color: 'var(--fg)' }}>
                         {h.label}
                       </span>
                     </div>
