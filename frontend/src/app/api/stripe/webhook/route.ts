@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { supabase } from '@/lib/supabase';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error('STRIPE_SECRET_KEY not configured');
+  return new Stripe(key);
+}
 
 function generateQRCode(eventId: string | number, userId: string | number): string {
   const ts = Date.now();
@@ -12,6 +16,7 @@ function generateQRCode(eventId: string | number, userId: string | number): stri
 
 export async function POST(req: NextRequest) {
   try {
+    const stripe = getStripe();
     const body = await req.text();
     const sig = req.headers.get('stripe-signature');
 

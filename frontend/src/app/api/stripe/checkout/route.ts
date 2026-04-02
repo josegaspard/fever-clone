@@ -3,10 +3,16 @@ import Stripe from 'stripe';
 import { getUserFromRequest } from '@/lib/auth-helpers';
 import { supabase } from '@/lib/supabase';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error('STRIPE_SECRET_KEY not configured');
+  return new Stripe(key);
+}
 
 export async function POST(req: NextRequest) {
   try {
+    const stripe = getStripe();
+
     const user = await getUserFromRequest(req);
     if (!user) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
