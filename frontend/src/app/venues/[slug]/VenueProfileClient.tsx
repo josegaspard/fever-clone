@@ -138,8 +138,9 @@ export default function VenueProfileClient({ venue, events, isFollowing }: Props
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
-      {/* ═══ HERO with Parallax ═══ */}
-      <div ref={heroRef} className="relative w-full h-[320px] sm:h-[380px] md:h-[440px] overflow-hidden">
+      {/* ═══ HERO - Immersive ═══ */}
+      <div ref={heroRef} className="relative w-full h-[420px] sm:h-[480px] md:h-[540px] overflow-hidden">
+        {/* Background media with parallax */}
         <motion.div style={{ scale: heroScale }} className="absolute inset-0">
           {venue.videoUrl ? (
             <video
@@ -163,54 +164,90 @@ export default function VenueProfileClient({ venue, events, isFollowing }: Props
               onError={() => setCoverError(true)}
             />
           ) : (
-            <div className="w-full h-full" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
-              <div className="absolute inset-0 flex items-center justify-center text-8xl opacity-10">{catInfo.icon}</div>
-            </div>
+            <div className="w-full h-full" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }} />
           )}
         </motion.div>
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.1) 70%, transparent 100%)' }} />
+        {/* Cinematic gradient overlays */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.3) 100%)' }} />
+        {/* Side vignette */}
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)' }} />
+        {/* Accent glow */}
+        <motion.div
+          animate={{ opacity: [0.08, 0.15, 0.08] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[120px]"
+          style={{ background: '#e63946' }}
+        />
 
         {/* Top nav */}
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="absolute top-0 left-0 right-0 p-4 sm:p-6 flex items-center justify-between z-10">
-          <Link href="/venues" className="w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all hover:scale-105" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)' }} aria-label="Volver">
+          <Link href="/venues" className="w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all hover:scale-110 hover:bg-white/25" style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }} aria-label="Volver">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
           </Link>
           <ShareButton url={`/venues/${venue.slug}`} title={venue.name} />
         </motion.div>
 
-        {/* Hero bottom info */}
-        <motion.div style={{ opacity: heroOpacity }} className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
-          <div className="max-w-5xl mx-auto flex items-end gap-4 sm:gap-5">
-            {/* Logo */}
-            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, type: 'spring' }} className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden flex-shrink-0 shadow-2xl" style={{ border: '3px solid rgba(255,255,255,0.3)' }}>
-              {venue.logo && !logoError ? (
-                <Image src={venue.logo} alt={venue.name} fill sizes="96px" className="object-cover" onError={() => setLogoError(true)} />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-3xl font-bold bg-white/10 backdrop-blur-sm text-white">{venue.name.charAt(0)}</div>
-              )}
-            </motion.div>
-
-            {/* Name + meta */}
-            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="flex-1 min-w-0 text-white pb-1">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-white/15 backdrop-blur-sm">{catInfo.icon} {catInfo.label}</span>
+        {/* Hero content - centered composition */}
+        <motion.div style={{ opacity: heroOpacity }} className="absolute inset-0 flex items-end z-10">
+          <div className="w-full p-5 sm:p-8 pb-8 sm:pb-10">
+            <div className="max-w-5xl mx-auto">
+              {/* Category + verified row */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex items-center gap-2 mb-4">
+                <span className="text-xs font-bold px-3 py-1 rounded-full tracking-wide uppercase" style={{ background: 'rgba(230,57,70,0.9)', color: '#fff' }}>{catInfo.icon} {catInfo.label}</span>
                 {venue.verified && (
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full" style={{ background: '#2a9d8f' }}>
+                  <span className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full" style={{ background: 'rgba(42,157,143,0.9)', color: '#fff' }}>
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
                     Verificado
                   </span>
                 )}
+              </motion.div>
+
+              {/* Name + logo row */}
+              <div className="flex items-end gap-5 sm:gap-6">
+                {/* Logo */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.7, rotate: -5 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+                  className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-2xl sm:rounded-3xl overflow-hidden flex-shrink-0"
+                  style={{ border: '3px solid rgba(255,255,255,0.25)', boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(230,57,70,0.15)' }}
+                >
+                  {venue.logo && !logoError ? (
+                    <Image src={venue.logo} alt={venue.name} fill sizes="112px" className="object-cover" onError={() => setLogoError(true)} />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-3xl sm:text-4xl font-black bg-white/10 backdrop-blur-sm text-white">{venue.name.charAt(0)}</div>
+                  )}
+                </motion.div>
+
+                {/* Title block */}
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.5 }} className="flex-1 min-w-0 text-white">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-[1.1] mb-2 drop-shadow-lg">{venue.name}</h1>
+                  {venue.shortDescription && (
+                    <p className="text-sm sm:text-base opacity-85 line-clamp-2 mb-3 max-w-lg leading-relaxed">{venue.shortDescription}</p>
+                  )}
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {venue.address && (
+                      <span className="flex items-center gap-1.5 text-xs sm:text-sm opacity-75 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                        <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        <span className="truncate max-w-[200px] sm:max-w-none">{venue.address}</span>
+                      </span>
+                    )}
+                    {venue.rating !== undefined && venue.rating > 0 && (
+                      <span className="flex items-center gap-1 text-xs sm:text-sm font-bold bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                        <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+                        {venue.rating.toFixed(1)}
+                        <span className="opacity-60 font-normal">({venue.reviewCount})</span>
+                      </span>
+                    )}
+                    <span className="flex items-center gap-1 text-xs sm:text-sm bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                      {formatCount(venue.followerCount || 0)} seguidores
+                    </span>
+                  </div>
+                </motion.div>
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight">{venue.name}</h1>
-              {venue.address && (
-                <p className="text-sm opacity-80 mt-1 flex items-center gap-1.5 truncate">
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                  {venue.address}
-                </p>
-              )}
-            </motion.div>
+            </div>
           </div>
         </motion.div>
       </div>

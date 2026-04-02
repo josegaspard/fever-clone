@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { getUserFromRequest } from '@/lib/auth-helpers';
 
 function transformVenue(row: Record<string, unknown>): Record<string, unknown> {
   const city = row.cities as Record<string, unknown> | null;
@@ -80,5 +81,98 @@ export async function GET(
       { message: 'Internal server error' },
       { status: 500 }
     );
+  }
+}
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const user = await getUserFromRequest(req);
+    if (!user || user.role !== 'admin') {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { slug } = await params;
+    const body = await req.json();
+
+    const updateFields: Record<string, unknown> = {};
+    const fieldMap: Record<string, string> = {
+      name: 'name',
+      slug: 'slug',
+      description: 'description',
+      shortDescription: 'short_description',
+      logo: 'logo',
+      coverImage: 'cover_image',
+      category: 'category',
+      address: 'address',
+      cityId: 'city_id',
+      lat: 'lat',
+      lng: 'lng',
+      phone: 'phone',
+      email: 'email',
+      website: 'website',
+      instagram: 'instagram',
+      twitter: 'twitter',
+      facebook: 'facebook',
+      tiktok: 'tiktok',
+      verified: 'verified',
+      featured: 'featured',
+      metaTitle: 'meta_title',
+      metaDescription: 'meta_description',
+    };
+
+    for (const [camel, snake] of Object.entries(fieldMap)) {
+      if (body[camel] !== undefined) {
+        updateFields[snake] = body[camel];
+      }
+    }
+
+    updateFields.updated_at = new Date().toISOString();
+
+    const { data, error } = await supabase
+      .from('venues')
+      .update(updateFields)
+      .eq('slug', slug)
+      .select('*, cities(id, name, slug, image, country)')
+      .single();
+
+    if (error) {
+      return NextResponse.json({ message: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json(transformVenue(data as Record<string, unknown>));
+  } catch (error) {
+    console.error('Update venue error:', error);
+    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const user = await getUserFromRequest(req);
+    if (!user || user.role !== 'admin') {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { slug } = await params;
+
+    const { error } = await supabase
+      .from('venues')
+      .delete()
+      .eq('slug', slug);
+
+    if (error) {
+      return NextResponse.json({ message: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ message: 'Venue eliminado' });
+  } catch (error) {
+    console.error('Delete venue error:', error);
+    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }
