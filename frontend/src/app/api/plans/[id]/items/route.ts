@@ -111,7 +111,14 @@ export async function POST(
     }
 
     const body = await req.json();
-    const { eventId, startTime, endTime, notes } = body;
+    const { eventId, startTime, notes } = body;
+    // Default endTime: 2 hours after startTime, or fallback to '20:00'
+    let endTime = body.endTime;
+    if (!endTime && startTime) {
+      const [h, m] = startTime.split(':').map(Number);
+      endTime = `${String(Math.min(h + 2, 23)).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+    if (!endTime) endTime = '20:00';
 
     if (!eventId) {
       return NextResponse.json(
