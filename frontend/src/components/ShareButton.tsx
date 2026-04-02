@@ -52,7 +52,7 @@ export default function ShareButton({ title, url, description }: ShareButtonProp
   return (
     <div className="relative">
       <button
-        onClick={() => typeof navigator !== 'undefined' && 'share' in navigator ? shareNative() : setOpen(!open)}
+        onClick={() => setOpen(!open)}
         className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition"
         style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)', background: 'var(--surface)' }}
       >

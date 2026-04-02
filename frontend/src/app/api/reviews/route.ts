@@ -10,6 +10,7 @@ function transformReview(row: Record<string, unknown>): Record<string, unknown> 
     eventId: row.event_id,
     rating: row.rating,
     comment: row.comment,
+    media: Array.isArray(row.media) ? row.media : [],
     createdAt: row.created_at,
     user: user
       ? {
@@ -85,6 +86,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Insert the review
+    const { media } = body;
+
     const { data, error } = await supabase
       .from('reviews')
       .insert({
@@ -92,6 +95,7 @@ export async function POST(req: NextRequest) {
         event_id: eventId,
         rating: Number(rating),
         comment: comment || null,
+        media: Array.isArray(media) ? media : [],
       })
       .select('*, users(id, name, avatar)')
       .single();

@@ -70,8 +70,8 @@ export default function EventCard({
   const currencyLabel = event.currency || 'EUR';
 
   return (
-    <Link href={`/events/${event.slug}`} className="group block" aria-label={`${event.title} - ${event.city?.name || ''} - ${event.price === 0 ? 'Gratis' : `${currencySymbol}${event.price}`}`}>
-      <article className="event-card-premium rounded-xl overflow-hidden border transition-all duration-300" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
+    <Link href={`/events/${event.slug}`} className="group block h-full" aria-label={`${event.title} - ${event.city?.name || ''} - ${event.price === 0 ? 'Gratis' : `${currencySymbol}${event.price}`}`}>
+      <article className="event-card-premium rounded-xl overflow-hidden border transition-all duration-300 h-full flex flex-col" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
         {/* Image / Video */}
         <div className="relative aspect-[3/4] overflow-hidden">
           {event.videoUrl ? (
@@ -178,7 +178,7 @@ export default function EventCard({
         </div>
 
         {/* Content */}
-        <div className="p-3">
+        <div className="p-3 flex flex-col flex-1">
           <h3 className="text-sm font-semibold line-clamp-2 leading-snug mb-1" style={{ color: 'var(--fg)' }}>
             {event.title}
           </h3>
@@ -193,7 +193,7 @@ export default function EventCard({
             <span>{formatDate(event.date)}</span>
           </p>
           {/* Price display - more prominent */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-auto pt-1">
             {event.originalPrice && event.originalPrice > event.price && (
               <span className="text-xs line-through font-medium" style={{ color: 'var(--text-tertiary)' }}>
                 {currencySymbol}{event.originalPrice.toFixed(0)}

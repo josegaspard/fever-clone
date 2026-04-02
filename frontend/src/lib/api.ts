@@ -90,12 +90,19 @@ export interface AdminStats {
   recentEvents: Event[];
 }
 
+export interface ReviewMedia {
+  type: 'image' | 'video';
+  url: string;
+  thumb?: string;
+}
+
 export interface Review {
   id: string;
   userId: string;
   eventId: string;
   rating: number;
   comment?: string;
+  media?: ReviewMedia[];
   createdAt: string;
   user: { id: string; name: string; avatar?: string } | null;
 }

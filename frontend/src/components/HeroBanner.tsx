@@ -166,8 +166,12 @@ export default function HeroBanner() {
           <button onClick={() => router.push(selectedCity ? `/${selectedCity.slug}` : '/search')} className="px-8 py-3.5 bg-[#e63946] hover:bg-[#d32836] text-white font-bold text-sm rounded-full transition-all hover:scale-[1.03] shadow-xl shadow-[#e63946]/30 hover:shadow-[#e63946]/50">
             {selectedCity ? `Explorar ${selectedCity.name}` : 'Explorar eventos'}
           </button>
-          <button onClick={() => router.push('/build-day')} className="px-8 py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold text-sm rounded-full transition-all hover:bg-white/20 hover:scale-[1.03]">
-            Arma tu Day
+          <button onClick={() => router.push('/build-day')} className="hero-cta-shine relative px-8 py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold text-sm rounded-full transition-all hover:bg-white/20 hover:scale-[1.05] overflow-hidden group">
+            <span className="relative z-10 flex items-center gap-2">
+              <span className="inline-block animate-bounce" style={{ animationDuration: '2s' }}>✨</span>
+              Arma tu Day
+              <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            </span>
           </button>
           <button onClick={() => router.push('/venues')} className="px-8 py-3.5 bg-white/5 backdrop-blur-sm border border-white/10 text-white/80 font-medium text-sm rounded-full transition-all hover:bg-white/15 hover:text-white hover:scale-[1.03]">
             Ver Venues
