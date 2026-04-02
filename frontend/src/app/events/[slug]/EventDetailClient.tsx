@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { Event, addFavorite, removeFavorite, createCheckoutSession, createTicket } from '@/lib/api';
+import { Event, addFavorite, removeFavorite, createCheckoutSession, createTicket, createPlan, addPlanItem } from '@/lib/api';
 import EventCarousel from '@/components/EventCarousel';
 import StarRating from '@/components/StarRating';
 import ReviewSection from '@/components/ReviewSection';
@@ -53,14 +53,29 @@ export default function EventDetailClient({ event, related, venue }: Props) {
     }
     setBuyLoading(true);
     try {
+      // 1. Create a Day plan automatically
+      const plan = await createPlan({
+        title: `Day — ${event.title}`,
+        planDate: event.date,
+      });
+      // 2. Add event to the plan
+      const item = await addPlanItem(plan.id, {
+        eventId: event.id,
+        startTime: event.time || '18:00',
+      });
+
       if (event.price === 0) {
-        // Free event → create ticket directly
-        await createTicket(String(event.id));
-        showToast('Ticket reservado con éxito', 'success');
-        router.push('/tickets?success=true');
+        // Free event → create ticket directly, then go to the Day
+        await createTicket(String(event.id), String(item.id));
+        showToast('Reservado y agregado a tu Day', 'success');
+        router.push(`/plans/${plan.id}?success=true`);
       } else {
-        // Paid event → Stripe checkout
-        const { url } = await createCheckoutSession({ eventId: String(event.id) });
+        // Paid event → Stripe checkout (will redirect back to the Day on success)
+        const { url } = await createCheckoutSession({
+          eventId: String(event.id),
+          planItemId: String(item.id),
+          planId: String(plan.id),
+        });
         if (url) {
           window.location.href = url;
         } else {
@@ -68,7 +83,7 @@ export default function EventDetailClient({ event, related, venue }: Props) {
         }
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error al procesar la compra';
+      const msg = err instanceof Error ? err.message : 'Error al procesar';
       showToast(msg, 'error');
     } finally {
       setBuyLoading(false);

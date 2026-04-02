@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Plan, getPlan, updatePlan, createTicket, createCheckoutSession } from '@/lib/api';
@@ -14,11 +14,14 @@ import { useToast } from '@/components/Toast';
 export default function PlanDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
   const { showToast } = useToast();
   const planId = params.id as string;
+  const isSuccess = searchParams.get('success') === 'true';
 
   const [plan, setPlan] = useState<Plan | null>(null);
+  const [showSuccessBanner, setShowSuccessBanner] = useState(isSuccess);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [editingTitle, setEditingTitle] = useState(false);
@@ -95,23 +98,15 @@ export default function PlanDetailPage() {
     }
     setPayingPending(true);
     try {
-      // Try Stripe checkout for the first unpaid item
+      // Stripe checkout for the first unpaid item (webhook handles ticket creation)
       const firstUnpaid = unpaidItems[0];
-      try {
-        const { url } = await createCheckoutSession({
-          eventId: firstUnpaid.eventId,
-          planItemId: firstUnpaid.id,
-          planId: plan.id,
-        });
-        if (url) { window.location.href = url; return; }
-      } catch {
-        // Fallback: create tickets directly (demo mode)
-        for (const item of unpaidItems) {
-          await createTicket(item.eventId, item.id);
-        }
-        showToast(`${unpaidItems.length} tickets creados`);
-        await loadPlan();
-      }
+      const { url } = await createCheckoutSession({
+        eventId: firstUnpaid.eventId,
+        planItemId: firstUnpaid.id,
+        planId: plan.id,
+      });
+      if (url) { window.location.href = url; return; }
+      showToast('Error al crear sesión de pago', 'error');
     } catch (err) {
       showToast(err instanceof Error ? err.message : 'Error al pagar', 'error');
     } finally {
@@ -197,6 +192,26 @@ export default function PlanDetailPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
+      {/* Success banner after purchase/reservation */}
+      {showSuccessBanner && (
+        <div className="mb-6 rounded-xl p-4 flex items-center gap-3 animate-in fade-in" style={{ background: 'rgba(42, 157, 143, 0.1)', border: '1px solid rgba(42, 157, 143, 0.3)' }}>
+          <div className="w-10 h-10 bg-[#2a9d8f]/20 rounded-full flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-[#2a9d8f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold text-sm" style={{ color: 'var(--fg)' }}>Compra exitosa</p>
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Tu ticket ha sido generado. Sigue armando tu Day agregando mas eventos.</p>
+          </div>
+          <button onClick={() => setShowSuccessBanner(false)} className="text-[#2a9d8f] hover:opacity-70 transition shrink-0">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
         <Link href="/plans" className="hover:opacity-80 transition">Mis Days</Link>

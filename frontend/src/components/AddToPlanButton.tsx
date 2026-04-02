@@ -69,29 +69,30 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
         startTime,
         endTime,
       });
-      // For paid events, redirect to Stripe or create ticket
+
       if (!isFree && item.id) {
-        try {
-          const { url } = await createCheckoutSession({
-            eventId: event.id,
-            planItemId: item.id,
-            planId,
-          });
-          if (url) {
-            window.location.href = url;
-            return;
-          }
-        } catch {
-          // Fallback: create ticket directly (demo mode)
-          try { await createTicket(event.id, item.id); } catch {}
+        // Paid event → Stripe checkout, redirect back to the Day on success
+        const { url } = await createCheckoutSession({
+          eventId: event.id,
+          planItemId: item.id,
+          planId,
+        });
+        if (url) {
+          window.location.href = url;
+          return;
         }
+        showToast('Error al crear sesión de pago', 'error');
+      } else {
+        // Free event → create ticket directly
+        await createTicket(event.id, item.id);
+        setSuccessPlanId(planId);
+        showToast('Agregado gratis a tu Day', 'success');
+        setTimeout(() => {
+          setOpen(false);
+          setSuccessPlanId(null);
+          router.push(`/plans/${planId}`);
+        }, 1500);
       }
-      setSuccessPlanId(planId);
-      showToast(isFree ? 'Agregado gratis a tu Day' : 'Agregado a tu Day');
-      setTimeout(() => {
-        setOpen(false);
-        setSuccessPlanId(null);
-      }, 2000);
     } catch (err) {
       showToast(err instanceof Error ? err.message : 'Error al agregar', 'error');
     } finally {
@@ -112,27 +113,29 @@ export default function AddToPlanButton({ event, variant = 'full' }: AddToPlanBu
         startTime,
         endTime,
       });
-      // For paid events, redirect to Stripe or create ticket
+
       if (!isFree && item.id) {
-        try {
-          const { url } = await createCheckoutSession({
-            eventId: event.id,
-            planItemId: item.id,
-            planId: plan.id,
-          });
-          if (url) { window.location.href = url; return; }
-        } catch {
-          try { await createTicket(event.id, item.id); } catch {}
-        }
+        // Paid event → Stripe checkout
+        const { url } = await createCheckoutSession({
+          eventId: event.id,
+          planItemId: item.id,
+          planId: plan.id,
+        });
+        if (url) { window.location.href = url; return; }
+        showToast('Error al crear sesión de pago', 'error');
+      } else {
+        // Free event → ticket + redirect to Day
+        await createTicket(event.id, item.id);
+        setSuccessPlanId(plan.id);
+        showToast('Day creado y evento agregado', 'success');
+        setTimeout(() => {
+          setOpen(false);
+          setShowCreate(false);
+          setNewTitle('');
+          setSuccessPlanId(null);
+          router.push(`/plans/${plan.id}`);
+        }, 1500);
       }
-      setSuccessPlanId(plan.id);
-      showToast('Day creado y evento agregado');
-      setTimeout(() => {
-        setOpen(false);
-        setShowCreate(false);
-        setNewTitle('');
-        setSuccessPlanId(null);
-      }, 2000);
     } catch (err) {
       showToast(err instanceof Error ? err.message : 'Error al crear Day', 'error');
     } finally {

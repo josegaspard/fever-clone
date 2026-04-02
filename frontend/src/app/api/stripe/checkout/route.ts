@@ -40,6 +40,11 @@ export async function POST(req: NextRequest) {
 
     const origin = req.headers.get('origin') || 'https://fever-clone.vercel.app';
 
+    // Redirect to the plan page if buying within a plan, otherwise to tickets
+    const successUrl = planId
+      ? `${origin}/plans/${planId}?success=true&session_id={CHECKOUT_SESSION_ID}`
+      : `${origin}/tickets?success=true&session_id={CHECKOUT_SESSION_ID}`;
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
@@ -63,7 +68,7 @@ export async function POST(req: NextRequest) {
         planItemId: planItemId ? String(planItemId) : '',
         planId: planId ? String(planId) : '',
       },
-      success_url: `${origin}/tickets?session_id={CHECKOUT_SESSION_ID}&success=true`,
+      success_url: successUrl,
       cancel_url: `${origin}/events/${event.slug}?cancelled=true`,
     });
 

@@ -1,17 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Ticket, getTickets } from '@/lib/api';
 import QRTicket from '@/components/QRTicket';
 
-export default function TicketsPage() {
+function TicketsContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isSuccess = searchParams.get('success') === 'true';
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSuccessBanner, setShowSuccessBanner] = useState(isSuccess);
   const [filter, setFilter] = useState<'all' | 'ACTIVE' | 'USED'>('all');
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
 
@@ -75,6 +78,24 @@ export default function TicketsPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+      {showSuccessBanner && (
+        <div className="rounded-xl p-4 flex items-center gap-3" style={{ background: 'rgba(42, 157, 143, 0.1)', border: '1px solid rgba(42, 157, 143, 0.3)' }}>
+          <div className="w-10 h-10 bg-[#2a9d8f]/20 rounded-full flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5 text-[#2a9d8f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold text-sm" style={{ color: 'var(--fg)' }}>Compra exitosa</p>
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Tu ticket se esta procesando. Puede tardar unos segundos en aparecer.</p>
+          </div>
+          <button onClick={() => setShowSuccessBanner(false)} className="text-[#2a9d8f] hover:opacity-70 transition shrink-0">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
       <h1 className="text-2xl font-extrabold" style={{ color: 'var(--fg)' }}>Mis Tickets</h1>
 
       {/* Filter tabs */}
@@ -191,5 +212,19 @@ export default function TicketsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function TicketsPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 rounded w-48" style={{ background: 'var(--card)' }} />
+        </div>
+      </div>
+    }>
+      <TicketsContent />
+    </Suspense>
   );
 }
