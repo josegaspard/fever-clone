@@ -52,18 +52,20 @@ export async function GET(req: NextRequest) {
     );
 
     // Group users by type
-    const usersByType: Record<string, number> = {};
+    const usersByTypeMap: Record<string, number> = {};
     for (const row of usersByTypeResult.data || []) {
       const type = (row as Record<string, unknown>).user_type as string || 'USER';
-      usersByType[type] = (usersByType[type] || 0) + 1;
+      usersByTypeMap[type] = (usersByTypeMap[type] || 0) + 1;
     }
+    const usersByType = Object.entries(usersByTypeMap).map(([type, count]) => ({ type, count }));
 
     // Group events by status
-    const eventsByStatus: Record<string, number> = {};
+    const eventsByStatusMap: Record<string, number> = {};
     for (const row of eventsByStatusResult.data || []) {
       const status = (row as Record<string, unknown>).status as string || 'unknown';
-      eventsByStatus[status] = (eventsByStatus[status] || 0) + 1;
+      eventsByStatusMap[status] = (eventsByStatusMap[status] || 0) + 1;
     }
+    const eventsByStatus = Object.entries(eventsByStatusMap).map(([status, count]) => ({ status, count }));
 
     // Map recent users
     const recentUsers = (recentUsersResult.data || []).map(
