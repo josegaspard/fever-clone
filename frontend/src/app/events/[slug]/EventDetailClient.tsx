@@ -5,12 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { Event, addFavorite, removeFavorite, createCheckoutSession, createTicket, createPlan, addPlanItem } from '@/lib/api';
+import { Event, addFavorite, removeFavorite } from '@/lib/api';
 import EventCarousel from '@/components/EventCarousel';
 import StarRating from '@/components/StarRating';
 import ReviewSection from '@/components/ReviewSection';
 import AddToPlanButton from '@/components/AddToPlanButton';
 import ShareButton from '@/components/ShareButton';
+import PurchaseSheet from '@/components/PurchaseSheet';
 import { useToast } from '@/components/Toast';
 
 interface VenueInfo {
@@ -41,53 +42,16 @@ export default function EventDetailClient({ event, related, venue }: Props) {
   const [descExpanded, setDescExpanded] = useState(false);
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const [mobileBarVisible, setMobileBarVisible] = useState(false);
-  const [buyLoading, setBuyLoading] = useState(false);
+  const [showPurchase, setShowPurchase] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
-  // ---- Buy / Reserve handler ----
-  async function handleBuy() {
+  function handleBuy() {
     if (!user) {
       router.push('/auth/login');
       return;
     }
-    setBuyLoading(true);
-    try {
-      // 1. Create a Day plan automatically
-      const plan = await createPlan({
-        title: `Day — ${event.title}`,
-        planDate: event.date,
-      });
-      // 2. Add event to the plan
-      const item = await addPlanItem(plan.id, {
-        eventId: event.id,
-        startTime: event.time || '18:00',
-      });
-
-      if (event.price === 0) {
-        // Free event → create ticket directly, then go to the Day
-        await createTicket(String(event.id), String(item.id));
-        showToast('Reservado y agregado a tu Day', 'success');
-        router.push(`/plans/${plan.id}?success=true`);
-      } else {
-        // Paid event → Stripe checkout (will redirect back to the Day on success)
-        const { url } = await createCheckoutSession({
-          eventId: String(event.id),
-          planItemId: String(item.id),
-          planId: String(plan.id),
-        });
-        if (url) {
-          window.location.href = url;
-        } else {
-          showToast('Error al crear la sesión de pago', 'error');
-        }
-      }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error al procesar';
-      showToast(msg, 'error');
-    } finally {
-      setBuyLoading(false);
-    }
+    setShowPurchase(true);
   }
 
   // ---- Formatters ----
@@ -946,22 +910,20 @@ export default function EventDetailClient({ event, related, venue }: Props) {
                     {!isFree ? (
                       <button
                         onClick={handleBuy}
-                        disabled={buyLoading}
-                        className="w-full py-3.5 text-white font-bold text-lg rounded-xl transition shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none"
+                        className="w-full py-3.5 text-white font-bold text-lg rounded-xl transition shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99]"
                         style={{
                           background: 'linear-gradient(135deg, #e63946, #c62d3a)',
                           boxShadow: '0 4px 20px rgba(230,57,70,0.3)',
                         }}
                       >
-                        {buyLoading ? 'Procesando...' : 'Comprar entrada'}
+                        Comprar entrada
                       </button>
                     ) : (
                       <button
                         onClick={handleBuy}
-                        disabled={buyLoading}
-                        className="w-full py-3.5 bg-green-500 hover:bg-green-600 text-white font-bold text-lg rounded-xl transition shadow-lg shadow-green-500/20 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none"
+                        className="w-full py-3.5 bg-green-500 hover:bg-green-600 text-white font-bold text-lg rounded-xl transition shadow-lg shadow-green-500/20 hover:scale-[1.01] active:scale-[0.99]"
                       >
-                        {buyLoading ? 'Procesando...' : 'Reservar gratis'}
+                        Reservar gratis
                       </button>
                     )}
                     <AddToPlanButton event={event} variant="full" />
@@ -1146,18 +1108,20 @@ export default function EventDetailClient({ event, related, venue }: Props) {
         </div>
         <button
           onClick={handleBuy}
-          disabled={buyLoading}
-          className="px-6 py-3 text-sm text-white font-bold rounded-xl transition hover:scale-[1.02] active:scale-[0.98] shrink-0 disabled:opacity-60 disabled:pointer-events-none"
+          className="px-6 py-3 text-sm text-white font-bold rounded-xl transition hover:scale-[1.02] active:scale-[0.98] shrink-0"
           style={{
             background: isFree ? '#2a9d8f' : 'linear-gradient(135deg, #e63946, #c62d3a)',
           }}
         >
-          {buyLoading ? '...' : isFree ? 'Reservar' : 'Comprar'}
+          {isFree ? 'Reservar' : 'Comprar'}
         </button>
       </div>
 
       {/* Bottom spacer for mobile sticky bar */}
       <div className="lg:hidden h-20" />
+
+      {/* Purchase modal/sheet */}
+      <PurchaseSheet event={event} open={showPurchase} onClose={() => setShowPurchase(false)} />
     </article>
   );
 }
