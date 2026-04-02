@@ -209,7 +209,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
             </div>
             <div>
               <div style={{ color: '#e63946', fontWeight: 800, fontSize: 18, letterSpacing: -0.5, lineHeight: 1.1 }}>
-                FEVER
+                CTXPLORER
               </div>
               <div style={{ color: 'var(--sidebar-text-muted)', fontSize: 11, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase' }}>
                 Admin Panel

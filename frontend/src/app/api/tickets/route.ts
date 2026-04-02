@@ -40,7 +40,7 @@ function transformTicket(row: Record<string, unknown>): Record<string, unknown> 
 function generateQRCode(eventId: string, userId: string): string {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substring(2, 10);
-  return `FEVER-${eventId}-${userId}-${timestamp}-${random}`;
+  return `CTX-${eventId}-${userId}-${timestamp}-${random}`;
 }
 
 export async function GET(req: NextRequest) {

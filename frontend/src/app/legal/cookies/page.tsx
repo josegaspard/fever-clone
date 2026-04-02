@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Politica de Cookies',
-  description: 'Politica de cookies de la plataforma Fever.',
+  description: 'Politica de cookies de la plataforma CTXplorer.',
 };
 
 export default function CookiesPage() {

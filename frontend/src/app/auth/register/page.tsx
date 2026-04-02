@@ -52,7 +52,7 @@ function RegisterForm() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold">Crear cuenta</h1>
           <p className="mt-2" style={{ color: 'var(--text-secondary)' }}>
-            Unete a Fever y descubre experiencias unicas
+            Unete a CTXplorer y descubre experiencias unicas
           </p>
         </div>
 

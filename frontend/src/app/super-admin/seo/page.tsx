@@ -16,7 +16,7 @@ interface SeoConfig {
 }
 
 const DEFAULT_CONFIG: SeoConfig = {
-  siteTitle: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
+  siteTitle: 'CTXplorer - Descubre los mejores planes y eventos en tu ciudad',
   siteDescription: 'Descubre experiencias unicas, conciertos, gastronomia, arte y mas.',
   keywords: ['eventos', 'experiencias', 'conciertos', 'teatro', 'gastronomia', 'planes'],
   ogImageUrl: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1200&h=630&fit=crop',

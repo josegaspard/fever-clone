@@ -8,7 +8,7 @@ export const revalidate = 300;
 const BASE_URL = 'https://fever-clone.vercel.app';
 
 export const metadata: Metadata = {
-  title: 'Blog Fever - Guias, tendencias y lo mejor en eventos',
+  title: 'Blog CTXplorer - Guias, tendencias y lo mejor en eventos',
   description:
     'Descubre guias, tendencias, consejos y lo mejor del mundo de los eventos. Articulos sobre gastronomia, cultura, musica, viajes y planes en tu ciudad.',
   keywords: [
@@ -24,26 +24,26 @@ export const metadata: Metadata = {
     'agenda cultural',
   ],
   openGraph: {
-    title: 'Blog Fever - Guias, tendencias y lo mejor en eventos',
+    title: 'Blog CTXplorer - Guias, tendencias y lo mejor en eventos',
     description:
       'Descubre guias, tendencias, consejos y lo mejor del mundo de los eventos.',
     type: 'website',
     url: `${BASE_URL}/blog`,
-    siteName: 'Fever',
+    siteName: 'CTXplorer',
     locale: 'es_ES',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Blog Fever - Guias y tendencias en eventos',
+        alt: 'Blog CTXplorer - Guias y tendencias en eventos',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
     site: '@fever',
-    title: 'Blog Fever - Guias, tendencias y lo mejor en eventos',
+    title: 'Blog CTXplorer - Guias, tendencias y lo mejor en eventos',
     description:
       'Descubre guias, tendencias, consejos y lo mejor del mundo de los eventos.',
   },
@@ -129,13 +129,13 @@ export default async function BlogPage({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
-    name: 'Blog Fever',
+    name: 'Blog CTXplorer',
     description:
       'Guias, tendencias y lo mejor en eventos. Articulos sobre gastronomia, cultura, musica y planes en tu ciudad.',
     url: `${BASE_URL}/blog`,
     publisher: {
       '@type': 'Organization',
-      name: 'Fever',
+      name: 'CTXplorer',
       url: BASE_URL,
       logo: {
         '@type': 'ImageObject',
@@ -175,7 +175,7 @@ export default async function BlogPage({
               className="text-4xl md:text-5xl font-black tracking-tight mb-4"
               style={{ color: 'var(--fg)' }}
             >
-              Blog <span className="gradient-text">Fever</span>
+              Blog <span className="gradient-text">CTXplorer</span>
             </h1>
             <p
               className="text-lg md:text-xl max-w-2xl mx-auto"

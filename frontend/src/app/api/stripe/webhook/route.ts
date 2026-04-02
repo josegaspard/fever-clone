@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder'
 function generateQRCode(eventId: string | number, userId: string | number): string {
   const ts = Date.now();
   const rand = Math.random().toString(36).substring(2, 10);
-  return `FEVER-${eventId}-${userId}-${ts}-${rand}`;
+  return `CTX-${eventId}-${userId}-${ts}-${rand}`;
 }
 
 export async function POST(req: NextRequest) {

@@ -47,7 +47,7 @@ function transformEvent(row: Record<string, unknown>) {
 const BASE_URL = 'https://fever-clone.vercel.app';
 
 export const metadata = {
-  title: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
+  title: 'CTXplorer - Descubre los mejores planes y eventos en tu ciudad',
   description: 'Explora conciertos, gastronomia, arte, festivales y mas. Crea tu Day perfecto en Ciudad de Mexico, Madrid, Barcelona, New York, London y Paris. Eventos gratuitos y de pago. Compra entradas online.',
   keywords: [
     'eventos', 'conciertos', 'gastronomia', 'arte', 'festivales',
@@ -57,18 +57,18 @@ export const metadata = {
   ],
   alternates: { canonical: BASE_URL },
   openGraph: {
-    title: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
+    title: 'CTXplorer - Descubre los mejores planes y eventos en tu ciudad',
     description: 'Explora conciertos, gastronomia, arte, festivales y mas. Crea tu Day perfecto.',
     url: BASE_URL,
-    siteName: 'Fever',
+    siteName: 'CTXplorer',
     type: 'website',
     locale: 'es_ES',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Fever - Descubre los mejores eventos y experiencias' }],
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'CTXplorer - Descubre los mejores eventos y experiencias' }],
   },
   twitter: {
     card: 'summary_large_image' as const,
-    site: '@fever',
-    title: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
+    site: '@ctxplorer',
+    title: 'CTXplorer - Descubre los mejores planes y eventos en tu ciudad',
     description: 'Explora conciertos, gastronomia, arte, festivales y mas.',
     images: ['/og-image.png'],
   },
@@ -164,7 +164,7 @@ export default async function HomePage() {
   const itemListJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: 'Eventos destacados en Fever',
+    name: 'Eventos destacados en CTXplorer',
     description: 'Los mejores eventos y experiencias destacados en tu ciudad.',
     numberOfItems: featured.length,
     itemListElement: featured.map((event, index) => ({
@@ -201,7 +201,7 @@ export default async function HomePage() {
           availability: 'https://schema.org/InStock',
           url: `${BASE_URL}/events/${event.slug}`,
         },
-        organizer: { '@type': 'Organization', name: 'Fever', url: BASE_URL },
+        organizer: { '@type': 'Organization', name: 'CTXplorer', url: BASE_URL },
       },
     })),
   };
@@ -212,28 +212,28 @@ export default async function HomePage() {
     mainEntity: [
       {
         '@type': 'Question',
-        name: 'Como funciona Fever para explorar eventos?',
+        name: 'Como funciona CTXplorer para explorar eventos?',
         acceptedAnswer: { '@type': 'Answer', text: 'Descubre experiencias unicas en tu ciudad: conciertos, gastronomia, arte y mas. Navega por categorias o busca eventos especificos para encontrar lo que te interesa.' },
       },
       {
         '@type': 'Question',
-        name: 'Como puedo crear mi Day perfecto en Fever?',
+        name: 'Como puedo crear mi Day perfecto en CTXplorer?',
         acceptedAnswer: { '@type': 'Answer', text: 'Agrega actividades a tu plan diario. Te mostramos la ruta y el costo total para que puedas organizar tu dia de la mejor manera.' },
       },
       {
         '@type': 'Question',
-        name: 'Como obtengo mis entradas en Fever?',
+        name: 'Como obtengo mis entradas en CTXplorer?',
         acceptedAnswer: { '@type': 'Answer', text: 'Obten tus tickets QR directamente en la app, comparte con amigos y vive un dia inolvidable. Puedes comprar entradas para conciertos, teatro, gastronomia y mas.' },
       },
       {
         '@type': 'Question',
-        name: 'En que ciudades esta disponible Fever?',
-        acceptedAnswer: { '@type': 'Answer', text: 'Fever esta disponible en Ciudad de Mexico, Madrid, Barcelona, New York, London, Paris y muchas mas ciudades. Explora eventos en tu ciudad favorita.' },
+        name: 'En que ciudades esta disponible CTXplorer?',
+        acceptedAnswer: { '@type': 'Answer', text: 'CTXplorer esta disponible en Ciudad de Mexico, Madrid, Barcelona, New York, London, Paris y muchas mas ciudades. Explora eventos en tu ciudad favorita.' },
       },
       {
         '@type': 'Question',
-        name: 'Hay eventos gratuitos en Fever?',
-        acceptedAnswer: { '@type': 'Answer', text: 'Si, Fever ofrece una seleccion de eventos gratuitos en todas las ciudades disponibles. Filtra por precio para encontrar experiencias sin costo.' },
+        name: 'Hay eventos gratuitos en CTXplorer?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Si, CTXplorer ofrece una seleccion de eventos gratuitos en todas las ciudades disponibles. Filtra por precio para encontrar experiencias sin costo.' },
       },
     ],
   };
@@ -935,7 +935,7 @@ export default async function HomePage() {
               Lo que dicen nuestros usuarios
             </h2>
             <p className="text-sm max-w-xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
-              Miles de personas han descubierto experiencias inolvidables con Fever
+              Miles de personas han descubierto experiencias inolvidables con CTXplorer
             </p>
           </div>
 

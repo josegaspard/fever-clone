@@ -228,8 +228,8 @@ export default function AICreatorPage() {
       const next = { ...prev, [field]: value };
       if (field === 'title' && typeof value === 'string') {
         next.slug = slugify(value);
-        if (!next.metaTitle || next.metaTitle === `${prev.title.slice(0, 55)} | Fever`) {
-          next.metaTitle = `${value.slice(0, 55)} | Fever`;
+        if (!next.metaTitle || next.metaTitle === `${prev.title.slice(0, 55)} | CTXplorer`) {
+          next.metaTitle = `${value.slice(0, 55)} | CTXplorer`;
         }
       }
       return next;

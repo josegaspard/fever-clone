@@ -126,7 +126,7 @@ export async function generateMetadata({
       description,
       type: 'article',
       url: eventUrl,
-      siteName: 'Fever',
+      siteName: 'CTXplorer',
       locale: 'es_ES',
       publishedTime: event.createdAt,
       modifiedTime: event.updatedAt,
@@ -146,8 +146,8 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      site: '@fever',
-      creator: '@fever',
+      site: '@ctxplorer',
+      creator: '@ctxplorer',
       title,
       description,
       images: event.image
@@ -319,11 +319,11 @@ export default async function EventDetailPage({
         }
       : {
           '@type': 'Organization',
-          name: 'Fever',
+          name: 'CTXplorer',
         },
     organizer: {
       '@type': 'Organization',
-      name: 'Fever',
+      name: 'CTXplorer',
       url: BASE_URL,
       logo: `${BASE_URL}/og-image.png`,
     },

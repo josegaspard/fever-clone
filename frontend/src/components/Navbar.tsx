@@ -91,9 +91,9 @@ export default function Navbar() {
         <Link
           href="/"
           className="text-2xl font-extrabold tracking-tight text-[#e63946] shrink-0"
-          aria-label="Fever - Ir al inicio"
+          aria-label="CTXplorer - Ir al inicio"
         >
-          FEVER
+          CTXPLORER
         </Link>
 
         {/* City selector -- desktop */}

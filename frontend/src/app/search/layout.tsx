@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 const BASE_URL = 'https://fever-clone.vercel.app';
 
 export const metadata: Metadata = {
-  title: 'Buscar eventos | Fever',
+  title: 'Buscar eventos | CTXplorer',
   description:
     'Busca y filtra eventos, conciertos, teatro, gastronomía, arte y más en tu ciudad. Encuentra entradas y experiencias únicas cerca de ti. Compara precios y compra tickets online.',
   keywords: [
@@ -15,10 +15,10 @@ export const metadata: Metadata = {
     'eventos Ciudad de México', 'eventos Madrid', 'eventos Barcelona',
   ],
   openGraph: {
-    title: 'Buscar eventos | Fever',
+    title: 'Buscar eventos | CTXplorer',
     description: 'Encuentra los mejores eventos, conciertos y experiencias en tu ciudad. Filtra por categoría, ciudad y precio.',
     url: `${BASE_URL}/search`,
-    siteName: 'Fever',
+    siteName: 'CTXplorer',
     type: 'website',
     locale: 'es_ES',
     images: [
@@ -26,14 +26,14 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Buscar eventos en Fever',
+        alt: 'Buscar eventos en CTXplorer',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@fever',
-    title: 'Buscar eventos | Fever',
+    site: '@ctxplorer',
+    title: 'Buscar eventos | CTXplorer',
     description: 'Encuentra los mejores eventos, conciertos y experiencias en tu ciudad.',
     images: ['/og-image.png'],
   },

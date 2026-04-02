@@ -7,10 +7,10 @@ export const revalidate = 300;
 const BASE_URL = 'https://fever-clone.vercel.app';
 
 export const metadata: Metadata = {
-  title: 'Venues - Descubre los mejores lugares | FEVER',
+  title: 'Venues - Descubre los mejores lugares | CTXPLORER',
   description: 'Explora los mejores venues, teatros, museos, bares y centros culturales. Encuentra eventos, reseñas y compra tus entradas.',
   openGraph: {
-    title: 'Venues - Descubre los mejores lugares | FEVER',
+    title: 'Venues - Descubre los mejores lugares | CTXPLORER',
     description: 'Explora los mejores venues y compra tus entradas.',
     url: `${BASE_URL}/venues`,
     type: 'website',
@@ -70,7 +70,7 @@ export default async function VenuesPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'Venues - FEVER',
+    name: 'Venues - CTXPLORER',
     description: 'Directorio de los mejores venues y espacios para eventos.',
     url: `${BASE_URL}/venues`,
   };

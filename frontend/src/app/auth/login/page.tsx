@@ -79,7 +79,7 @@ function LoginForm() {
           </div>
           <h1 className="text-2xl font-black tracking-tight">Iniciar sesión</h1>
           <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-            Accede a tu cuenta de Fever
+            Accede a tu cuenta de CTXplorer
           </p>
         </div>
 

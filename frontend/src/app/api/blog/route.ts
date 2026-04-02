@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       content,
       excerpt: excerpt || null,
       image: image || null,
-      author_name: author_name || 'Fever Team',
+      author_name: author_name || 'CTXplorer Team',
       category: category || 'general',
       tags: tags || [],
       meta_title: meta_title || title,

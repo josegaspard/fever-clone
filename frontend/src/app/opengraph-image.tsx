@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Fever - Descubre los mejores eventos y experiencias en tu ciudad';
+export const alt = 'CTXplorer - Descubre los mejores eventos y experiencias en tu ciudad';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -55,7 +55,7 @@ export default function Image() {
             marginBottom: 24,
           }}
         >
-          FEVER
+          CTXPLORER
         </div>
 
         {/* Tagline */}

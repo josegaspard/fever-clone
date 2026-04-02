@@ -345,7 +345,7 @@ export default function UserOnboardingPage() {
           className="gradient-text"
           style={{ fontSize: 28, fontWeight: 900, textDecoration: 'none', letterSpacing: -1 }}
         >
-          FEVER
+          CTXPLORER
         </a>
 
         <button
@@ -894,7 +894,7 @@ export default function UserOnboardingPage() {
                   lineHeight: 1.2,
                 }}
               >
-                ¡Todo listo! Tu experiencia Fever te espera
+                ¡Todo listo! Tu experiencia CTXplorer te espera
               </h1>
               <p
                 style={{

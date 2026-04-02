@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Politica de Privacidad',
-  description: 'Politica de privacidad y proteccion de datos de Fever.',
+  description: 'Politica de privacidad y proteccion de datos de CTXplorer.',
 };
 
 export default function PrivacyPage() {
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
       <div className="prose-sm space-y-6" style={{ color: 'var(--text-secondary)' }}>
         <section>
           <h2 className="text-lg font-bold mb-2" style={{ color: 'var(--fg)' }}>1. Informacion que Recopilamos</h2>
-          <p>Recopilamos la siguiente informacion cuando usas Fever:</p>
+          <p>Recopilamos la siguiente informacion cuando usas CTXplorer:</p>
           <ul className="list-disc pl-5 space-y-1 mt-2">
             <li><strong>Datos de registro:</strong> nombre, correo electronico, contrasena (cifrada)</li>
             <li><strong>Datos de perfil:</strong> avatar, telefono, preferencias de ciudad</li>

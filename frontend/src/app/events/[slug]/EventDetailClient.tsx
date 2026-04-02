@@ -969,7 +969,7 @@ export default function EventDetailClient({ event, related, venue }: Props) {
                     </div>
                     <div>
                       <p className="text-sm font-semibold" style={{ color: 'var(--fg)' }}>
-                        Fever
+                        CTXplorer
                       </p>
                       <p className="text-xs flex items-center gap-1" style={{ color: 'var(--text-tertiary)' }}>
                         <span style={{ color: '#2a9d8f' }}>Organizador verificado</span>

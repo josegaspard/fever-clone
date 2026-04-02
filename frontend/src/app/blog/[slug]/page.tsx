@@ -89,7 +89,7 @@ export async function generateMetadata({
       description,
       type: 'article',
       url: postUrl,
-      siteName: 'Fever',
+      siteName: 'CTXplorer',
       locale: 'es_ES',
       publishedTime: post.created_at,
       modifiedTime: post.updated_at,
@@ -202,7 +202,7 @@ export default async function BlogPostPage({
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Fever',
+      name: 'CTXplorer',
       url: BASE_URL,
       logo: {
         '@type': 'ImageObject',

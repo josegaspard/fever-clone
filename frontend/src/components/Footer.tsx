@@ -7,8 +7,8 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="text-2xl font-extrabold text-[#e63946]" aria-label="Fever - Ir al inicio">
-              FEVER
+            <Link href="/" className="text-2xl font-extrabold text-[#e63946]" aria-label="CTXplorer - Ir al inicio">
+              CTXPLORER
             </Link>
             <p className="mt-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
               Descubre las mejores experiencias y eventos en tu ciudad.
@@ -72,7 +72,7 @@ export default function Footer() {
 
         <div className="mt-10 pt-6 border-t flex flex-col md:flex-row items-center justify-between gap-4" style={{ borderColor: 'var(--border)' }}>
           <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-            &copy; {new Date().getFullYear()} Fever. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} CTXplorer. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--text-tertiary)' }}>
             <Link href="/legal/terms" className="footer-legal-link">

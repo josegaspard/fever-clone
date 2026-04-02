@@ -38,7 +38,7 @@ export default function BlogNewPage() {
   const [image, setImage] = useState('');
   const [category, setCategory] = useState('general');
   const [tagsStr, setTagsStr] = useState('');
-  const [authorName, setAuthorName] = useState('Fever Team');
+  const [authorName, setAuthorName] = useState('CTXplorer Team');
   const [status, setStatus] = useState('DRAFT');
   const [featured, setFeatured] = useState(false);
   const [readingTime, setReadingTime] = useState(5);
@@ -337,7 +337,7 @@ export default function BlogNewPage() {
                       className="text-base font-medium mb-1 line-clamp-1"
                       style={{ color: '#1a0dab' }}
                     >
-                      {(metaTitle || title || 'Titulo del articulo') + ' | Fever'}
+                      {(metaTitle || title || 'Titulo del articulo') + ' | CTXplorer'}
                     </p>
                     <p
                       className="text-xs line-clamp-2"

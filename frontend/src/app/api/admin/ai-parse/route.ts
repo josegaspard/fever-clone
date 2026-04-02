@@ -337,7 +337,7 @@ function parseEventContent(content: string, images: string[], links: string[]) {
   const shortDescription = description.slice(0, 150).trim() + (description.length > 150 ? '...' : '');
 
   // SEO fields
-  const metaTitle = title ? `${title.slice(0, 55)} | Fever` : '';
+  const metaTitle = title ? `${title.slice(0, 55)} | CTXplorer` : '';
   const metaDescription = shortDescription.slice(0, 155);
 
   // Image from provided images or detect from content

@@ -95,7 +95,7 @@ export async function generateMetadata({
   const name = cityData.name;
   const country = cityData.country;
   const desc = CITY_DESCRIPTIONS[citySlug] || `Descubre los mejores eventos y experiencias en ${name}. Conciertos, gastronomia, arte, festivales y mas.`;
-  const title = `Eventos en ${name} - Conciertos, Gastronomia, Arte y Mas | Fever`;
+  const title = `Eventos en ${name} - Conciertos, Gastronomia, Arte y Mas | CTXplorer`;
   const url = `${BASE_URL}/${citySlug}`;
 
   return {
@@ -105,21 +105,21 @@ export async function generateMetadata({
       `eventos ${name}`, `conciertos ${name}`, `que hacer en ${name}`,
       `planes ${name}`, `experiencias ${name}`, `tickets ${name}`,
       `actividades ${name}`, `gastronomia ${name}`, `arte ${name}`,
-      name, country, 'Fever',
+      name, country, 'CTXplorer',
     ],
     alternates: { canonical: url },
     openGraph: {
       title,
       description: desc.slice(0, 160),
       url,
-      siteName: 'Fever',
+      siteName: 'CTXplorer',
       type: 'website',
       locale: 'es_ES',
       images: [{ url: CITY_HERO_IMAGES[citySlug] || '/og-image.png', width: 1200, height: 630, alt: `Eventos en ${name}` }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Eventos en ${name} | Fever`,
+      title: `Eventos en ${name} | CTXplorer`,
       description: desc.slice(0, 160),
       images: [CITY_HERO_IMAGES[citySlug] || '/og-image.png'],
     },

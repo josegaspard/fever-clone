@@ -31,8 +31,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
-    template: '%s | Fever',
+    default: 'CTXplorer - Descubre los mejores planes y eventos en tu ciudad',
+    template: '%s | CTXplorer',
   },
   description:
     'Descubre experiencias unicas, conciertos, gastronomia, arte y mas. Crea tu Day perfecto con eventos en Ciudad de Mexico, Madrid, Barcelona, New York, London y Paris. Compra entradas y tickets online.',
@@ -45,9 +45,9 @@ export const metadata: Metadata = {
     'Paris', 'eventos cerca de mi', 'comprar entradas online',
     'planes fin de semana', 'cosas que hacer', 'agenda cultural',
   ],
-  authors: [{ name: 'Fever', url: BASE_URL }],
-  creator: 'Fever',
-  publisher: 'Fever',
+  authors: [{ name: 'CTXplorer', url: BASE_URL }],
+  creator: 'CTXplorer',
+  publisher: 'CTXplorer',
   formatDetection: { telephone: false },
   alternates: {
     canonical: BASE_URL,
@@ -64,8 +64,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'es_ES',
-    siteName: 'Fever',
-    title: 'Fever - Descubre los mejores planes y eventos en tu ciudad',
+    siteName: 'CTXplorer',
+    title: 'CTXplorer - Descubre los mejores planes y eventos en tu ciudad',
     description: 'Experiencias unicas, conciertos, gastronomia y mas. Crea tu Day perfecto.',
     url: BASE_URL,
     images: [
@@ -73,23 +73,23 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Fever - Descubre los mejores eventos y experiencias en tu ciudad',
+        alt: 'CTXplorer - Descubre los mejores eventos y experiencias en tu ciudad',
         type: 'image/png',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@fever',
-    creator: '@fever',
-    title: 'Fever - Descubre los mejores planes en tu ciudad',
+    site: '@ctxplorer',
+    creator: '@ctxplorer',
+    title: 'CTXplorer - Descubre los mejores planes en tu ciudad',
     description: 'Experiencias unicas, conciertos, gastronomia y mas.',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Fever - Descubre los mejores eventos y experiencias en tu ciudad',
+        alt: 'CTXplorer - Descubre los mejores eventos y experiencias en tu ciudad',
       },
     ],
   },
@@ -115,13 +115,13 @@ export default function RootLayout({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Fever',
+    name: 'CTXplorer',
     url: BASE_URL,
     description: 'Descubre los mejores planes y eventos en tu ciudad. Conciertos, gastronomia, arte, festivales y experiencias unicas.',
     inLanguage: 'es',
     publisher: {
       '@type': 'Organization',
-      name: 'Fever',
+      name: 'CTXplorer',
     },
     potentialAction: {
       '@type': 'SearchAction',
@@ -136,7 +136,7 @@ export default function RootLayout({
   const orgJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Fever',
+    name: 'CTXplorer',
     url: BASE_URL,
     logo: {
       '@type': 'ImageObject',

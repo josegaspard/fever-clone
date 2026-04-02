@@ -3,7 +3,7 @@
 // Set RESEND_API_KEY in .env.local to enable real emails
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
-const FROM_EMAIL = process.env.EMAIL_FROM || 'Fever <noreply@fever-clone.vercel.app>';
+const FROM_EMAIL = process.env.EMAIL_FROM || 'CTXplorer <noreply@fever-clone.vercel.app>';
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://fever-clone.vercel.app';
 
 interface EmailOptions {
@@ -51,13 +51,13 @@ function baseTemplate(content: string): string {
 <body style="margin:0;padding:0;background:#f9fafb;font-family:system-ui,-apple-system,sans-serif">
   <div style="max-width:560px;margin:40px auto;background:white;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb">
     <div style="background:#e63946;padding:24px 32px">
-      <h1 style="color:white;font-size:24px;font-weight:900;margin:0;letter-spacing:-0.5px">FEVER</h1>
+      <h1 style="color:white;font-size:24px;font-weight:900;margin:0;letter-spacing:-0.5px">CTXPLORER</h1>
     </div>
     <div style="padding:32px">
       ${content}
     </div>
     <div style="padding:16px 32px;background:#f9fafb;border-top:1px solid #e5e7eb;text-align:center">
-      <p style="color:#9ca3af;font-size:12px;margin:0">&copy; ${new Date().getFullYear()} Fever. Todos los derechos reservados.</p>
+      <p style="color:#9ca3af;font-size:12px;margin:0">&copy; ${new Date().getFullYear()} CTXplorer. Todos los derechos reservados.</p>
     </div>
   </div>
 </body>
@@ -68,7 +68,7 @@ export async function sendPasswordResetEmail(to: string, token: string): Promise
   const resetUrl = `${BASE_URL}/auth/reset-password?token=${token}`;
   return sendEmail({
     to,
-    subject: 'Restablecer tu contrasena - Fever',
+    subject: 'Restablecer tu contrasena - CTXplorer',
     html: baseTemplate(`
       <h2 style="color:#111;font-size:20px;font-weight:700;margin:0 0 8px">Restablecer contrasena</h2>
       <p style="color:#6b7280;font-size:14px;line-height:1.6;margin:0 0 24px">Recibimos una solicitud para restablecer la contrasena de tu cuenta. Haz clic en el boton de abajo para crear una nueva contrasena.</p>
@@ -81,9 +81,9 @@ export async function sendPasswordResetEmail(to: string, token: string): Promise
 export async function sendWelcomeEmail(to: string, name: string): Promise<boolean> {
   return sendEmail({
     to,
-    subject: `Bienvenido a Fever, ${name}!`,
+    subject: `Bienvenido a CTXplorer, ${name}!`,
     html: baseTemplate(`
-      <h2 style="color:#111;font-size:20px;font-weight:700;margin:0 0 8px">Bienvenido a Fever!</h2>
+      <h2 style="color:#111;font-size:20px;font-weight:700;margin:0 0 8px">Bienvenido a CTXplorer!</h2>
       <p style="color:#6b7280;font-size:14px;line-height:1.6;margin:0 0 16px">Hola <strong>${name}</strong>, tu cuenta ha sido creada exitosamente.</p>
       <p style="color:#6b7280;font-size:14px;line-height:1.6;margin:0 0 24px">Ahora puedes explorar miles de eventos, crear tu Day perfecto y comprar entradas con un solo clic.</p>
       <a href="${BASE_URL}/search" style="display:inline-block;background:#e63946;color:white;font-weight:700;font-size:14px;padding:12px 32px;border-radius:8px;text-decoration:none">Explorar eventos</a>
@@ -101,7 +101,7 @@ export async function sendTicketConfirmationEmail(
 ): Promise<boolean> {
   return sendEmail({
     to,
-    subject: `Tu entrada para ${eventTitle} - Fever`,
+    subject: `Tu entrada para ${eventTitle} - CTXplorer`,
     html: baseTemplate(`
       <h2 style="color:#111;font-size:20px;font-weight:700;margin:0 0 8px">Entrada confirmada!</h2>
       <p style="color:#6b7280;font-size:14px;line-height:1.6;margin:0 0 24px">Hola <strong>${name}</strong>, tu entrada ha sido confirmada.</p>
@@ -126,7 +126,7 @@ export async function sendEventReminderEmail(
 ): Promise<boolean> {
   return sendEmail({
     to,
-    subject: `Recordatorio: ${eventTitle} es manana! - Fever`,
+    subject: `Recordatorio: ${eventTitle} es manana! - CTXplorer`,
     html: baseTemplate(`
       <h2 style="color:#111;font-size:20px;font-weight:700;margin:0 0 8px">Tu evento es manana!</h2>
       <p style="color:#6b7280;font-size:14px;line-height:1.6;margin:0 0 24px">Hola <strong>${name}</strong>, te recordamos que manana tienes un evento.</p>

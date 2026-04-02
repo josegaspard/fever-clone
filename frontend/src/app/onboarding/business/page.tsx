@@ -400,7 +400,7 @@ export default function BusinessOnboardingPage() {
           className="text-2xl font-extrabold tracking-tight"
           style={{ color: '#e63946' }}
         >
-          FEVER
+          CTXPLORER
         </Link>
         <button
           onClick={handleSkip}

@@ -27,6 +27,9 @@ function SearchContent() {
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
+  const [userLat, setUserLat] = useState<number | null>(null);
+  const [userLng, setUserLng] = useState<number | null>(null);
+  const [geoStatus, setGeoStatus] = useState<'idle' | 'loading' | 'granted' | 'denied'>('idle');
 
   // Read filters from URL
   const q = searchParams.get('q') || '';
@@ -38,7 +41,22 @@ function SearchContent() {
   const featured = searchParams.get('featured') || '';
   const rating = searchParams.get('rating') || '';
   const sortBy = searchParams.get('sortBy') || '';
+  const radius = searchParams.get('radius') || '';
   const page = parseInt(searchParams.get('page') || '1', 10);
+
+  function requestLocation() {
+    if (!navigator.geolocation) return;
+    setGeoStatus('loading');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLat(pos.coords.latitude);
+        setUserLng(pos.coords.longitude);
+        setGeoStatus('granted');
+      },
+      () => setGeoStatus('denied'),
+      { enableHighAccuracy: false, timeout: 8000 }
+    );
+  }
 
   const updateUrl = useCallback(
     (updates: Record<string, string>) => {
@@ -77,6 +95,9 @@ function SearchContent() {
           featured: featured === 'true' ? true : undefined,
           rating: rating ? Number(rating) : undefined,
           sortBy: sortBy || undefined,
+          lat: radius && userLat ? userLat : undefined,
+          lng: radius && userLng ? userLng : undefined,
+          radius: radius ? Number(radius) : undefined,
           status: 'PUBLISHED',
           page,
           limit: 24,
@@ -90,7 +111,7 @@ function SearchContent() {
       }
     }
     load();
-  }, [q, city, category, minPrice, maxPrice, date, featured, rating, sortBy, page]);
+  }, [q, city, category, minPrice, maxPrice, date, featured, rating, sortBy, radius, userLat, userLng, page]);
 
   return (
     <div>
@@ -201,6 +222,46 @@ function SearchContent() {
               <option value="popularity">Mas popular</option>
               <option value="date">Fecha mas cercana</option>
             </select>
+          </div>
+
+          {/* Distance filter */}
+          <div>
+            <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Distancia</h3>
+            {geoStatus === 'granted' && userLat ? (
+              <>
+                <select
+                  value={radius}
+                  onChange={(e) => updateUrl({ radius: e.target.value })}
+                  className="w-full input-theme text-sm px-3 py-2"
+                >
+                  <option value="">Sin limite</option>
+                  <option value="2">2 km</option>
+                  <option value="5">5 km</option>
+                  <option value="10">10 km</option>
+                  <option value="25">25 km</option>
+                  <option value="50">50 km</option>
+                </select>
+                <p className="text-[10px] mt-1" style={{ color: 'var(--text-tertiary)' }}>
+                  Ubicacion activa
+                </p>
+              </>
+            ) : geoStatus === 'loading' ? (
+              <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Obteniendo ubicacion...</p>
+            ) : geoStatus === 'denied' ? (
+              <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Ubicacion no disponible. Activa los permisos en tu navegador.</p>
+            ) : (
+              <button
+                onClick={requestLocation}
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition hover:opacity-80"
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--fg)' }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--text-secondary)' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Usar mi ubicacion
+              </button>
+            )}
           </div>
 
           <div>

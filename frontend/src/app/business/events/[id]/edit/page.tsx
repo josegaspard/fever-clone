@@ -711,7 +711,7 @@ export default function EditBusinessEventPage() {
             </div>
             <div className="rounded-xl p-4" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
               <p className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Google Preview</p>
-              <p className="text-sm truncate" style={{ color: '#1a0dab' }}>{form.metaTitle || form.title || 'Titulo'} | Fever</p>
+              <p className="text-sm truncate" style={{ color: '#1a0dab' }}>{form.metaTitle || form.title || 'Titulo'} | CTXplorer</p>
               <p className="text-xs truncate" style={{ color: '#006621' }}>fever-clone.vercel.app/events/{form.slug}</p>
               <p className="text-xs line-clamp-2 mt-0.5" style={{ color: 'var(--text-secondary)' }}>{form.metaDescription || form.shortDescription || form.description?.slice(0, 160) || '...'}</p>
             </div>
