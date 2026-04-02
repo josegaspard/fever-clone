@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { Event, addFavorite, removeFavorite } from '@/lib/api';
+import { Event, addFavorite, removeFavorite, createCheckoutSession, createTicket } from '@/lib/api';
 import EventCarousel from '@/components/EventCarousel';
 import StarRating from '@/components/StarRating';
 import ReviewSection from '@/components/ReviewSection';
@@ -41,8 +41,39 @@ export default function EventDetailClient({ event, related, venue }: Props) {
   const [descExpanded, setDescExpanded] = useState(false);
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
   const [mobileBarVisible, setMobileBarVisible] = useState(false);
+  const [buyLoading, setBuyLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  // ---- Buy / Reserve handler ----
+  async function handleBuy() {
+    if (!user) {
+      router.push('/auth/login');
+      return;
+    }
+    setBuyLoading(true);
+    try {
+      if (event.price === 0) {
+        // Free event → create ticket directly
+        await createTicket(String(event.id));
+        showToast('Ticket reservado con éxito', 'success');
+        router.push('/tickets?success=true');
+      } else {
+        // Paid event → Stripe checkout
+        const { url } = await createCheckoutSession({ eventId: String(event.id) });
+        if (url) {
+          window.location.href = url;
+        } else {
+          showToast('Error al crear la sesión de pago', 'error');
+        }
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error al procesar la compra';
+      showToast(msg, 'error');
+    } finally {
+      setBuyLoading(false);
+    }
+  }
 
   // ---- Formatters ----
   const formatDate = (d: string) => {
@@ -899,33 +930,23 @@ export default function EventDetailClient({ event, related, venue }: Props) {
                   <div className="space-y-3 pt-2">
                     {!isFree ? (
                       <button
-                        onClick={() => {
-                          if (!user) {
-                            router.push('/auth/login');
-                            return;
-                          }
-                          alert('Compra simulada. Agrega a tu Day para generar ticket.');
-                        }}
-                        className="w-full py-3.5 text-white font-bold text-lg rounded-xl transition shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99]"
+                        onClick={handleBuy}
+                        disabled={buyLoading}
+                        className="w-full py-3.5 text-white font-bold text-lg rounded-xl transition shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none"
                         style={{
                           background: 'linear-gradient(135deg, #e63946, #c62d3a)',
                           boxShadow: '0 4px 20px rgba(230,57,70,0.3)',
                         }}
                       >
-                        Comprar entrada
+                        {buyLoading ? 'Procesando...' : 'Comprar entrada'}
                       </button>
                     ) : (
                       <button
-                        onClick={() => {
-                          if (!user) {
-                            router.push('/auth/login');
-                            return;
-                          }
-                          alert('Reserva simulada. Agrega a tu Day para generar ticket.');
-                        }}
-                        className="w-full py-3.5 bg-green-500 hover:bg-green-600 text-white font-bold text-lg rounded-xl transition shadow-lg shadow-green-500/20 hover:scale-[1.01] active:scale-[0.99]"
+                        onClick={handleBuy}
+                        disabled={buyLoading}
+                        className="w-full py-3.5 bg-green-500 hover:bg-green-600 text-white font-bold text-lg rounded-xl transition shadow-lg shadow-green-500/20 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none"
                       >
-                        Reservar gratis
+                        {buyLoading ? 'Procesando...' : 'Reservar gratis'}
                       </button>
                     )}
                     <AddToPlanButton event={event} variant="full" />
@@ -1109,19 +1130,14 @@ export default function EventDetailClient({ event, related, venue }: Props) {
           </p>
         </div>
         <button
-          onClick={() => {
-            if (!user) {
-              router.push('/auth/login');
-              return;
-            }
-            alert('Agrega a tu Day para continuar.');
-          }}
-          className="px-6 py-3 text-sm text-white font-bold rounded-xl transition hover:scale-[1.02] active:scale-[0.98] shrink-0"
+          onClick={handleBuy}
+          disabled={buyLoading}
+          className="px-6 py-3 text-sm text-white font-bold rounded-xl transition hover:scale-[1.02] active:scale-[0.98] shrink-0 disabled:opacity-60 disabled:pointer-events-none"
           style={{
             background: isFree ? '#2a9d8f' : 'linear-gradient(135deg, #e63946, #c62d3a)',
           }}
         >
-          {isFree ? 'Reservar' : 'Comprar'}
+          {buyLoading ? '...' : isFree ? 'Reservar' : 'Comprar'}
         </button>
       </div>
 

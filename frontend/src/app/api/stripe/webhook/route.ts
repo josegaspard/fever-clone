@@ -34,23 +34,32 @@ export async function POST(req: NextRequest) {
       const { userId, eventId, planItemId } = session.metadata || {};
 
       if (userId && eventId) {
-        // Create ticket
-        const qrCode = generateQRCode(eventId, userId);
-        await supabase.from('tickets').insert({
-          user_id: Number(userId),
-          event_id: Number(eventId),
-          plan_item_id: planItemId ? Number(planItemId) : null,
-          qr_code: qrCode,
-          status: 'ACTIVE',
-          stripe_session_id: session.id,
-        });
+        // Prevent duplicate tickets for the same session
+        const { data: existing } = await supabase
+          .from('tickets')
+          .select('id')
+          .eq('payment_intent_id', session.id)
+          .maybeSingle();
 
-        // Mark plan item as paid
-        if (planItemId) {
-          await supabase
-            .from('plan_items')
-            .update({ is_paid: true })
-            .eq('id', Number(planItemId));
+        if (!existing) {
+          const qrCode = generateQRCode(eventId, userId);
+          await supabase.from('tickets').insert({
+            user_id: Number(userId),
+            event_id: Number(eventId),
+            plan_item_id: planItemId ? Number(planItemId) : null,
+            qr_code: qrCode,
+            status: 'ACTIVE',
+            payment_intent_id: session.id,
+            total_paid: (session.amount_total || 0) / 100,
+          });
+
+          // Mark plan item as paid
+          if (planItemId) {
+            await supabase
+              .from('plan_items')
+              .update({ is_paid: true })
+              .eq('id', Number(planItemId));
+          }
         }
       }
     }
