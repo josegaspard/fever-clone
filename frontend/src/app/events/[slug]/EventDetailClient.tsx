@@ -147,9 +147,8 @@ export default function EventDetailClient({ event, related, venue }: Props) {
   // ---- Gallery (only real images) ----
   const gallery: string[] = [];
   if (event.image) gallery.push(event.image);
-  const eventAny = event as unknown as Record<string, unknown>;
-  if (Array.isArray(eventAny.gallery)) {
-    for (const img of eventAny.gallery as string[]) {
+  if (Array.isArray(event.gallery)) {
+    for (const img of event.gallery) {
       if (img && !gallery.includes(img)) gallery.push(img);
     }
   }

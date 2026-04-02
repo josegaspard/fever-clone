@@ -193,6 +193,26 @@ export default function SuperAdminEvents() {
     } catch { /* silent */ }
   };
 
+  const [uploading, setUploading] = useState<string | null>(null); // 'image' | 'video' | 'gallery' | null
+
+  const uploadFile = async (file: File, target: 'image' | 'video' | 'gallery') => {
+    setUploading(target);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/upload', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      const url = data.url as string;
+      if (target === 'image') setForm(f => ({ ...f, image: url }));
+      else if (target === 'video') setForm(f => ({ ...f, videoUrl: url }));
+      else if (target === 'gallery') setForm(f => ({ ...f, gallery: [...f.gallery, url] }));
+      showToast('Archivo subido');
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Error subiendo archivo', 'error');
+    } finally { setUploading(null); }
+  };
+
   const updateField = (key: string, value: string | boolean) => setForm(f => ({ ...f, [key]: value }));
   const allSelected = data ? data.data.length > 0 && selectedIds.size === data.data.length : false;
 
@@ -248,28 +268,47 @@ export default function SuperAdminEvents() {
               <textarea style={{ ...inputStyle, minHeight: 100, resize: 'vertical' }} value={form.description} onChange={e => updateField('description', e.target.value)} />
             </div>
 
-            {/* Media - Image principal + Video */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 16 }}>
-              <div>
-                <label style={labelStyle}>Imagen principal (URL)</label>
-                <input style={inputStyle} value={form.image} onChange={e => updateField('image', e.target.value)} placeholder="https://..." />
-                {form.image && <div style={{ marginTop: 8, height: 50, width: 80, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}><Image src={form.image} alt="" width={80} height={50} style={{ objectFit: 'cover', width: '100%', height: '100%' }} /></div>}
-              </div>
-              <div>
-                <label style={labelStyle}>Video (URL .mp4)</label>
-                <input style={inputStyle} value={form.videoUrl} onChange={e => updateField('videoUrl', e.target.value)} placeholder="https://...video.mp4" />
-                {form.videoUrl && <div style={{ marginTop: 8, fontSize: 12, color: '#22c55e', fontWeight: 600 }}>Video configurado</div>}
-              </div>
-              <div>
-                <label style={labelStyle}>Venue / Organizador</label>
-                <select style={inputStyle} value={form.venueId} onChange={e => updateField('venueId', e.target.value)}>
-                  <option value="">Sin venue</option>
-                  {venues.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
-                </select>
-              </div>
+            {/* Venue */}
+            <div style={{ marginBottom: 20 }}>
+              <label style={labelStyle}>Venue / Organizador</label>
+              <select style={inputStyle} value={form.venueId} onChange={e => updateField('venueId', e.target.value)}>
+                <option value="">Sin venue</option>
+                {venues.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+              </select>
             </div>
 
-            {/* Gallery - Multiple images */}
+            {/* ═══ IMAGEN PRINCIPAL ═══ */}
+            <div style={{ marginBottom: 20, padding: 16, borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <label style={labelStyle}>Imagen principal</label>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+                <input style={{ ...inputStyle, flex: 1 }} value={form.image} onChange={e => updateField('image', e.target.value)} placeholder="URL de imagen o sube un archivo" />
+                <label style={{ padding: '10px 16px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--fg)', fontWeight: 600, fontSize: 13, cursor: uploading === 'image' ? 'wait' : 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 6, opacity: uploading === 'image' ? 0.6 : 1 }}>
+                  {uploading === 'image' ? 'Subiendo...' : '📁 Subir'}
+                  <input type="file" accept="image/*" hidden onChange={e => { if (e.target.files?.[0]) uploadFile(e.target.files[0], 'image'); e.target.value = ''; }} />
+                </label>
+              </div>
+              {form.image && <div style={{ width: 120, height: 80, borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)' }}><Image src={form.image} alt="" width={120} height={80} style={{ objectFit: 'cover', width: '100%', height: '100%' }} /></div>}
+            </div>
+
+            {/* ═══ VIDEO ═══ */}
+            <div style={{ marginBottom: 20, padding: 16, borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <label style={labelStyle}>Video del evento</label>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+                <input style={{ ...inputStyle, flex: 1 }} value={form.videoUrl} onChange={e => updateField('videoUrl', e.target.value)} placeholder="URL .mp4 o sube un video" />
+                <label style={{ padding: '10px 16px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--fg)', fontWeight: 600, fontSize: 13, cursor: uploading === 'video' ? 'wait' : 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 6, opacity: uploading === 'video' ? 0.6 : 1 }}>
+                  {uploading === 'video' ? 'Subiendo...' : '🎬 Subir video'}
+                  <input type="file" accept="video/*" hidden onChange={e => { if (e.target.files?.[0]) uploadFile(e.target.files[0], 'video'); e.target.value = ''; }} />
+                </label>
+                {form.videoUrl && <button type="button" onClick={() => updateField('videoUrl', '')} style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.06)', color: '#ef4444', fontWeight: 600, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' }}>Quitar</button>}
+              </div>
+              {form.videoUrl && (
+                <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)', maxWidth: 320 }}>
+                  <video src={form.videoUrl} controls muted style={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }} />
+                </div>
+              )}
+            </div>
+
+            {/* ═══ GALERIA ═══ */}
             <div style={{ marginBottom: 20, padding: 16, borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>
               <label style={labelStyle}>Galeria de fotos ({form.gallery.length} imagenes)</label>
               <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
@@ -277,31 +316,37 @@ export default function SuperAdminEvents() {
                   style={{ ...inputStyle, flex: 1 }}
                   value={form.galleryInput}
                   onChange={e => setForm(f => ({ ...f, galleryInput: e.target.value }))}
-                  placeholder="Pega URL de imagen y presiona Agregar"
+                  placeholder="Pega URL o sube archivos"
                   onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      if (form.galleryInput.trim()) {
-                        setForm(f => ({ ...f, gallery: [...f.gallery, f.galleryInput.trim()], galleryInput: '' }));
-                      }
-                    }
+                    if (e.key === 'Enter') { e.preventDefault(); if (form.galleryInput.trim()) setForm(f => ({ ...f, gallery: [...f.gallery, f.galleryInput.trim()], galleryInput: '' })); }
                   }}
                 />
                 <button type="button" onClick={() => {
                   if (form.galleryInput.trim()) setForm(f => ({ ...f, gallery: [...f.gallery, f.galleryInput.trim()], galleryInput: '' }));
-                }} style={{ padding: '10px 16px', borderRadius: 10, border: 'none', background: '#e63946', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' }}>+ Agregar</button>
+                }} style={{ padding: '10px 16px', borderRadius: 10, border: 'none', background: '#e63946', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' }}>+ URL</button>
+                <label style={{ padding: '10px 16px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--fg)', fontWeight: 600, fontSize: 13, cursor: uploading === 'gallery' ? 'wait' : 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 6, opacity: uploading === 'gallery' ? 0.6 : 1 }}>
+                  {uploading === 'gallery' ? 'Subiendo...' : '📁 Subir'}
+                  <input type="file" accept="image/*" multiple hidden onChange={async e => {
+                    const files = e.target.files;
+                    if (!files) return;
+                    for (let i = 0; i < files.length; i++) { await uploadFile(files[i], 'gallery'); }
+                    e.target.value = '';
+                  }} />
+                </label>
               </div>
-              {form.gallery.length > 0 && (
+              {form.gallery.length > 0 ? (
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {form.gallery.map((url, i) => (
-                    <div key={i} style={{ position: 'relative', width: 80, height: 60, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
-                      <Image src={url} alt={`Gallery ${i + 1}`} width={80} height={60} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
-                      <button type="button" onClick={() => setForm(f => ({ ...f, gallery: f.gallery.filter((_, idx) => idx !== i) }))} style={{ position: 'absolute', top: 2, right: 2, width: 18, height: 18, borderRadius: '50%', background: 'rgba(239,68,68,0.9)', color: '#fff', border: 'none', fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>x</button>
+                    <div key={i} style={{ position: 'relative', width: 100, height: 70, borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)' }}>
+                      <Image src={url} alt={`Foto ${i + 1}`} width={100} height={70} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+                      <button type="button" onClick={() => setForm(f => ({ ...f, gallery: f.gallery.filter((_, idx) => idx !== i) }))} style={{ position: 'absolute', top: 3, right: 3, width: 20, height: 20, borderRadius: '50%', background: 'rgba(239,68,68,0.9)', color: '#fff', border: 'none', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>x</button>
+                      <div style={{ position: 'absolute', bottom: 3, left: 3, background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4 }}>{i + 1}</div>
                     </div>
                   ))}
                 </div>
+              ) : (
+                <p style={{ fontSize: 12, color: 'var(--text-tertiary)', margin: 0 }}>Sin fotos en la galeria. Agrega URLs o sube archivos.</p>
               )}
-              {form.gallery.length === 0 && <p style={{ fontSize: 12, color: 'var(--text-tertiary)', margin: 0 }}>Sin imagenes en la galeria. Agrega URLs arriba.</p>}
             </div>
 
             {/* Price */}

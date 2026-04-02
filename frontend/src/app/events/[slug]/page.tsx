@@ -19,6 +19,8 @@ function transformEvent(row: Record<string, unknown>): Event {
     description: (row.description as string) || '',
     shortDescription: row.short_description as string | undefined,
     image: row.image as string | undefined,
+    videoUrl: row.video_url as string | undefined,
+    gallery: Array.isArray(row.gallery) ? (row.gallery as string[]) : [],
     price: row.price as number,
     originalPrice: row.original_price as number | undefined,
     date: row.date as string,
