@@ -229,7 +229,7 @@ export default function EventDetailClient({ event, related, venue }: Props) {
       {/* ======================================================= */}
       <nav className="max-w-7xl mx-auto px-4 pt-4 pb-2">
         <ol
-          className="flex items-center gap-1.5 text-xs overflow-x-auto"
+          className="flex items-center gap-1.5 text-xs overflow-x-auto scrollbar-hide"
           style={{ color: 'var(--text-tertiary)' }}
         >
           <li>
@@ -309,7 +309,7 @@ export default function EventDetailClient({ event, related, venue }: Props) {
           </div>
         ) : (
           /* ---------- MULTI IMAGE - Bento Grid ---------- */
-          <div className="max-w-7xl mx-auto px-4 mb-8">
+          <div className="max-w-7xl mx-auto px-4 mb-8 overflow-hidden">
             <div className="relative">
               <div className="absolute -inset-4 rounded-3xl blur-2xl opacity-20" style={{ backgroundImage: `url(${gallery[0]})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
               <div className={`relative gap-2 rounded-2xl overflow-hidden ${gallery.length >= 4 ? 'grid grid-cols-4 grid-rows-2 h-[300px] md:h-[500px]' : 'grid grid-cols-2 h-[250px] md:h-[400px]'}`}>

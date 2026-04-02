@@ -427,18 +427,18 @@ function SheetContent({
               {/* Perfect Day upsell */}
               <div className="rounded-xl p-3.5" style={{ background: 'linear-gradient(135deg, rgba(230,57,70,0.06), rgba(42,157,143,0.06))', border: '1px solid var(--border)' }}>
                 <p className="text-xs font-bold mb-2" style={{ color: 'var(--fg)' }}>Arma tu Day perfecto</p>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-1.5">
+                <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+                  <div className="flex items-center gap-1.5 shrink-0">
                     <span className="text-base">🍽️</span>
                     <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Cena antes</span>
                   </div>
-                  <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>|</span>
-                  <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] hidden sm:inline" style={{ color: 'var(--text-tertiary)' }}>|</span>
+                  <div className="flex items-center gap-1.5 shrink-0">
                     <span className="text-base">🍸</span>
                     <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Drinks despues</span>
                   </div>
-                  <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>|</span>
-                  <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] hidden sm:inline" style={{ color: 'var(--text-tertiary)' }}>|</span>
+                  <div className="flex items-center gap-1.5 shrink-0">
                     <span className="text-base">📍</span>
                     <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Actividades cerca</span>
                   </div>
@@ -447,7 +447,7 @@ function SheetContent({
               </div>
 
               {/* Security badges */}
-              <div className="flex items-center gap-4 pt-1">
+              <div className="flex items-center gap-4 flex-wrap pt-1">
                 <div className="flex items-center gap-1.5">
                   <svg className="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />

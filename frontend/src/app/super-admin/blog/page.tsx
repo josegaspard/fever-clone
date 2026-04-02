@@ -120,7 +120,7 @@ export default function BlogAdminPage() {
           placeholder="Buscar por titulo..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="input-theme w-full md:w-80 px-4 py-2.5 rounded-xl text-sm"
+          className="input-theme w-full md:w-80 px-4 py-2.5 rounded-xl text-base"
         />
       </div>
 
@@ -258,8 +258,8 @@ export default function BlogAdminPage() {
                         <Link
                           href={`/blog/${post.slug}`}
                           target="_blank"
-                          className="p-2 rounded-lg hover:bg-[var(--surface-2)] transition"
-                          style={{ color: 'var(--text-tertiary)' }}
+                          className="p-2.5 rounded-lg hover:bg-[var(--surface-2)] transition inline-flex items-center justify-center"
+                          style={{ color: 'var(--text-tertiary)', minWidth: 40, minHeight: 40 }}
                           title="Ver"
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -269,8 +269,8 @@ export default function BlogAdminPage() {
                         </Link>
                         <Link
                           href={`/super-admin/blog/${post.id}/edit`}
-                          className="p-2 rounded-lg hover:bg-[var(--surface-2)] transition"
-                          style={{ color: 'var(--text-secondary)' }}
+                          className="p-2.5 rounded-lg hover:bg-[var(--surface-2)] transition inline-flex items-center justify-center"
+                          style={{ color: 'var(--text-secondary)', minWidth: 40, minHeight: 40 }}
                           title="Editar"
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -281,8 +281,8 @@ export default function BlogAdminPage() {
                         <button
                           onClick={() => handleDelete(post.id)}
                           disabled={deleting === post.id}
-                          className="p-2 rounded-lg hover:bg-red-500/10 transition"
-                          style={{ color: deleting === post.id ? 'var(--text-tertiary)' : '#e63946' }}
+                          className="p-2.5 rounded-lg hover:bg-red-500/10 transition inline-flex items-center justify-center"
+                          style={{ color: deleting === post.id ? 'var(--text-tertiary)' : '#e63946', minWidth: 40, minHeight: 40, border: 'none', background: 'none', cursor: 'pointer' }}
                           title="Eliminar"
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

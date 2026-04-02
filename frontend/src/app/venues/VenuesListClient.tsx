@@ -70,9 +70,9 @@ export default function VenuesListClient({ venues }: { venues: VenueItem[] }) {
   const avgRating = venues.length ? (venues.reduce((s, v) => s + v.rating, 0) / venues.length).toFixed(1) : '0';
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+    <div className="min-h-screen overflow-x-hidden" style={{ background: 'var(--bg)' }}>
       {/* Hero */}
-      <section className="relative overflow-hidden py-16 sm:py-24">
+      <section className="relative overflow-hidden py-12 sm:py-24">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-1/2 -right-1/4 w-[600px] h-[600px] rounded-full opacity-[0.04]" style={{ background: 'radial-gradient(circle, #e63946 0%, transparent 70%)' }} />
           <div className="absolute -bottom-1/2 -left-1/4 w-[500px] h-[500px] rounded-full opacity-[0.03]" style={{ background: 'radial-gradient(circle, #e63946 0%, transparent 70%)' }} />
@@ -118,7 +118,7 @@ export default function VenuesListClient({ venues }: { venues: VenueItem[] }) {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar venue, ciudad..."
-                className="w-full input-theme rounded-2xl pl-12 pr-4 py-4 text-sm shadow-theme-lg"
+                className="w-full input-theme rounded-2xl pl-12 pr-4 py-4 text-base shadow-theme-lg"
               />
             </div>
           </motion.div>
@@ -127,7 +127,7 @@ export default function VenuesListClient({ venues }: { venues: VenueItem[] }) {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.4 }} className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2 justify-center flex-wrap">
             <button
               onClick={() => setCategoryFilter(null)}
-              className="px-4 py-2 rounded-full text-sm font-medium transition-all shrink-0"
+              className="px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium transition-all shrink-0"
               style={!categoryFilter ? { background: '#e63946', color: '#fff' } : { background: 'var(--card)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
             >
               Todos
@@ -138,7 +138,7 @@ export default function VenuesListClient({ venues }: { venues: VenueItem[] }) {
                 <button
                   key={cat}
                   onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
-                  className="px-4 py-2 rounded-full text-sm font-medium transition-all shrink-0"
+                  className="px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium transition-all shrink-0"
                   style={categoryFilter === cat ? { background: '#e63946', color: '#fff' } : { background: 'var(--card)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
                 >
                   {info.icon} {info.label}
@@ -151,11 +151,11 @@ export default function VenuesListClient({ venues }: { venues: VenueItem[] }) {
 
       {/* Sort + Results */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
-        <div className="flex items-center justify-between mb-6">
-          <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <p className="text-sm font-medium shrink-0" style={{ color: 'var(--text-secondary)' }}>
             {filtered.length} {filtered.length === 1 ? 'venue' : 'venues'}
           </p>
-          <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: 'var(--card)' }}>
+          <div className="flex items-center gap-1 p-1 rounded-xl overflow-x-auto scrollbar-hide" style={{ background: 'var(--card)' }}>
             {([
               { key: 'rating' as const, label: 'Rating' },
               { key: 'followers' as const, label: 'Seguidores' },
@@ -164,7 +164,7 @@ export default function VenuesListClient({ venues }: { venues: VenueItem[] }) {
               <button
                 key={s.key}
                 onClick={() => setSortBy(s.key)}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                className="px-3 py-2 min-h-[44px] rounded-lg text-xs font-semibold transition-all shrink-0"
                 style={sortBy === s.key ? { background: 'var(--bg)', color: 'var(--fg)', boxShadow: 'var(--shadow)' } : { color: 'var(--text-tertiary)' }}
               >
                 {s.label}

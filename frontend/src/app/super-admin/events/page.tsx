@@ -27,9 +27,9 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
   if (totalPages <= 1) return null;
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 24 }}>
-      <button disabled={page <= 1} onClick={() => onPageChange(page - 1)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--card)', color: page <= 1 ? 'var(--text-tertiary)' : 'var(--fg)', cursor: page <= 1 ? 'not-allowed' : 'pointer', fontSize: 13, fontWeight: 500 }}>Anterior</button>
+      <button disabled={page <= 1} onClick={() => onPageChange(page - 1)} style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--card)', color: page <= 1 ? 'var(--text-tertiary)' : 'var(--fg)', cursor: page <= 1 ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 500, minHeight: 44 }}>Anterior</button>
       <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600 }}>{page} / {totalPages}</span>
-      <button disabled={page >= totalPages} onClick={() => onPageChange(page + 1)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--card)', color: page >= totalPages ? 'var(--text-tertiary)' : 'var(--fg)', cursor: page >= totalPages ? 'not-allowed' : 'pointer', fontSize: 13, fontWeight: 500 }}>Siguiente</button>
+      <button disabled={page >= totalPages} onClick={() => onPageChange(page + 1)} style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--card)', color: page >= totalPages ? 'var(--text-tertiary)' : 'var(--fg)', cursor: page >= totalPages ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 500, minHeight: 44 }}>Siguiente</button>
     </div>
   );
 }
@@ -216,18 +216,18 @@ export default function SuperAdminEvents() {
   const updateField = (key: string, value: string | boolean) => setForm(f => ({ ...f, [key]: value }));
   const allSelected = data ? data.data.length > 0 && selectedIds.size === data.data.length : false;
 
-  const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 14px', borderRadius: 10, background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--fg)', fontSize: 14 };
+  const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 14px', borderRadius: 10, background: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--fg)', fontSize: 16 };
   const labelStyle: React.CSSProperties = { display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6, color: 'var(--text-secondary)' };
 
   return (
     <div>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 style={{ fontSize: 28, fontWeight: 800, color: 'var(--fg)', letterSpacing: -0.5, marginBottom: 4 }}>Eventos</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Gestiona todos los eventos de la plataforma</p>
         </div>
-        <button onClick={openCreate} style={{ padding: '10px 20px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg, #e63946, #d32836)', color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <button onClick={openCreate} style={{ padding: '12px 20px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg, #e63946, #d32836)', color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, minHeight: 44 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
           Nuevo Evento
         </button>
@@ -408,12 +408,14 @@ export default function SuperAdminEvents() {
       )}
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 20, background: 'var(--card)', borderRadius: 12, padding: 4, border: '1px solid var(--border)', width: 'fit-content' }}>
-        {TABS.map(tab => (
-          <button key={tab.value} onClick={() => setStatusFilter(tab.value)} style={{ padding: '8px 18px', borderRadius: 8, border: 'none', background: statusFilter === tab.value ? 'rgba(230,57,70,0.12)' : 'transparent', color: statusFilter === tab.value ? '#e63946' : 'var(--text-secondary)', fontSize: 13, fontWeight: statusFilter === tab.value ? 700 : 500, cursor: 'pointer' }}>
-            {tab.label}
-          </button>
-        ))}
+      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', marginBottom: 20 }}>
+        <div style={{ display: 'flex', gap: 4, background: 'var(--card)', borderRadius: 12, padding: 4, border: '1px solid var(--border)', width: 'fit-content' }}>
+          {TABS.map(tab => (
+            <button key={tab.value} onClick={() => setStatusFilter(tab.value)} style={{ padding: '10px 18px', borderRadius: 8, border: 'none', background: statusFilter === tab.value ? 'rgba(230,57,70,0.12)' : 'transparent', color: statusFilter === tab.value ? '#e63946' : 'var(--text-secondary)', fontSize: 13, fontWeight: statusFilter === tab.value ? 700 : 500, cursor: 'pointer', whiteSpace: 'nowrap', minHeight: 44 }}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Search + Bulk */}
@@ -472,19 +474,19 @@ export default function SuperAdminEvents() {
                   <td style={{ padding: '10px 12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap', fontSize: 12 }}>{event.date ? new Date(event.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) : '-'}</td>
                   <td style={{ padding: '10px 12px' }}>
                     <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                      <button onClick={() => openEdit(event)} title="Editar" style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                      <button onClick={() => openEdit(event)} title="Editar" style={{ width: 36, height: 36, minWidth: 36, minHeight: 36, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', cursor: 'pointer', padding: 0 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                       </button>
-                      <Link href={`/events/${event.slug}`} target="_blank" title="Ver" style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', textDecoration: 'none' }}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+                      <Link href={`/events/${event.slug}`} target="_blank" title="Ver" style={{ width: 36, height: 36, minWidth: 36, minHeight: 36, borderRadius: 8, border: '1px solid var(--border)', background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', textDecoration: 'none' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
                       </Link>
-                      <select value={event.status || 'DRAFT'} onChange={e => handleQuickStatus(event.id, e.target.value)} style={{ padding: '4px 6px', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--fg)', fontSize: 10, fontWeight: 600, cursor: 'pointer' }}>
+                      <select value={event.status || 'DRAFT'} onChange={e => handleQuickStatus(event.id, e.target.value)} style={{ padding: '6px 8px', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--fg)', fontSize: 11, fontWeight: 600, cursor: 'pointer', minHeight: 36 }}>
                         <option value="PUBLISHED">PUB</option>
                         <option value="DRAFT">DRA</option>
                         <option value="ARCHIVED">ARC</option>
                       </select>
-                      <button onClick={() => handleDelete(event.id)} disabled={deleting === event.id} title="Eliminar" style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444', cursor: 'pointer', opacity: deleting === event.id ? 0.5 : 1 }}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" /></svg>
+                      <button onClick={() => handleDelete(event.id)} disabled={deleting === event.id} title="Eliminar" style={{ width: 36, height: 36, minWidth: 36, minHeight: 36, borderRadius: 8, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444', cursor: 'pointer', opacity: deleting === event.id ? 0.5 : 1, padding: 0 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" /></svg>
                       </button>
                     </div>
                   </td>

@@ -216,7 +216,7 @@ export default function PlanDetailPage() {
               </button>
             </div>
             {/* Quick action chips */}
-            <div className="flex flex-wrap gap-2 ml-13">
+            <div className="flex flex-wrap gap-2 ml-0 sm:ml-13">
               <Link
                 href={`/search?city=${plan?.items?.[0]?.event ? ((plan.items[0].event as Record<string, unknown>).city as Record<string, string>)?.slug || '' : ''}&category=gastronomia`}
                 className="px-3 py-1.5 rounded-lg text-xs font-medium transition hover:opacity-80"

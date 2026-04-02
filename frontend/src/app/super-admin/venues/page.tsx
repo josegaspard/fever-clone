@@ -170,7 +170,7 @@ export default function VenuesAdminPage() {
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '10px 14px', borderRadius: 10,
     background: 'var(--input-bg)', border: '1px solid var(--input-border)',
-    color: 'var(--fg)', fontSize: 14,
+    color: 'var(--fg)', fontSize: 16,
   };
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6,
@@ -182,7 +182,7 @@ export default function VenuesAdminPage() {
   return (
     <div>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <h1 style={{ fontSize: 28, fontWeight: 800, color: 'var(--fg)', margin: 0 }}>Venues</h1>
           <p style={{ fontSize: 14, color: 'var(--text-tertiary)', margin: '4px 0 0' }}>
@@ -192,10 +192,10 @@ export default function VenuesAdminPage() {
         <button
           onClick={openCreate}
           style={{
-            padding: '10px 20px', borderRadius: 12, border: 'none',
+            padding: '12px 20px', borderRadius: 12, border: 'none',
             background: 'linear-gradient(135deg, #e63946, #d32836)', color: '#fff',
             fontWeight: 700, fontSize: 14, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 8,
+            display: 'flex', alignItems: 'center', gap: 8, minHeight: 44,
           }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
@@ -317,13 +317,14 @@ export default function VenuesAdminPage() {
                 padding: '12px 28px', borderRadius: 12, border: 'none',
                 background: 'linear-gradient(135deg, #e63946, #d32836)', color: '#fff',
                 fontWeight: 700, fontSize: 14, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1,
+                minHeight: 44,
               }}>
                 {saving ? 'Guardando...' : editingVenue ? 'Guardar cambios' : 'Crear venue'}
               </button>
               <button type="button" onClick={() => setShowForm(false)} style={{
                 padding: '12px 28px', borderRadius: 12,
                 background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)',
-                fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                fontWeight: 600, fontSize: 14, cursor: 'pointer', minHeight: 44,
               }}>
                 Cancelar
               </button>
@@ -346,7 +347,8 @@ export default function VenuesAdminPage() {
         </div>
       ) : (
         <div style={{ borderRadius: 16, overflow: 'hidden', border: '1px solid var(--border)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, minWidth: 700 }}>
             <thead>
               <tr style={{ background: 'var(--card)', borderBottom: '1px solid var(--border)' }}>
                 <th style={{ textAlign: 'left', padding: '12px 16px', fontWeight: 600, color: 'var(--text-secondary)' }}>Venue</th>
@@ -398,8 +400,9 @@ export default function VenuesAdminPage() {
                       <button
                         onClick={() => openEdit(v)}
                         style={{
-                          padding: '6px 14px', borderRadius: 8, border: '1px solid var(--border)',
+                          padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)',
                           background: 'var(--card)', color: 'var(--fg)', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                          minHeight: 40,
                         }}
                       >
                         Editar
@@ -408,9 +411,10 @@ export default function VenuesAdminPage() {
                         onClick={() => handleDelete(v.slug)}
                         disabled={deleting === v.slug}
                         style={{
-                          padding: '6px 14px', borderRadius: 8, border: '1px solid rgba(239,68,68,0.3)',
+                          padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(239,68,68,0.3)',
                           background: 'rgba(239,68,68,0.08)', color: '#ef4444', fontSize: 13, fontWeight: 600,
                           cursor: deleting === v.slug ? 'not-allowed' : 'pointer', opacity: deleting === v.slug ? 0.5 : 1,
+                          minHeight: 40,
                         }}
                       >
                         {deleting === v.slug ? '...' : 'Eliminar'}
@@ -421,6 +425,7 @@ export default function VenuesAdminPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

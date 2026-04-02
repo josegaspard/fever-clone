@@ -189,7 +189,7 @@ export default async function BlogPage({
         <div className="max-w-7xl mx-auto px-4 py-10">
           {/* Category filter pills */}
           {categories.length > 1 && (
-            <nav className="flex flex-wrap gap-2 mb-10" aria-label="Filtrar por categoria">
+            <nav className="flex gap-2 mb-10 overflow-x-auto scrollbar-hide pb-2 sm:flex-wrap" aria-label="Filtrar por categoria">
               <Link
                 href="/blog"
                 className="px-4 py-2 rounded-full text-sm font-medium border transition"

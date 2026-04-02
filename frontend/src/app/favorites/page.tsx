@@ -39,7 +39,7 @@ export default function FavoritesPage() {
   if (authLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {Array.from({ length: 10 }).map((_, i) => (
             <EventCardSkeleton key={i} />
           ))}
@@ -53,7 +53,7 @@ export default function FavoritesPage() {
       <h1 className="text-3xl font-extrabold mb-8">Mis favoritos</h1>
 
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {Array.from({ length: 10 }).map((_, i) => (
             <EventCardSkeleton key={i} />
           ))}
@@ -82,13 +82,13 @@ export default function FavoritesPage() {
           </p>
           <button
             onClick={() => router.push('/search')}
-            className="px-6 py-2.5 bg-[#e63946] hover:bg-[#c62d3a] rounded-lg text-white font-bold transition"
+            className="px-6 py-3 min-h-[44px] bg-[#e63946] hover:bg-[#c62d3a] rounded-lg text-white font-bold transition"
           >
             Explorar eventos
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {events.map((event) => (
             <EventCard
               key={event.id}

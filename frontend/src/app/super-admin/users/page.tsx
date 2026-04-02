@@ -83,10 +83,10 @@ function ActionsDropdown({ onChangeType, onDelete }: { onChangeType: () => void;
       <button
         onClick={() => setOpen(!open)}
         style={{
-          width: 32, height: 32, borderRadius: 8,
+          width: 40, height: 40, minWidth: 40, minHeight: 40, borderRadius: 8,
           border: '1px solid var(--border)', background: 'var(--card)',
           cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--text-secondary)', transition: 'all 0.2s',
+          color: 'var(--text-secondary)', transition: 'all 0.2s', padding: 0,
         }}
         onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#e63946'; e.currentTarget.style.color = '#e63946'; }}
         onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
@@ -107,10 +107,10 @@ function ActionsDropdown({ onChangeType, onDelete }: { onChangeType: () => void;
             <button
               onClick={() => { setOpen(false); onChangeType(); }}
               style={{
-                width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
-                color: 'var(--fg)', fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                width: '100%', padding: '12px 16px', border: 'none', background: 'transparent',
+                color: 'var(--fg)', fontSize: 14, fontWeight: 500, cursor: 'pointer',
                 textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10,
-                transition: 'background 0.15s',
+                transition: 'background 0.15s', minHeight: 44,
               }}
               onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(230,57,70,0.08)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
@@ -126,10 +126,10 @@ function ActionsDropdown({ onChangeType, onDelete }: { onChangeType: () => void;
             <button
               onClick={() => { setOpen(false); onDelete(); }}
               style={{
-                width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
-                color: '#ef4444', fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                width: '100%', padding: '12px 16px', border: 'none', background: 'transparent',
+                color: '#ef4444', fontSize: 14, fontWeight: 500, cursor: 'pointer',
                 textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10,
-                transition: 'background 0.15s',
+                transition: 'background 0.15s', minHeight: 44,
               }}
               onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
@@ -166,9 +166,9 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
         disabled={page <= 1}
         onClick={() => onPageChange(page - 1)}
         style={{
-          padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)',
+          padding: '10px 16px', borderRadius: 8, border: '1px solid var(--border)',
           background: 'var(--card)', color: page <= 1 ? 'var(--text-tertiary)' : 'var(--fg)',
-          cursor: page <= 1 ? 'not-allowed' : 'pointer', fontSize: 13, fontWeight: 500,
+          cursor: page <= 1 ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 500, minHeight: 44,
         }}
       >
         Anterior
@@ -181,7 +181,7 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
             key={p}
             onClick={() => onPageChange(p)}
             style={{
-              width: 36, height: 36, borderRadius: 8,
+              width: 40, height: 40, minWidth: 40, minHeight: 40, borderRadius: 8,
               border: p === page ? '1px solid #e63946' : '1px solid var(--border)',
               background: p === page ? 'rgba(230,57,70,0.12)' : 'var(--card)',
               color: p === page ? '#e63946' : 'var(--fg)',
@@ -196,9 +196,9 @@ function Pagination({ page, totalPages, onPageChange }: { page: number; totalPag
         disabled={page >= totalPages}
         onClick={() => onPageChange(page + 1)}
         style={{
-          padding: '8px 14px', borderRadius: 8, border: '1px solid var(--border)',
+          padding: '10px 16px', borderRadius: 8, border: '1px solid var(--border)',
           background: 'var(--card)', color: page >= totalPages ? 'var(--text-tertiary)' : 'var(--fg)',
-          cursor: page >= totalPages ? 'not-allowed' : 'pointer', fontSize: 13, fontWeight: 500,
+          cursor: page >= totalPages ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 500, minHeight: 44,
         }}
       >
         Siguiente
@@ -316,7 +316,7 @@ export default function SuperAdminUsers() {
             className="input-theme"
             style={{
               width: '100%', padding: '10px 14px 10px 42px', borderRadius: 10,
-              fontSize: 14, outline: 'none',
+              fontSize: 16, outline: 'none',
             }}
           />
         </div>
@@ -327,7 +327,7 @@ export default function SuperAdminUsers() {
           onChange={(e) => setFilterType(e.target.value)}
           className="input-theme"
           style={{
-            padding: '10px 36px 10px 14px', borderRadius: 10, fontSize: 14,
+            padding: '10px 36px 10px 14px', borderRadius: 10, fontSize: 16, minHeight: 44,
             cursor: 'pointer', appearance: 'none',
             backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
             backgroundRepeat: 'no-repeat',
@@ -463,7 +463,7 @@ export default function SuperAdminUsers() {
           className="input-theme"
           style={{
             width: '100%', padding: '10px 14px', borderRadius: 10,
-            fontSize: 14, marginBottom: 24, cursor: 'pointer',
+            fontSize: 16, marginBottom: 24, cursor: 'pointer', minHeight: 44,
           }}
         >
           <option value="USER">USER</option>
@@ -474,7 +474,7 @@ export default function SuperAdminUsers() {
           <button
             onClick={() => setChangeTypeUser(null)}
             className="btn-secondary"
-            style={{ padding: '10px 20px', border: '1px solid var(--border)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
+            style={{ padding: '12px 20px', border: '1px solid var(--border)', cursor: 'pointer', fontSize: 14, fontWeight: 600, minHeight: 44 }}
           >
             Cancelar
           </button>
@@ -483,8 +483,8 @@ export default function SuperAdminUsers() {
             disabled={actionLoading}
             className="btn-primary"
             style={{
-              padding: '10px 20px', border: 'none', cursor: actionLoading ? 'wait' : 'pointer',
-              fontSize: 13, fontWeight: 600, opacity: actionLoading ? 0.7 : 1,
+              padding: '12px 20px', border: 'none', cursor: actionLoading ? 'wait' : 'pointer',
+              fontSize: 14, fontWeight: 600, opacity: actionLoading ? 0.7 : 1, minHeight: 44,
             }}
           >
             {actionLoading ? 'Guardando...' : 'Guardar cambio'}
@@ -517,7 +517,7 @@ export default function SuperAdminUsers() {
             <button
               onClick={() => setDeleteConfirmUser(null)}
               className="btn-secondary"
-              style={{ padding: '10px 24px', border: '1px solid var(--border)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
+              style={{ padding: '12px 24px', border: '1px solid var(--border)', cursor: 'pointer', fontSize: 14, fontWeight: 600, minHeight: 44 }}
             >
               Cancelar
             </button>
@@ -525,9 +525,9 @@ export default function SuperAdminUsers() {
               onClick={handleDelete}
               disabled={actionLoading}
               style={{
-                padding: '10px 24px', borderRadius: 12, border: 'none',
+                padding: '12px 24px', borderRadius: 12, border: 'none',
                 background: '#ef4444', color: '#fff', cursor: actionLoading ? 'wait' : 'pointer',
-                fontSize: 13, fontWeight: 700, opacity: actionLoading ? 0.7 : 1,
+                fontSize: 14, fontWeight: 700, opacity: actionLoading ? 0.7 : 1, minHeight: 44,
                 transition: 'all 0.2s',
               }}
             >

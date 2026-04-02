@@ -275,7 +275,7 @@ export default async function HomePage() {
       {/* TRENDING NOW - Large editorial cards                               */}
       {/* ================================================================== */}
       {trendingEvents.length > 0 && (
-        <section className="relative" aria-label="Trending ahora">
+        <section className="relative overflow-hidden" aria-label="Trending ahora">
           {/* Background accent */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full bg-[#e63946]/[0.04] blur-[100px]" />

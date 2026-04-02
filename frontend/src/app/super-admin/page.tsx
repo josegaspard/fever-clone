@@ -52,7 +52,7 @@ function StatCard({ icon, label, value, prefix, suffix, borderColor, loading }: 
       style={{
         background: 'var(--card)',
         borderRadius: 16,
-        padding: '24px 28px',
+        padding: '20px 20px',
         border: '1px solid var(--border)',
         borderLeft: `4px solid ${borderColor}`,
         display: 'flex',
@@ -385,8 +385,8 @@ export default function SuperAdminDashboard() {
       {/* Stat Cards */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-        gap: 20,
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gap: 16,
         marginBottom: 32,
       }}
         className="stagger-children"
@@ -457,8 +457,8 @@ export default function SuperAdminDashboard() {
       {/* Charts Row */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: 20,
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gap: 16,
         marginBottom: 32,
       }}>
         <BarChart
@@ -478,8 +478,8 @@ export default function SuperAdminDashboard() {
       {/* Tables Row */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-        gap: 20,
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: 16,
       }}>
         <DataTable
           title="Usuarios Recientes"

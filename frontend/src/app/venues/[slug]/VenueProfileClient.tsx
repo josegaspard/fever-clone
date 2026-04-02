@@ -137,7 +137,7 @@ export default function VenueProfileClient({ venue, events, isFollowing }: Props
   }, [venue.rating, venue.reviewCount]);
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+    <div className="min-h-screen overflow-x-hidden" style={{ background: 'var(--bg)' }}>
       {/* ═══ HERO - Immersive ═══ */}
       <div ref={heroRef} className="relative w-full h-[420px] sm:h-[480px] md:h-[540px] overflow-hidden">
         {/* Background media with parallax */}
@@ -176,7 +176,7 @@ export default function VenueProfileClient({ venue, events, isFollowing }: Props
         <motion.div
           animate={{ opacity: [0.08, 0.15, 0.08] }}
           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[120px]"
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[min(600px,100vw)] h-[300px] rounded-full blur-[120px]"
           style={{ background: '#e63946' }}
         />
 
@@ -330,7 +330,7 @@ export default function VenueProfileClient({ venue, events, isFollowing }: Props
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className="relative flex items-center gap-1.5 px-4 sm:px-5 py-3.5 text-sm font-medium whitespace-nowrap transition-colors shrink-0"
+                className="relative flex items-center gap-1.5 px-4 sm:px-5 py-3.5 min-h-[44px] text-sm font-medium whitespace-nowrap transition-colors shrink-0"
                 style={{ color: activeTab === tab.id ? '#e63946' : 'var(--text-tertiary)' }}
               >
                 {tab.label}
@@ -371,7 +371,7 @@ export default function VenueProfileClient({ venue, events, isFollowing }: Props
                   <button
                     key={f}
                     onClick={() => setEventFilter(f)}
-                    className="px-4 py-2 rounded-full text-sm font-medium transition-all"
+                    className="px-4 py-2.5 min-h-[44px] rounded-full text-sm font-medium transition-all"
                     style={eventFilter === f ? { background: '#e63946', color: '#fff' } : { background: 'var(--card)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
                   >
                     {f === 'proximos' ? 'Proximos' : f === 'pasados' ? 'Pasados' : 'Todos'}
@@ -388,7 +388,7 @@ export default function VenueProfileClient({ venue, events, isFollowing }: Props
                   <p className="text-sm mt-2" style={{ color: 'var(--text-tertiary)' }}>Sigue a {venue.name} para enterarte de nuevos eventos</p>
                 </motion.div>
               ) : (
-                <motion.div layout className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+                <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                   {filteredEvents.map((event, i) => (
                     <motion.div key={event.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: i * 0.04 }}>
                       <EventCard event={event} />

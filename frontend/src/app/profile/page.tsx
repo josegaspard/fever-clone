@@ -148,7 +148,7 @@ export default function ProfilePage() {
           <div>
             <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text-secondary)' }}>Nombre</label>
             {editing ? (
-              <input value={name} onChange={(e) => setName(e.target.value)} className="w-full input-theme rounded-xl px-4 py-2.5 text-sm" />
+              <input value={name} onChange={(e) => setName(e.target.value)} className="w-full input-theme rounded-xl px-4 py-2.5 text-base" />
             ) : (
               <p className="text-sm py-2.5" style={{ color: 'var(--fg)' }}>{user.name}</p>
             )}
@@ -162,7 +162,7 @@ export default function ProfilePage() {
           <div>
             <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text-secondary)' }}>Telefono</label>
             {editing ? (
-              <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+52 55 1234 5678" className="w-full input-theme rounded-xl px-4 py-2.5 text-sm" />
+              <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+52 55 1234 5678" className="w-full input-theme rounded-xl px-4 py-2.5 text-base" />
             ) : (
               <p className="text-sm py-2.5" style={{ color: user.phone ? 'var(--fg)' : 'var(--text-tertiary)' }}>{user.phone || 'Sin telefono'}</p>
             )}
@@ -175,7 +175,7 @@ export default function ProfilePage() {
               <div>
                 <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text-secondary)' }}>Nombre de empresa</label>
                 {editing ? (
-                  <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full input-theme rounded-xl px-4 py-2.5 text-sm" />
+                  <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full input-theme rounded-xl px-4 py-2.5 text-base" />
                 ) : (
                   <p className="text-sm py-2.5" style={{ color: 'var(--fg)' }}>{user.companyName || '-'}</p>
                 )}
@@ -183,7 +183,7 @@ export default function ProfilePage() {
               <div>
                 <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text-secondary)' }}>Descripcion</label>
                 {editing ? (
-                  <textarea value={companyDescription} onChange={(e) => setCompanyDescription(e.target.value)} rows={3} className="w-full input-theme rounded-xl px-4 py-2.5 text-sm resize-none" />
+                  <textarea value={companyDescription} onChange={(e) => setCompanyDescription(e.target.value)} rows={3} className="w-full input-theme rounded-xl px-4 py-2.5 text-base resize-none" />
                 ) : (
                   <p className="text-sm py-2.5" style={{ color: user.companyDescription ? 'var(--fg)' : 'var(--text-tertiary)' }}>{user.companyDescription || 'Sin descripcion'}</p>
                 )}
@@ -191,7 +191,7 @@ export default function ProfilePage() {
               <div>
                 <label className="text-xs font-semibold block mb-1.5" style={{ color: 'var(--text-secondary)' }}>Sitio web</label>
                 {editing ? (
-                  <input value={companyWebsite} onChange={(e) => setCompanyWebsite(e.target.value)} placeholder="https://..." className="w-full input-theme rounded-xl px-4 py-2.5 text-sm" />
+                  <input value={companyWebsite} onChange={(e) => setCompanyWebsite(e.target.value)} placeholder="https://..." className="w-full input-theme rounded-xl px-4 py-2.5 text-base" />
                 ) : (
                   <p className="text-sm py-2.5" style={{ color: user.companyWebsite ? 'var(--fg)' : 'var(--text-tertiary)' }}>{user.companyWebsite || 'Sin sitio web'}</p>
                 )}
@@ -258,7 +258,7 @@ export default function ProfilePage() {
         <h2 className="text-sm font-bold mb-3" style={{ color: 'var(--text-secondary)' }}>Sesion</h2>
         <button
           onClick={() => { logout(); router.push('/'); }}
-          className="px-4 py-2 rounded-xl text-sm font-medium border transition hover:border-[#e63946] hover:text-[#e63946]"
+          className="w-full sm:w-auto px-4 py-3 min-h-[44px] rounded-xl text-sm font-medium border transition hover:border-[#e63946] hover:text-[#e63946]"
           style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
         >
           Cerrar sesion

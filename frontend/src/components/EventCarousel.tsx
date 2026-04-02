@@ -34,7 +34,7 @@ export default function EventCarousel({
   if (!loading && events.length === 0) return null;
 
   return (
-    <section className="relative">
+    <section className="relative overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl md:text-2xl font-bold" style={{ color: 'var(--fg)' }}>{title}</h2>
