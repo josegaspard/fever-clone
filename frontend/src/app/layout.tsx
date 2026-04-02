@@ -8,6 +8,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CookieBanner from '@/components/CookieBanner';
 import Analytics from '@/components/Analytics';
+import ScrollToTop from '@/components/ScrollToTop';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -54,13 +55,6 @@ export const metadata: Metadata = {
     languages: { 'es': BASE_URL },
   },
   manifest: '/manifest.json',
-  verification: {
-    google: 'GOOGLE_SITE_VERIFICATION_PLACEHOLDER',
-    other: {
-      'msvalidate.01': 'BING_SITE_VERIFICATION_PLACEHOLDER',
-      'yandex-verification': 'YANDEX_VERIFICATION_PLACEHOLDER',
-    },
-  },
   openGraph: {
     type: 'website',
     locale: 'es_ES',
@@ -202,6 +196,7 @@ export default function RootLayout({
           <AuthProvider>
             <ToastProvider>
               <Navbar />
+              <ScrollToTop />
               <main className="flex-1">{children}</main>
               <Footer />
               <CookieBanner />

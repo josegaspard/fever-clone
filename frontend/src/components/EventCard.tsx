@@ -104,7 +104,8 @@ export default function EventCard({
               src={event.image}
               alt={`${event.title} - ${event.category?.name || 'Evento'} en ${event.city?.name || ''}`}
               fill
-              sizes="(max-width: 640px) 160px, (max-width: 768px) 200px, 220px"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              placeholder="empty"
               className="object-cover transition-transform duration-500 group-hover:scale-110"
               loading="lazy"
             />

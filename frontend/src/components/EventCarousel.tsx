@@ -53,7 +53,7 @@ export default function EventCarousel({
         {/* Left arrow */}
         <button
           onClick={() => scroll('left')}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity -translate-x-1/2"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border flex items-center justify-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity -translate-x-1/2"
           style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--fg)' }}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,7 +64,7 @@ export default function EventCarousel({
         {/* Right arrow */}
         <button
           onClick={() => scroll('right')}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity translate-x-1/2"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full border flex items-center justify-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity translate-x-1/2"
           style={{ background: 'var(--card)', borderColor: 'var(--border)', color: 'var(--fg)' }}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

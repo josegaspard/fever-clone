@@ -94,8 +94,13 @@ nav[role="navigation"] {
 .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-/* Smooth scroll */
+/* Smooth scroll — instant on navigation, smooth on anchor links */
 html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Page transition */
+@keyframes page-enter { from { opacity: 0; } to { opacity: 1; } }
+main { animation: page-enter 0.25s ease-out; }
 
 /* Focus */
 :focus-visible { outline: 2px solid #e63946; outline-offset: 2px; }

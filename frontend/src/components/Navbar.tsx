@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { getCities, getPlans, City } from '@/lib/api';
 import { useTheme } from '@/context/ThemeContext';
@@ -11,6 +11,7 @@ export default function Navbar() {
   const { user, logout, loading, isSuperAdmin, isBusiness } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
   const [cities, setCities] = useState<City[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>('');
   const [cityOpen, setCityOpen] = useState(false);
@@ -22,12 +23,20 @@ export default function Navbar() {
   const cityRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
 
+  // Close all menus on route change
+  useEffect(() => {
+    setMenuOpen(false);
+    setCityOpen(false);
+    setUserMenuOpen(false);
+    setSearchOpen(false);
+  }, [pathname]);
+
   useEffect(() => {
     getCities()
       .then((c) => {
         setCities(c);
         // Use saved city from localStorage (set by HeroBanner geolocation)
-        const saved = typeof window !== 'undefined' ? localStorage.getItem('fever-city') : null;
+        const saved = typeof window !== 'undefined' ? localStorage.getItem('ctxplorer-city') : null;
         if (saved) {
           const match = c.find(city => city.slug === saved);
           if (match) { setSelectedCity(match.name); return; }
@@ -118,7 +127,7 @@ export default function Navbar() {
                   key={c.id}
                   className="block w-full text-left px-4 py-2 text-sm transition hover:bg-[var(--card-hover)]"
                   style={{ color: selectedCity === c.name ? '#e63946' : 'var(--text-secondary)' }}
-                  onClick={() => { setSelectedCity(c.name); setCityOpen(false); localStorage.setItem('fever-city', c.slug); router.push(`/${c.slug}`); }}
+                  onClick={() => { setSelectedCity(c.name); setCityOpen(false); localStorage.setItem('ctxplorer-city', c.slug); router.push(`/${c.slug}`); }}
                 >
                   {c.name}
                 </button>

@@ -22,7 +22,7 @@ export default function VideoEventCard({ event }: VideoEventCardProps) {
             muted
             loop
             playsInline
-            preload="none"
+            preload="metadata"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()}
             onMouseLeave={(e) => { const v = e.currentTarget as HTMLVideoElement; v.pause(); v.currentTime = 0; }}

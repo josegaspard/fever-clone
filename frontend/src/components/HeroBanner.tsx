@@ -36,7 +36,7 @@ export default function HeroBanner() {
 
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem('fever-city');
+    const saved = localStorage.getItem('ctxplorer-city');
     if (saved) { setDetectedCity(saved); return; }
     if ('geolocation' in navigator) {
       setDetecting(true);
@@ -46,7 +46,7 @@ export default function HeroBanner() {
           let nearest = CITIES[0].slug, minDist = Infinity;
           for (const c of CITIES) { const d = Math.sqrt((latitude - c.lat) ** 2 + (longitude - c.lng) ** 2); if (d < minDist) { minDist = d; nearest = c.slug; } }
           setDetectedCity(nearest);
-          localStorage.setItem('fever-city', nearest);
+          localStorage.setItem('ctxplorer-city', nearest);
           setDetecting(false);
         },
         () => { setDetecting(false); setShowCityPicker(true); },
@@ -61,7 +61,7 @@ export default function HeroBanner() {
     return () => clearInterval(t);
   }, []);
 
-  const handleCitySelect = (slug: string) => { setDetectedCity(slug); localStorage.setItem('fever-city', slug); setShowCityPicker(false); router.push(`/${slug}`); };
+  const handleCitySelect = (slug: string) => { setDetectedCity(slug); localStorage.setItem('ctxplorer-city', slug); setShowCityPicker(false); router.push(`/${slug}`); };
   const handleSearch = (q: string) => { if (q.trim()) { router.push(`/search?q=${encodeURIComponent(q.trim())}${detectedCity ? `&city=${detectedCity}` : ''}`); } };
   const selectedCity = CITIES.find(c => c.slug === detectedCity);
 
@@ -87,7 +87,7 @@ export default function HeroBanner() {
           style={{ opacity: !videoLoaded && bgIndex === i ? 1 : 0 }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={img} alt="" className="w-full h-full object-cover" />
+          <img src={img} alt={`Evento destacado ${i + 1}`} className="w-full h-full object-cover" />
         </div>
       ))}
 
