@@ -258,181 +258,81 @@ export default function EventDetailClient({ event, related, venue }: Props) {
       </nav>
 
       {/* ======================================================= */}
-      {/* HERO SECTION                                             */}
+      {/* HERO - Always image, full width with overlay             */}
       {/* ======================================================= */}
-      {hasVideo ? (
-        /* ---------- VIDEO HERO ---------- */
-        <div className="relative w-full h-[50vh] md:h-[70vh] overflow-hidden mb-8">
-          <video
-            ref={videoRef}
-            src={event.videoUrl}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-            poster={gallery[0] || undefined}
-          />
-          {/* Gradient overlays */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+      {gallery.length > 0 ? (
+        gallery.length === 1 ? (
+          /* ---------- SINGLE IMAGE HERO - Full width ---------- */
+          <div className="relative w-full h-[40vh] sm:h-[50vh] md:h-[60vh] overflow-hidden mb-8 cursor-pointer group" onClick={() => setShowFullGallery(true)}>
+            <Image src={gallery[0]} alt={event.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" priority sizes="100vw" />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.1) 70%, rgba(0,0,0,0.25) 100%)' }} />
+            <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%)' }} />
 
-          {/* Top actions */}
-          <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
-            <button
-              onClick={toggleFav}
-              disabled={favLoading}
-              className="w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition hover:scale-110"
-              style={{ background: isFav ? 'rgba(230,57,70,0.9)' : 'rgba(0,0,0,0.4)' }}
-            >
-              <svg
-                className="w-5 h-5 text-white"
-                fill={isFav ? 'currentColor' : 'none'}
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
-            </button>
-            <ShareButton
-              title={event.title}
-              description={event.shortDescription || event.description.slice(0, 100)}
-            />
-          </div>
+            {/* Top actions */}
+            <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+              <button onClick={toggleFav} disabled={favLoading} className="w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition hover:scale-110" style={{ background: isFav ? 'rgba(230,57,70,0.9)' : 'rgba(0,0,0,0.4)' }}>
+                <svg className="w-5 h-5 text-white" fill={isFav ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+              </button>
+              <ShareButton title={event.title} description={event.shortDescription || event.description.slice(0, 100)} />
+            </div>
 
-          {/* Play / Pause toggle */}
-          <button
-            onClick={toggleVideo}
-            className="absolute bottom-6 right-6 z-10 w-12 h-12 rounded-full backdrop-blur-md flex items-center justify-center transition hover:scale-110"
-            style={{ background: 'rgba(0,0,0,0.5)' }}
-          >
-            {videoPaused ? (
-              <svg className="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
-              </svg>
-            )}
-          </button>
+            {/* Badges */}
+            <div className="absolute top-4 left-4 flex gap-2 z-10">
+              {discount && <div className="bg-[#e63946] text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-lg">-{discount}%</div>}
+              {isFree && <div className="bg-green-500 text-white text-sm font-extrabold px-4 py-1.5 rounded-lg shadow-lg">GRATIS</div>}
+              {hasVideo && <div className="bg-black/60 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5"><svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>Video</div>}
+            </div>
 
-          {/* Event info overlay */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 z-10">
-            <div className="max-w-7xl mx-auto">
-              {event.category && (
-                <span
-                  className="inline-flex items-center gap-1.5 text-sm px-3 py-1 rounded-full mb-3 backdrop-blur-sm"
-                  style={{ background: 'rgba(230,57,70,0.8)', color: 'white' }}
-                >
-                  {event.category.icon && <span>{event.category.icon}</span>}
-                  {event.category.name}
-                </span>
-              )}
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-[1.05] tracking-tight max-w-3xl mb-3">
-                {event.title}
-              </h1>
-              <div className="flex flex-wrap items-center gap-3 text-white/80 text-sm">
-                {event.city && (
-                  <span className="flex items-center gap-1.5">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                    {event.city.name}
+            {/* Bottom info */}
+            <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8 z-10">
+              <div className="max-w-7xl mx-auto">
+                {event.category && (
+                  <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm px-3 py-1 rounded-full mb-3 backdrop-blur-sm" style={{ background: 'rgba(230,57,70,0.85)', color: 'white' }}>
+                    {event.category.icon && <span>{event.category.icon}</span>}{event.category.name}
                   </span>
                 )}
-                <span className="w-1 h-1 rounded-full bg-white/40" />
-                <span>{formatDateShort(event.date)}</span>
-                {event.time && (
-                  <>
-                    <span className="w-1 h-1 rounded-full bg-white/40" />
-                    <span>{event.time}</span>
-                  </>
-                )}
+                <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-white leading-[1.08] tracking-tight max-w-3xl mb-2">{event.title}</h1>
+                <div className="flex flex-wrap items-center gap-2.5 text-white/80 text-sm">
+                  {event.city && (<span className="flex items-center gap-1.5"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>{event.city.name}</span>)}
+                  <span className="w-1 h-1 rounded-full bg-white/40" />
+                  <span>{formatDateShort(event.date)}</span>
+                  {event.time && (<><span className="w-1 h-1 rounded-full bg-white/40" /><span>{event.time}</span></>)}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ) : (
-        /* ---------- BENTO GALLERY HERO ---------- */
-        <div className="max-w-7xl mx-auto px-4 mb-8">
-          {/* Blur backdrop */}
-          <div className="relative">
-            <div
-              className="absolute -inset-4 rounded-3xl blur-2xl opacity-20"
-              style={{
-                backgroundImage: `url(${gallery[0]})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            />
-            <div className="relative grid grid-cols-4 grid-rows-2 gap-2 h-[300px] md:h-[500px] rounded-2xl overflow-hidden">
-              {/* Main image */}
-              <div
-                className="col-span-4 md:col-span-2 row-span-2 relative cursor-pointer group"
-                onClick={() => setShowFullGallery(true)}
-              >
-                <Image
-                  src={gallery[0]}
-                  alt={event.title}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  priority
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                {discount && (
-                  <div className="absolute top-4 left-4 bg-[#e63946] text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-lg">
-                    -{discount}%
-                  </div>
-                )}
-                {isFree && (
-                  <div className="absolute top-4 left-4 bg-green-500 text-white text-sm font-extrabold px-4 py-1.5 rounded-lg shadow-lg">
-                    GRATIS
-                  </div>
-                )}
-              </div>
-              {/* Secondary images */}
-              {gallery.slice(1, 5).map((img, i) => (
-                <div
-                  key={i}
-                  className="hidden md:block relative cursor-pointer group overflow-hidden"
-                  onClick={() => {
-                    setSelectedImage(i + 1);
-                    setShowFullGallery(true);
-                  }}
-                >
-                  <Image
-                    src={img}
-                    alt={`${event.title} foto ${i + 2}`}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    loading="lazy"
-                    sizes="25vw"
-                  />
-                  {i === 3 && gallery.length > 5 && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">+{gallery.length - 5} fotos</span>
-                    </div>
-                  )}
+        ) : (
+          /* ---------- MULTI IMAGE - Bento Grid ---------- */
+          <div className="max-w-7xl mx-auto px-4 mb-8">
+            <div className="relative">
+              <div className="absolute -inset-4 rounded-3xl blur-2xl opacity-20" style={{ backgroundImage: `url(${gallery[0]})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+              <div className={`relative gap-2 rounded-2xl overflow-hidden ${gallery.length >= 4 ? 'grid grid-cols-4 grid-rows-2 h-[300px] md:h-[500px]' : 'grid grid-cols-2 h-[250px] md:h-[400px]'}`}>
+                <div className={`${gallery.length >= 4 ? 'col-span-4 md:col-span-2 row-span-2' : 'col-span-1'} relative cursor-pointer group`} onClick={() => setShowFullGallery(true)}>
+                  <Image src={gallery[0]} alt={event.title} fill className="object-cover transition-transform duration-700 group-hover:scale-105" priority sizes="(max-width: 768px) 100vw, 50vw" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  {discount && <div className="absolute top-4 left-4 bg-[#e63946] text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-lg">-{discount}%</div>}
+                  {isFree && <div className="absolute top-4 left-4 bg-green-500 text-white text-sm font-extrabold px-4 py-1.5 rounded-lg shadow-lg">GRATIS</div>}
                 </div>
-              ))}
+                {gallery.slice(1, gallery.length >= 4 ? 5 : 2).map((img, i) => (
+                  <div key={i} className={`${gallery.length < 4 ? 'col-span-1' : 'hidden md:block'} relative cursor-pointer group overflow-hidden`} onClick={() => { setSelectedImage(i + 1); setShowFullGallery(true); }}>
+                    <Image src={img} alt={`${event.title} foto ${i + 2}`} fill className="object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" sizes="25vw" />
+                    {i === (gallery.length >= 4 ? 3 : 0) && gallery.length > (gallery.length >= 4 ? 5 : 2) && (
+                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center"><span className="text-white font-bold text-lg">+{gallery.length - (gallery.length >= 4 ? 5 : 2)} fotos</span></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      ) : (
+        /* ---------- NO IMAGES - gradient placeholder ---------- */
+        <div className="relative w-full h-[30vh] md:h-[40vh] overflow-hidden mb-8" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}>
+          <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-10">{event.category?.icon || '🎭'}</div>
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%)' }} />
+          <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8 z-10">
+            <div className="max-w-7xl mx-auto">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-white leading-[1.08] tracking-tight max-w-3xl">{event.title}</h1>
             </div>
           </div>
         </div>
@@ -501,9 +401,9 @@ export default function EventDetailClient({ event, related, venue }: Props) {
       )}
 
       {/* ======================================================= */}
-      {/* ACTION BUTTONS (only shown when no video hero)           */}
+      {/* ACTION BUTTONS                                           */}
       {/* ======================================================= */}
-      {!hasVideo && (
+      {gallery.length > 1 && (
         <div className="max-w-7xl mx-auto px-4 flex items-center gap-3 mb-6 -mt-2">
           <button
             onClick={toggleFav}
@@ -513,33 +413,16 @@ export default function EventDetailClient({ event, related, venue }: Props) {
             }`}
             style={
               !isFav
-                ? {
-                    borderColor: 'var(--border)',
-                    color: 'var(--text-secondary)',
-                    background: 'var(--surface)',
-                  }
+                ? { borderColor: 'var(--border)', color: 'var(--text-secondary)', background: 'var(--surface)' }
                 : {}
             }
           >
-            <svg
-              className="w-4 h-4"
-              fill={isFav ? 'currentColor' : 'none'}
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              />
+            <svg className="w-4 h-4" fill={isFav ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
             {isFav ? 'Guardado' : 'Guardar'}
           </button>
-          <ShareButton
-            title={event.title}
-            description={event.shortDescription || event.description.slice(0, 100)}
-          />
+          <ShareButton title={event.title} description={event.shortDescription || event.description.slice(0, 100)} />
         </div>
       )}
 
@@ -552,18 +435,14 @@ export default function EventDetailClient({ event, related, venue }: Props) {
           {/* LEFT COLUMN - Event info (2/3)                */}
           {/* ============================================= */}
           <div className="lg:col-span-2 space-y-10">
-            {/* ---- Title + Rating (only when no video hero, since video hero has title) ---- */}
-            {!hasVideo && (
+            {/* ---- Title + Rating (shown when hero is bento grid, not single image which has title overlay) ---- */}
+            {gallery.length > 1 && (
               <div className="space-y-4">
                 {event.category && (
                   <Link
                     href={`/search?category=${event.category.slug}`}
                     className="inline-flex items-center gap-1.5 text-sm px-3 py-1 rounded-full hover:border-[#e63946]/30 hover:text-[#e63946] transition"
-                    style={{
-                      background: 'var(--surface)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--text-secondary)',
-                    }}
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}
                   >
                     {event.category.icon && <span>{event.category.icon}</span>}
                     {event.category.name}
@@ -572,31 +451,15 @@ export default function EventDetailClient({ event, related, venue }: Props) {
                 <h1 className="text-3xl md:text-5xl font-black leading-[1.1] tracking-tight" style={{ color: 'var(--fg)' }}>
                   {event.title}
                 </h1>
-                {event.rating !== undefined && event.rating > 0 && (
-                  <div className="flex items-center gap-3">
-                    <StarRating rating={event.rating} count={event.reviewCount} size="md" />
-                    {event.soldCount !== undefined && event.soldCount > 0 && (
-                      <span
-                        className="text-xs pl-3"
-                        style={{ color: 'var(--text-tertiary)', borderLeft: '1px solid var(--border)' }}
-                      >
-                        {event.soldCount.toLocaleString()}+ asistentes
-                      </span>
-                    )}
-                  </div>
-                )}
               </div>
             )}
 
-            {/* When video hero is shown, still show rating below */}
-            {hasVideo && event.rating !== undefined && event.rating > 0 && (
+            {/* Rating always visible */}
+            {event.rating !== undefined && event.rating > 0 && (
               <div className="flex items-center gap-3">
                 <StarRating rating={event.rating} count={event.reviewCount} size="md" />
                 {event.soldCount !== undefined && event.soldCount > 0 && (
-                  <span
-                    className="text-xs pl-3"
-                    style={{ color: 'var(--text-tertiary)', borderLeft: '1px solid var(--border)' }}
-                  >
+                  <span className="text-xs pl-3" style={{ color: 'var(--text-tertiary)', borderLeft: '1px solid var(--border)' }}>
                     {event.soldCount.toLocaleString()}+ asistentes
                   </span>
                 )}
@@ -734,6 +597,26 @@ export default function EventDetailClient({ event, related, venue }: Props) {
                 </button>
               )}
             </section>
+
+            {/* ---- Video del evento ---- */}
+            {hasVideo && (
+              <section className="animate-fade-in">
+                <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--fg)' }}>
+                  Video del evento
+                </h2>
+                <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+                  <video
+                    ref={videoRef}
+                    src={event.videoUrl}
+                    controls
+                    playsInline
+                    poster={gallery[0] || undefined}
+                    className="w-full aspect-video object-cover"
+                    style={{ background: '#000' }}
+                  />
+                </div>
+              </section>
+            )}
 
             {/* ---- Ubicacion ---- */}
             {event.address && (
