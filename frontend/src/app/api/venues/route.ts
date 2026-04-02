@@ -99,7 +99,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const user = await getUserFromRequest(req);
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role.toUpperCase() !== 'ADMIN') {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 

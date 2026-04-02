@@ -90,7 +90,7 @@ export async function PATCH(
 ) {
   try {
     const user = await getUserFromRequest(req);
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role.toUpperCase() !== 'ADMIN') {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
@@ -155,7 +155,7 @@ export async function DELETE(
 ) {
   try {
     const user = await getUserFromRequest(req);
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role.toUpperCase() !== 'ADMIN') {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
