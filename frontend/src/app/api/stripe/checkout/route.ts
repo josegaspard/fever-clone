@@ -9,6 +9,19 @@ function getStripe() {
   return new Stripe(key);
 }
 
+// Temporary diagnostic endpoint - remove after fixing
+export async function GET() {
+  try {
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key) return NextResponse.json({ error: 'STRIPE_SECRET_KEY is missing', envKeys: Object.keys(process.env).filter(k => k.includes('STRIPE')) });
+    const stripe = new Stripe(key);
+    const balance = await stripe.balance.retrieve();
+    return NextResponse.json({ ok: true, keyPrefix: key.substring(0, 12) + '...', currency: balance.available?.[0]?.currency });
+  } catch (e: unknown) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : 'unknown', stack: e instanceof Error ? e.stack?.split('\n').slice(0, 3) : null });
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const stripe = getStripe();
