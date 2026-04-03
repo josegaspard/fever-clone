@@ -387,6 +387,7 @@ export default function PlanDetailPage() {
             planId={plan.id}
             currentEventIds={plan.items.map(i => String(i.eventId))}
             citySlug={plan.items[0]?.event ? (plan.items[0].event as Record<string, unknown>).city ? ((plan.items[0].event as Record<string, unknown>).city as Record<string, string>)?.slug : undefined : undefined}
+            eventCategory={plan.items[0]?.event?.category?.slug}
             onItemAdded={loadPlan}
           />
         </div>

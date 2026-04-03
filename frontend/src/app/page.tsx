@@ -7,6 +7,7 @@ import EventCarousel from '@/components/EventCarousel';
 import FilteredCarousel from '@/components/FilteredCarousel';
 import VideoEventCard from '@/components/VideoEventCard';
 import EventsMap from '@/components/EventsMap';
+import ForYouFeed from '@/components/ForYouFeed';
 
 // ISR: revalidate every 5 minutes instead of force-dynamic
 export const revalidate = 300;
@@ -685,6 +686,11 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* ================================================================== */}
+      {/* PERSONALIZED FEED — "Para Ti"                                      */}
+      {/* ================================================================== */}
+      <ForYouFeed />
 
       {/* ================================================================== */}
       {/* FEATURED EVENTS CAROUSEL                                           */}

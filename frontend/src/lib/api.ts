@@ -695,3 +695,26 @@ export async function checkFollow(slug: string): Promise<{ following: boolean; n
 export async function getVenueEvents(slug: string): Promise<Event[]> {
   return fetchApi<Event[]>(`/venues/${slug}/events`);
 }
+
+// ── Interests ────────────────────────────────────────────────────────────────
+
+export async function getInterests(): Promise<{ data: { id: string; categoryId: string; score: number; source: string; categories?: { id: string; name: string; slug: string; icon?: string; color?: string } }[] }> {
+  return fetchApi('/interests');
+}
+
+export async function updateInterests(categoryIds: string[]): Promise<{ success: boolean }> {
+  return fetchApi('/interests', {
+    method: 'POST',
+    body: JSON.stringify({ categoryIds }),
+  });
+}
+
+// ── Recommendations ──────────────────────────────────────────────────────────
+
+export async function getRecommendations(params: { city?: string; limit?: number; exclude?: string }): Promise<{ data: Event[]; personalized: boolean }> {
+  const qp = new URLSearchParams();
+  if (params.city) qp.set('city', params.city);
+  if (params.limit) qp.set('limit', String(params.limit));
+  if (params.exclude) qp.set('exclude', params.exclude);
+  return fetchApi(`/recommendations?${qp.toString()}`);
+}

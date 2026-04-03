@@ -10,6 +10,7 @@ interface DaySuggestionsProps {
   planId: string;
   currentEventIds: string[];
   citySlug?: string;
+  eventCategory?: string;
   onItemAdded?: () => void;
 }
 
@@ -22,12 +23,37 @@ const TABS: { key: TabKey; label: string; icon: string; desc: string }[] = [
   { key: 'grupo', label: 'Para tu grupo', icon: '👥', desc: 'Planes grupales con amigos' },
 ];
 
-const TAB_CATEGORIES: Record<TabKey, string[] | null> = {
+// Context-aware category mapping based on what was purchased
+const RELATED_CATEGORIES: Record<string, { previa: string[]; 'post-show': string[] }> = {
+  conciertos: { previa: ['gastronomia', 'tours'], 'post-show': ['nightlife', 'gastronomia'] },
+  gastronomia: { previa: ['conciertos', 'arte'], 'post-show': ['nightlife', 'conciertos'] },
+  deportes: { previa: ['gastronomia'], 'post-show': ['nightlife', 'gastronomia'] },
+  arte: { previa: ['gastronomia', 'bienestar'], 'post-show': ['tours', 'gastronomia'] },
+  nightlife: { previa: ['gastronomia', 'conciertos'], 'post-show': ['gastronomia', 'bienestar'] },
+  festivales: { previa: ['gastronomia', 'tours'], 'post-show': ['nightlife', 'gastronomia'] },
+  tours: { previa: ['gastronomia', 'bienestar'], 'post-show': ['nightlife', 'conciertos'] },
+  bienestar: { previa: ['gastronomia', 'tours'], 'post-show': ['arte', 'gastronomia'] },
+};
+
+const DEFAULT_TAB_CATEGORIES: Record<TabKey, string[] | null> = {
   'previa': ['gastronomia', 'bienestar', 'tours'],
   'post-show': ['nightlife', 'conciertos'],
   'cerca': null, // all, sorted by distance
   'grupo': ['deportes', 'festivales', 'experiencias-inmersivas'],
 };
+
+function getTabCategories(eventCategory?: string): Record<TabKey, string[] | null> {
+  if (!eventCategory || !RELATED_CATEGORIES[eventCategory]) {
+    return DEFAULT_TAB_CATEGORIES;
+  }
+  const related = RELATED_CATEGORIES[eventCategory];
+  return {
+    'previa': related.previa,
+    'post-show': related['post-show'],
+    'cerca': null,
+    'grupo': DEFAULT_TAB_CATEGORIES['grupo'],
+  };
+}
 
 const TIME_ESTIMATES: Record<string, string> = {
   gastronomia: '1-2h',
@@ -45,7 +71,7 @@ function getTimeEstimate(categorySlug?: string): string {
   return TIME_ESTIMATES[categorySlug] || '~1h';
 }
 
-export default function DaySuggestions({ planId, currentEventIds, citySlug, onItemAdded }: DaySuggestionsProps) {
+export default function DaySuggestions({ planId, currentEventIds, citySlug, eventCategory, onItemAdded }: DaySuggestionsProps) {
   const [suggestions, setSuggestions] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState<string | null>(null);
@@ -74,8 +100,10 @@ export default function DaySuggestions({ planId, currentEventIds, citySlug, onIt
     load();
   }, [citySlug, currentEventIds]);
 
+  const tabCategories = useMemo(() => getTabCategories(eventCategory), [eventCategory]);
+
   const filtered = useMemo(() => {
-    const cats = TAB_CATEGORIES[activeTab];
+    const cats = tabCategories[activeTab];
     if (cats === null) {
       // "Cerca" — show all suggestions
       return suggestions.slice(0, 8);
@@ -85,7 +113,7 @@ export default function DaySuggestions({ planId, currentEventIds, citySlug, onIt
       return cats.includes(slug);
     });
     return result.slice(0, 8);
-  }, [suggestions, activeTab]);
+  }, [suggestions, activeTab, tabCategories]);
 
   async function handleAdd(event: Event) {
     setAdding(event.id);
