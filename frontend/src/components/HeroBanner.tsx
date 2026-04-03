@@ -139,56 +139,70 @@ export default function HeroBanner() {
           )}
         </div>
 
-        {/* ═══ HEADLINE ═══ */}
-        <div className={`mb-5 transition-all duration-700 delay-150 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        {/* ═══ HEADLINE — ARMA TU DAY ═══ */}
+        <div className={`mb-4 transition-all duration-700 delay-150 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <p className="text-white/60 text-sm sm:text-base font-medium mb-2 tracking-wide uppercase">Tu dia perfecto empieza aqui</p>
           <h1 className="text-[clamp(2.5rem,8vw,5.5rem)] font-black leading-[0.92] tracking-[-0.03em] text-white max-w-4xl">
-            {selectedCity ? (
-              <>Vive lo mejor de{' '}<span className="relative inline-block"><span className="gradient-text">{selectedCity.name}</span><svg className="absolute -bottom-2 left-0 w-full h-3 text-[#e63946]/40" viewBox="0 0 200 12" fill="none"><path d="M2 10C50 2 150 2 198 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg></span></>
-            ) : (
-              <>Descubre algo{' '}<span className="relative inline-block"><span className="gradient-text">increible</span><svg className="absolute -bottom-2 left-0 w-full h-3 text-[#e63946]/40" viewBox="0 0 200 12" fill="none"><path d="M2 10C50 2 150 2 198 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg></span>{' '}hoy</>
-            )}
+            Arma tu{' '}<span className="relative inline-block"><span className="gradient-text">Day</span><svg className="absolute -bottom-2 left-0 w-full h-3 text-[#e63946]/40" viewBox="0 0 200 12" fill="none"><path d="M2 10C50 2 150 2 198 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg></span>
+            {selectedCity ? <> en {selectedCity.name}</> : <> perfecto</>}
           </h1>
         </div>
 
-        {/* Subtitle */}
-        <p className={`text-white/55 text-base sm:text-lg md:text-xl mb-8 max-w-xl leading-relaxed transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          Conciertos, gastronomia, arte, festivales y experiencias unicas.
-          <span className="text-white/80 font-medium"> Compra tu entrada en segundos.</span>
+        {/* Subtitle — value proposition */}
+        <p className={`text-white/60 text-base sm:text-lg mb-6 max-w-xl leading-relaxed transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          Combina actividades, restaurantes, conciertos y mas en un solo plan.
+          <span className="text-white/90 font-semibold"> Te decimos como llegar, cuanto tardas y te llevamos.</span>
         </p>
 
+        {/* Day mode pills */}
+        <div className={`flex flex-wrap gap-2 mb-6 transition-all duration-700 delay-250 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          {[
+            { emoji: '🧑', label: 'Solo' },
+            { emoji: '💑', label: 'En pareja' },
+            { emoji: '👯', label: 'Con amigos' },
+            { emoji: '👨‍👩‍👧‍👦', label: 'En familia' },
+            { emoji: '🎉', label: 'Fin de semana' },
+            { emoji: '🏖️', label: 'Vacaciones' },
+          ].map(m => (
+            <button
+              key={m.label}
+              onClick={() => router.push('/build-day')}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-sm border border-white/15 text-white hover:bg-white/20 hover:scale-105 transition-all"
+            >
+              <span>{m.emoji}</span> {m.label}
+            </button>
+          ))}
+        </div>
+
         {/* Search */}
-        <div className={`max-w-xl mb-8 transition-all duration-700 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          <SearchBar onSearch={handleSearch} large placeholder={selectedCity ? `Buscar en ${selectedCity.name}...` : 'Buscar eventos, artistas, venues...'} showSuggestions={false} />
+        <div className={`max-w-xl mb-6 transition-all duration-700 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          <SearchBar onSearch={handleSearch} large placeholder={selectedCity ? `Que quieres hacer en ${selectedCity.name}?` : 'Que quieres hacer hoy?'} showSuggestions={false} />
         </div>
 
         {/* CTA Buttons */}
-        <div className={`flex flex-wrap items-center gap-3 mb-12 transition-all duration-700 delay-[400ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          <button onClick={() => router.push(selectedCity ? `/${selectedCity.slug}` : '/search')} className="px-8 py-3.5 bg-[#e63946] hover:bg-[#d32836] text-white font-bold text-sm rounded-full transition-all hover:scale-[1.03] shadow-xl shadow-[#e63946]/30 hover:shadow-[#e63946]/50">
-            {selectedCity ? `Explorar ${selectedCity.name}` : 'Explorar eventos'}
-          </button>
-          <button onClick={() => router.push('/build-day')} className="hero-cta-shine relative px-8 py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold text-sm rounded-full transition-all hover:bg-white/20 hover:scale-[1.05] overflow-hidden group">
+        <div className={`flex flex-wrap items-center gap-3 mb-10 transition-all duration-700 delay-[400ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          <button onClick={() => router.push('/build-day')} className="hero-cta-shine relative px-8 py-4 bg-[#e63946] hover:bg-[#d32836] text-white font-bold text-sm rounded-full transition-all hover:scale-[1.03] shadow-xl shadow-[#e63946]/30 hover:shadow-[#e63946]/50 overflow-hidden group">
             <span className="relative z-10 flex items-center gap-2">
-              <span className="inline-block animate-bounce" style={{ animationDuration: '2s' }}>✨</span>
-              Arma tu Day
-              <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+              Arma tu Day ahora
+              <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
             </span>
           </button>
-          <button onClick={() => router.push('/venues')} className="px-8 py-3.5 bg-white/5 backdrop-blur-sm border border-white/10 text-white/80 font-medium text-sm rounded-full transition-all hover:bg-white/15 hover:text-white hover:scale-[1.03]">
-            Ver Venues
+          <button onClick={() => router.push(selectedCity ? `/${selectedCity.slug}` : '/search')} className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold text-sm rounded-full transition-all hover:bg-white/20 hover:scale-[1.03]">
+            {selectedCity ? `Explorar ${selectedCity.name}` : 'Explorar eventos'}
           </button>
         </div>
 
-        {/* Stats row */}
-        <div className={`flex items-center gap-8 md:gap-12 transition-all duration-700 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        {/* What's included row */}
+        <div className={`flex flex-wrap items-center gap-x-6 gap-y-2 transition-all duration-700 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           {[
-            { value: '65+', label: 'Eventos' },
-            { value: '6', label: 'Ciudades' },
-            { value: '5', label: 'Venues' },
-            { value: '100+', label: 'Resenas' },
-          ].map(s => (
-            <div key={s.label}>
-              <p className="text-2xl md:text-3xl font-black text-white tracking-tight">{s.value}</p>
-              <p className="text-[10px] text-white/35 uppercase tracking-[0.15em] font-medium">{s.label}</p>
+            { icon: '🗺️', label: 'Rutas completas' },
+            { icon: '🚇', label: 'Metro, bus, taxi' },
+            { icon: '⏱️', label: 'Tiempos estimados' },
+            { icon: '🚐', label: 'Te llevamos (Plus)' },
+          ].map(f => (
+            <div key={f.label} className="flex items-center gap-1.5">
+              <span className="text-sm">{f.icon}</span>
+              <span className="text-[11px] text-white/50 font-medium">{f.label}</span>
             </div>
           ))}
         </div>

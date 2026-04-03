@@ -261,18 +261,30 @@ export default function PlanTimeline({
                           )}
                         </div>
                       )}
-                      <a
-                        href={mapsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 text-[10px] font-medium hover:underline transition"
-                        style={{ color: '#3b82f6' }}
-                      >
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-                        </svg>
-                        Ver ruta en Google Maps
-                      </a>
+                      {/* Tips */}
+                      {dist && dist > 3 && (
+                        <p className="text-[9px] mt-1" style={{ color: 'var(--text-tertiary)' }}>
+                          💡 {dist > 10 ? 'Distancia larga — considera Metro o Uber' : 'Tip: en hora pico (7-9am, 5-8pm) puede tardar el doble en auto'}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                        <a
+                          href={mapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-[10px] font-medium hover:underline transition"
+                          style={{ color: '#3b82f6' }}
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                          </svg>
+                          Ver ruta
+                        </a>
+                        <span className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>|</span>
+                        <button className="flex items-center gap-1 text-[10px] font-semibold transition hover:opacity-80" style={{ color: '#e63946' }}>
+                          🚐 CTXplorer Plus: te llevamos
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
