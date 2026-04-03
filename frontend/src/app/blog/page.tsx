@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@fever',
+    site: '@ctxplorer',
     title: 'Blog CTXplorer - Guias, tendencias y lo mejor en eventos',
     description:
       'Descubre guias, tendencias, consejos y lo mejor del mundo de los eventos.',

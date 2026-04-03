@@ -82,7 +82,7 @@ export async function generateMetadata({
       ...(post.tags || []),
       'blog',
       'eventos',
-      'fever',
+      'CTXplorer',
     ],
     openGraph: {
       title,
@@ -110,8 +110,8 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      site: '@fever',
-      creator: '@fever',
+      site: '@ctxplorer',
+      creator: '@ctxplorer',
       title,
       description,
       images: post.image

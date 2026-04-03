@@ -142,12 +142,12 @@ export default function RootLayout({
     description: 'Plataforma de descubrimiento de eventos y experiencias en tu ciudad. Compra entradas para conciertos, teatro, gastronomia y mas.',
     foundingDate: '2024',
     sameAs: [
-      'https://www.instagram.com/fever',
-      'https://twitter.com/fever',
-      'https://www.facebook.com/fever',
-      'https://www.tiktok.com/@fever',
-      'https://www.youtube.com/@fever',
-      'https://www.linkedin.com/company/fever',
+      'https://www.instagram.com/ctxplorer',
+      'https://twitter.com/ctxplorer',
+      'https://www.facebook.com/ctxplorer',
+      'https://www.tiktok.com/@ctxplorer',
+      'https://www.youtube.com/@ctxplorer',
+      'https://www.linkedin.com/company/ctxplorer',
     ],
     contactPoint: [
       {

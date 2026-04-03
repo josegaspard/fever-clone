@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import SearchBar from './SearchBar';
 
 const CITIES = [
   { slug: 'cdmx', name: 'CDMX', country: 'Mexico', lat: 19.4326, lng: -99.1332, emoji: '🇲🇽' },
@@ -62,11 +61,10 @@ export default function HeroBanner() {
   }, []);
 
   const handleCitySelect = (slug: string) => { setDetectedCity(slug); localStorage.setItem('ctxplorer-city', slug); setShowCityPicker(false); router.push(`/${slug}`); };
-  const handleSearch = (q: string) => { if (q.trim()) { router.push(`/search?q=${encodeURIComponent(q.trim())}${detectedCity ? `&city=${detectedCity}` : ''}`); } };
   const selectedCity = CITIES.find(c => c.slug === detectedCity);
 
   return (
-    <section className="relative overflow-hidden flex flex-col justify-end min-h-[100svh]" role="banner">
+    <section className="relative overflow-hidden flex flex-col min-h-[100svh]" role="banner">
       {/* ═══ VIDEO BACKGROUND (primary) ═══ */}
       <video
         ref={videoRef}
@@ -106,24 +104,24 @@ export default function HeroBanner() {
       </div>
 
       {/* ═══ MAIN CONTENT ═══ */}
-      <div className={`relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 pb-28 sm:pb-24 pt-32 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 flex flex-col justify-center min-h-[100svh] py-24 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
 
-        {/* Location bar */}
-        <div className={`mb-6 transition-all duration-700 delay-75 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        {/* City pill */}
+        <div className={`mb-6 flex flex-col items-center lg:items-start transition-all duration-700 delay-75 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           {detecting ? (
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full px-4 py-2">
               <div className="w-3 h-3 border-2 border-white/50 border-t-white rounded-full animate-spin" />
               <span className="text-xs text-white/70">Detectando ubicacion...</span>
             </div>
           ) : selectedCity ? (
-            <button onClick={() => setShowCityPicker(!showCityPicker)} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full px-4 py-2 hover:bg-white/20 transition group">
-              <svg className="w-4 h-4 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-              <span className="text-sm text-white font-medium">{selectedCity.name}, {selectedCity.country}</span>
+            <button onClick={() => setShowCityPicker(!showCityPicker)} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full px-3.5 py-1.5 hover:bg-white/20 transition text-sm">
+              <span>📍</span>
+              <span className="text-white font-medium">{selectedCity.name}</span>
               <svg className={`w-3 h-3 text-white/50 transition-transform ${showCityPicker ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
             </button>
           ) : (
-            <button onClick={() => setShowCityPicker(true)} className="inline-flex items-center gap-2 bg-[#e63946] text-white rounded-full px-5 py-2.5 text-sm font-semibold hover:bg-[#d32836] transition shadow-lg shadow-[#e63946]/30">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            <button onClick={() => setShowCityPicker(true)} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 text-white rounded-full px-4 py-2 text-sm font-medium hover:bg-white/20 transition">
+              <span>📍</span>
               Elige tu ciudad
             </button>
           )}
@@ -139,23 +137,20 @@ export default function HeroBanner() {
           )}
         </div>
 
-        {/* ═══ HEADLINE — ARMA TU DAY ═══ */}
-        <div className={`mb-4 transition-all duration-700 delay-150 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <p className="text-white/60 text-sm sm:text-base font-medium mb-2 tracking-wide uppercase">Tu dia perfecto empieza aqui</p>
-          <h1 className="text-[clamp(2.5rem,8vw,5.5rem)] font-black leading-[0.92] tracking-[-0.03em] text-white max-w-4xl">
-            Arma tu{' '}<span className="relative inline-block"><span className="gradient-text">Day</span><svg className="absolute -bottom-2 left-0 w-full h-3 text-[#e63946]/40" viewBox="0 0 200 12" fill="none"><path d="M2 10C50 2 150 2 198 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg></span>
-            {selectedCity ? <> en {selectedCity.name}</> : <> perfecto</>}
-          </h1>
-        </div>
+        {/* Main headline */}
+        <h1 className={`text-4xl sm:text-5xl md:text-7xl font-black tracking-tight text-white text-center lg:text-left leading-[1.05] transition-all duration-700 delay-150 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          Arma tu<br />
+          <span className="gradient-text">Day perfecto</span>
+        </h1>
 
-        {/* Subtitle — value proposition */}
-        <p className={`text-white/60 text-base sm:text-lg mb-6 max-w-xl leading-relaxed transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          Combina actividades, restaurantes, conciertos y mas en un solo plan.
-          <span className="text-white/90 font-semibold"> Te decimos como llegar, cuanto tardas y te llevamos.</span>
+        {/* Subtitle */}
+        <p className={`text-white/60 text-base sm:text-lg mt-4 mb-8 max-w-lg text-center lg:text-left leading-relaxed transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          Combina actividades, cena, conciertos y mas.<br className="hidden sm:block" />
+          Te armamos la ruta completa. Te llevamos.
         </p>
 
         {/* Day mode pills */}
-        <div className={`flex flex-wrap gap-2 mb-6 transition-all duration-700 delay-250 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        <div className={`flex flex-wrap justify-center lg:justify-start gap-2 mb-8 transition-all duration-700 delay-250 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           {[
             { emoji: '🧑', label: 'Solo' },
             { emoji: '💑', label: 'En pareja' },
@@ -174,16 +169,11 @@ export default function HeroBanner() {
           ))}
         </div>
 
-        {/* Search */}
-        <div className={`max-w-xl mb-6 transition-all duration-700 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          <SearchBar onSearch={handleSearch} large placeholder={selectedCity ? `Que quieres hacer en ${selectedCity.name}?` : 'Que quieres hacer hoy?'} showSuggestions={false} />
-        </div>
-
         {/* CTA Buttons */}
-        <div className={`flex flex-wrap items-center gap-3 mb-10 transition-all duration-700 delay-[400ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        <div className={`flex flex-col sm:flex-row items-center lg:items-start gap-3 mb-8 transition-all duration-700 delay-[400ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           <button onClick={() => router.push('/build-day')} className="hero-cta-shine relative px-8 py-4 bg-[#e63946] hover:bg-[#d32836] text-white font-bold text-sm rounded-full transition-all hover:scale-[1.03] shadow-xl shadow-[#e63946]/30 hover:shadow-[#e63946]/50 overflow-hidden group">
             <span className="relative z-10 flex items-center gap-2">
-              Arma tu Day ahora
+              Arma tu Day
               <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
             </span>
           </button>
@@ -192,8 +182,8 @@ export default function HeroBanner() {
           </button>
         </div>
 
-        {/* What's included row */}
-        <div className={`flex flex-wrap items-center gap-x-6 gap-y-2 transition-all duration-700 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        {/* Features row */}
+        <div className={`flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-2 transition-all duration-700 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           {[
             { icon: '🗺️', label: 'Rutas completas' },
             { icon: '🚇', label: 'Metro, bus, taxi' },

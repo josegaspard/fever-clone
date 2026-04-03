@@ -1,6 +1,6 @@
 {
-  "name": "Fever - Eventos y Experiencias",
-  "short_name": "Fever",
+  "name": "CTXplorer - Eventos y Experiencias",
+  "short_name": "CTXplorer",
   "description": "Descubre los mejores eventos, conciertos, gastronomia, arte y experiencias en tu ciudad. Crea tu Day perfecto.",
   "start_url": "/",
   "display": "standalone",

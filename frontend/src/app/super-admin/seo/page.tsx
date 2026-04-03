@@ -20,10 +20,10 @@ const DEFAULT_CONFIG: SeoConfig = {
   siteDescription: 'Descubre experiencias unicas, conciertos, gastronomia, arte y mas.',
   keywords: ['eventos', 'experiencias', 'conciertos', 'teatro', 'gastronomia', 'planes'],
   ogImageUrl: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1200&h=630&fit=crop',
-  instagramUrl: 'https://www.instagram.com/fever',
-  twitterUrl: 'https://twitter.com/fever',
-  facebookUrl: 'https://www.facebook.com/fever',
-  tiktokUrl: 'https://www.tiktok.com/@fever',
+  instagramUrl: 'https://www.instagram.com/ctxplorer',
+  twitterUrl: 'https://twitter.com/ctxplorer',
+  facebookUrl: 'https://www.facebook.com/ctxplorer',
+  tiktokUrl: 'https://www.tiktok.com/@ctxplorer',
   googleAnalyticsId: '',
 };
 
