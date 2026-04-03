@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Event, addFavorite, removeFavorite } from '@/lib/api';
 import StarRating from './StarRating';
 import AddToPlanButton from './AddToPlanButton';
+import { trackClick } from '@/lib/tracking';
 
 interface EventCardProps {
   event: Event;
@@ -70,7 +71,7 @@ export default function EventCard({
   const currencyLabel = event.currency || 'EUR';
 
   return (
-    <Link href={`/events/${event.slug}`} className="group block h-full" aria-label={`${event.title} - ${event.city?.name || ''} - ${event.price === 0 ? 'Gratis' : `${currencySymbol}${event.price}`}`}>
+    <Link href={`/events/${event.slug}`} className="group block h-full" aria-label={`${event.title} - ${event.city?.name || ''} - ${event.price === 0 ? 'Gratis' : `${currencySymbol}${event.price}`}`} onClick={() => trackClick(event.id, 'card')}>
       <article className="event-card-premium rounded-xl overflow-hidden border transition-all duration-300 h-full flex flex-col" style={{ background: 'var(--card)', borderColor: 'var(--border)' }}>
         {/* Image / Video */}
         <div className="relative aspect-[3/4] overflow-hidden">

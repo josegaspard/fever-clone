@@ -13,6 +13,7 @@ import AddToPlanButton from '@/components/AddToPlanButton';
 import ShareButton from '@/components/ShareButton';
 import PurchaseSheet from '@/components/PurchaseSheet';
 import { useToast } from '@/components/Toast';
+import { startDwellTracking, stopDwellTracking, trackClick } from '@/lib/tracking';
 
 interface VenueInfo {
   slug: string;
@@ -45,6 +46,13 @@ export default function EventDetailClient({ event, related, venue }: Props) {
   const [showPurchase, setShowPurchase] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  // Track dwell time on this event page
+  useEffect(() => {
+    startDwellTracking(event.id);
+    trackClick(event.id, 'event_page');
+    return () => stopDwellTracking(event.id);
+  }, [event.id]);
 
   function handleBuy() {
     if (!user) {
