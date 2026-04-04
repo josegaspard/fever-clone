@@ -64,7 +64,7 @@ export default function HeroBanner() {
   const selectedCity = CITIES.find(c => c.slug === detectedCity);
 
   return (
-    <section className="relative overflow-hidden flex flex-col min-h-[100svh]" role="banner">
+    <section className="relative overflow-hidden flex flex-col items-center justify-center min-h-[100svh]" role="banner">
       {/* ═══ VIDEO BACKGROUND (primary) ═══ */}
       <video
         ref={videoRef}
@@ -103,18 +103,18 @@ export default function HeroBanner() {
         <div className="absolute bottom-[30%] left-[25%] w-2.5 h-2.5 rounded-full bg-[#e63946]/15 animate-pulse" style={{ animationDelay: '0.5s', animationDuration: '3.5s' }} />
       </div>
 
-      {/* ═══ MAIN CONTENT ═══ */}
-      <div className={`relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 flex flex-col justify-center min-h-[100svh] py-24 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+      {/* ═══ MAIN CONTENT — centered vertically and horizontally ═══ */}
+      <div className={`relative z-10 w-full max-w-3xl mx-auto px-5 text-center py-20 transition-all duration-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
 
-        {/* City pill */}
-        <div className={`mb-6 flex flex-col items-center lg:items-start transition-all duration-700 delay-75 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        {/* City pill — small, top */}
+        <div className={`mb-8 transition-all duration-700 delay-75 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           {detecting ? (
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full px-4 py-2">
               <div className="w-3 h-3 border-2 border-white/50 border-t-white rounded-full animate-spin" />
               <span className="text-xs text-white/70">Detectando ubicacion...</span>
             </div>
           ) : selectedCity ? (
-            <button onClick={() => setShowCityPicker(!showCityPicker)} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full px-3.5 py-1.5 hover:bg-white/20 transition text-sm">
+            <button onClick={() => setShowCityPicker(!showCityPicker)} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full px-4 py-2 hover:bg-white/20 transition text-sm">
               <span>📍</span>
               <span className="text-white font-medium">{selectedCity.name}</span>
               <svg className={`w-3 h-3 text-white/50 transition-transform ${showCityPicker ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
@@ -126,74 +126,73 @@ export default function HeroBanner() {
             </button>
           )}
           {showCityPicker && (
-            <div className="mt-3 grid grid-cols-3 sm:grid-cols-6 gap-2 animate-slide-up">
+            <div className="mt-3 grid grid-cols-3 sm:grid-cols-6 gap-2 animate-slide-up max-w-md mx-auto">
               {CITIES.map(c => (
-                <button key={c.slug} onClick={() => handleCitySelect(c.slug)} className={`flex flex-col items-center gap-1 p-3 rounded-2xl border backdrop-blur-md transition-all hover:scale-105 ${detectedCity === c.slug ? 'bg-[#e63946]/20 border-[#e63946]/50' : 'bg-white/10 border-white/10 hover:bg-white/20'}`}>
-                  <span className="text-lg">{c.emoji}</span>
-                  <span className="text-xs text-white font-semibold">{c.name}</span>
+                <button key={c.slug} onClick={() => handleCitySelect(c.slug)} className={`flex flex-col items-center gap-1 p-2.5 rounded-xl border backdrop-blur-md transition-all hover:scale-105 ${detectedCity === c.slug ? 'bg-[#e63946]/20 border-[#e63946]/50' : 'bg-white/10 border-white/10 hover:bg-white/20'}`}>
+                  <span className="text-base">{c.emoji}</span>
+                  <span className="text-[10px] text-white font-semibold">{c.name}</span>
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        {/* Main headline */}
-        <h1 className={`text-4xl sm:text-5xl md:text-7xl font-black tracking-tight text-white text-center lg:text-left leading-[1.05] transition-all duration-700 delay-150 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          Arma tu<br />
-          <span className="gradient-text">Day perfecto</span>
+        {/* Headline — big, clean, centered */}
+        <h1 className={`text-5xl sm:text-6xl md:text-8xl font-black tracking-[-0.03em] text-white leading-[0.95] transition-all duration-700 delay-150 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          Arma tu<br /><span className="gradient-text">Day perfecto</span>
         </h1>
 
-        {/* Subtitle */}
-        <p className={`text-white/60 text-base sm:text-lg mt-4 mb-8 max-w-lg text-center lg:text-left leading-relaxed transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          Combina actividades, cena, conciertos y mas.<br className="hidden sm:block" />
-          Te armamos la ruta completa. Te llevamos.
+        {/* Subtitle — clear, one idea */}
+        <p className={`text-white/50 text-base sm:text-lg mt-5 mb-8 max-w-md mx-auto leading-relaxed transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          Cena, concierto, bar, actividades — todo en un solo plan.
+          <span className="text-white/70 font-medium"> Con ruta y transporte incluido.</span>
         </p>
 
-        {/* Day mode pills */}
-        <div className={`flex flex-wrap justify-center lg:justify-start gap-2 mb-8 transition-all duration-700 delay-250 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        {/* Day mode pills — 3 on mobile, all on desktop */}
+        <div className={`flex flex-wrap justify-center gap-2 mb-8 transition-all duration-700 delay-250 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           {[
             { emoji: '🧑', label: 'Solo' },
-            { emoji: '💑', label: 'En pareja' },
-            { emoji: '👯', label: 'Con amigos' },
-            { emoji: '👨‍👩‍👧‍👦', label: 'En familia' },
-            { emoji: '🎉', label: 'Fin de semana' },
-            { emoji: '🏖️', label: 'Vacaciones' },
+            { emoji: '💑', label: 'Pareja' },
+            { emoji: '👯', label: 'Amigos' },
+            { emoji: '👨‍👩‍👧‍👦', label: 'Familia' },
           ].map(m => (
             <button
               key={m.label}
               onClick={() => router.push('/build-day')}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-sm border border-white/15 text-white hover:bg-white/20 hover:scale-105 transition-all"
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-sm border border-white/15 text-white hover:bg-white/20 hover:scale-105 transition-all"
             >
               <span>{m.emoji}</span> {m.label}
             </button>
           ))}
         </div>
 
-        {/* CTA Buttons */}
-        <div className={`flex flex-col sm:flex-row items-center lg:items-start gap-3 mb-8 transition-all duration-700 delay-[400ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          <button onClick={() => router.push('/build-day')} className="hero-cta-shine relative px-8 py-4 bg-[#e63946] hover:bg-[#d32836] text-white font-bold text-sm rounded-full transition-all hover:scale-[1.03] shadow-xl shadow-[#e63946]/30 hover:shadow-[#e63946]/50 overflow-hidden group">
-            <span className="relative z-10 flex items-center gap-2">
-              Arma tu Day
-              <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-            </span>
+        {/* CTA — single prominent button */}
+        <div className={`flex flex-col items-center gap-3 mb-10 transition-all duration-700 delay-[350ms] ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          <button
+            onClick={() => router.push('/build-day')}
+            className="px-10 py-4 bg-[#e63946] hover:bg-[#d32836] text-white font-bold text-base rounded-full transition-all hover:scale-[1.04] shadow-2xl shadow-[#e63946]/40 active:scale-[0.98]"
+          >
+            Arma tu Day
           </button>
-          <button onClick={() => router.push(selectedCity ? `/${selectedCity.slug}` : '/search')} className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold text-sm rounded-full transition-all hover:bg-white/20 hover:scale-[1.03]">
-            {selectedCity ? `Explorar ${selectedCity.name}` : 'Explorar eventos'}
+          <button
+            onClick={() => router.push(selectedCity ? `/${selectedCity.slug}` : '/search')}
+            className="text-white/40 text-sm font-medium hover:text-white/70 transition"
+          >
+            o explora eventos →
           </button>
         </div>
 
-        {/* Features row */}
-        <div className={`flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-2 transition-all duration-700 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        {/* Features — tiny, subtle */}
+        <div className={`flex flex-wrap justify-center gap-x-5 gap-y-1 transition-all duration-700 delay-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           {[
-            { icon: '🗺️', label: 'Rutas completas' },
-            { icon: '🚇', label: 'Metro, bus, taxi' },
-            { icon: '⏱️', label: 'Tiempos estimados' },
-            { icon: '🚐', label: 'Te llevamos (Plus)' },
+            { icon: '🗺️', label: 'Rutas' },
+            { icon: '🚇', label: 'Transporte' },
+            { icon: '⏱️', label: 'Tiempos' },
+            { icon: '🚐', label: 'Te llevamos' },
           ].map(f => (
-            <div key={f.label} className="flex items-center gap-1.5">
-              <span className="text-sm">{f.icon}</span>
-              <span className="text-[11px] text-white/50 font-medium">{f.label}</span>
-            </div>
+            <span key={f.label} className="text-[10px] text-white/30 font-medium">
+              {f.icon} {f.label}
+            </span>
           ))}
         </div>
       </div>
