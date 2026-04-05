@@ -584,19 +584,37 @@ export default function EditBusinessEventPage() {
               <label className={labelClass} style={{ color: 'var(--text-secondary)' }}>
                 URL de video
               </label>
+              <p className="text-xs mb-2" style={{ color: 'var(--text-tertiary)' }}>YouTube (youtube.com/watch?v=...) o URL directa .mp4</p>
               <input
                 type="url"
                 value={form.videoUrl}
-                onChange={(e) => updateField('videoUrl', e.target.value)}
+                onChange={(e) => {
+                  let url = e.target.value;
+                  const watchMatch = url.match(/youtube\.com\/watch\?v=([^&]+)/);
+                  const shortMatch = url.match(/youtu\.be\/([^?]+)/);
+                  if (watchMatch) url = `https://www.youtube.com/embed/${watchMatch[1]}`;
+                  else if (shortMatch) url = `https://www.youtube.com/embed/${shortMatch[1]}`;
+                  updateField('videoUrl', url);
+                }}
+                placeholder="https://www.youtube.com/watch?v=... o URL de video"
                 className={inputClass}
+                style={{ fontSize: 16 }}
               />
-              {form.videoUrl && (
-                <video
-                  src={form.videoUrl}
-                  controls
-                  className="mt-3 h-40 w-full object-cover rounded-xl"
-                />
-              )}
+              {form.videoUrl && (() => {
+                const ytMatch = form.videoUrl.match(/\/embed\/([^?&]+)/);
+                return ytMatch ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${ytMatch[1]}?modestbranding=1&rel=0`}
+                    className="mt-3 w-full rounded-xl"
+                    style={{ height: 200, border: 'none' }}
+                    allow="encrypted-media; picture-in-picture"
+                    allowFullScreen
+                    title="Video preview"
+                  />
+                ) : (
+                  <video src={form.videoUrl} controls className="mt-3 h-40 w-full object-cover rounded-xl" />
+                );
+              })()}
             </div>
 
             <div>

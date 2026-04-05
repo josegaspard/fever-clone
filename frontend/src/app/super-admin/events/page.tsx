@@ -293,19 +293,49 @@ export default function SuperAdminEvents() {
             {/* ═══ VIDEO ═══ */}
             <div style={{ marginBottom: 20, padding: 16, borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>
               <label style={labelStyle}>Video del evento</label>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-                <input style={{ ...inputStyle, flex: 1 }} value={form.videoUrl} onChange={e => updateField('videoUrl', e.target.value)} placeholder="URL .mp4 o sube un video" />
+              <p style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 8 }}>
+                Pega una URL de YouTube (youtube.com/watch?v=...) o un link directo a video .mp4
+              </p>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+                <input
+                  style={{ ...inputStyle, flex: 1, minWidth: 200, fontSize: 16 }}
+                  value={form.videoUrl}
+                  onChange={e => {
+                    let url = e.target.value;
+                    // Auto-convert YouTube watch URL to embed format
+                    const watchMatch = url.match(/youtube\.com\/watch\?v=([^&]+)/);
+                    const shortMatch = url.match(/youtu\.be\/([^?]+)/);
+                    if (watchMatch) url = `https://www.youtube.com/embed/${watchMatch[1]}`;
+                    else if (shortMatch) url = `https://www.youtube.com/embed/${shortMatch[1]}`;
+                    updateField('videoUrl', url);
+                  }}
+                  placeholder="https://www.youtube.com/watch?v=... o URL de video"
+                />
                 <label style={{ padding: '10px 16px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--fg)', fontWeight: 600, fontSize: 13, cursor: uploading === 'video' ? 'wait' : 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 6, opacity: uploading === 'video' ? 0.6 : 1 }}>
-                  {uploading === 'video' ? 'Subiendo...' : '🎬 Subir video'}
+                  {uploading === 'video' ? 'Subiendo...' : 'Subir .mp4'}
                   <input type="file" accept="video/*" hidden onChange={e => { if (e.target.files?.[0]) uploadFile(e.target.files[0], 'video'); e.target.value = ''; }} />
                 </label>
                 {form.videoUrl && <button type="button" onClick={() => updateField('videoUrl', '')} style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.06)', color: '#ef4444', fontWeight: 600, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' }}>Quitar</button>}
               </div>
-              {form.videoUrl && (
-                <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)', maxWidth: 320 }}>
-                  <video src={form.videoUrl} controls muted style={{ width: '100%', height: 180, objectFit: 'cover', display: 'block' }} />
-                </div>
-              )}
+              {form.videoUrl && (() => {
+                const ytMatch = form.videoUrl.match(/\/embed\/([^?&]+)/);
+                const ytId = ytMatch ? ytMatch[1] : null;
+                return (
+                  <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border)', maxWidth: 400 }}>
+                    {ytId ? (
+                      <iframe
+                        src={`https://www.youtube.com/embed/${ytId}?modestbranding=1&rel=0`}
+                        style={{ width: '100%', height: 225, border: 'none', display: 'block' }}
+                        allow="encrypted-media; picture-in-picture"
+                        allowFullScreen
+                        title="Video preview"
+                      />
+                    ) : (
+                      <video src={form.videoUrl} controls muted style={{ width: '100%', height: 225, objectFit: 'cover', display: 'block' }} />
+                    )}
+                  </div>
+                );
+              })()}
             </div>
 
             {/* ═══ GALERIA ═══ */}

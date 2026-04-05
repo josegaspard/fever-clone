@@ -252,21 +252,17 @@ export default function BusinessEventsPage() {
               >
                 {/* Thumbnail */}
                 <div className="relative aspect-video overflow-hidden" style={{ background: 'var(--surface-2)' }}>
-                  {event.videoUrl ? (
-                    <video
-                      src={event.videoUrl}
-                      muted
-                      loop
-                      playsInline
-                      poster={event.image}
-                      className="w-full h-full object-cover"
-                      onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()}
-                      onMouseLeave={(e) => {
-                        const v = e.currentTarget as HTMLVideoElement;
-                        v.pause();
-                        v.currentTime = 0;
-                      }}
-                    />
+                  {event.videoUrl && event.videoUrl.includes('/embed/') ? (
+                    <div className="relative w-full h-full">
+                      {event.image && <img src={event.image} alt={event.title} className="w-full h-full object-cover" />}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        <div className="w-10 h-10 rounded-full bg-black/40 flex items-center justify-center">
+                          <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                      </div>
+                    </div>
+                  ) : event.videoUrl ? (
+                    <video src={event.videoUrl} muted loop playsInline poster={event.image} className="w-full h-full object-cover" onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()} onMouseLeave={(e) => { const v = e.currentTarget as HTMLVideoElement; v.pause(); v.currentTime = 0; }} />
                   ) : event.image ? (
                     <img src={event.image} alt={event.title} className="w-full h-full object-cover" loading="lazy" />
                   ) : (
