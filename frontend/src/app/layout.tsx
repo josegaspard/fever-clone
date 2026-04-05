@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     template: '%s | CTXplorer',
   },
   description:
-    'Descubre experiencias unicas, conciertos, gastronomia, arte y mas. Crea tu Day perfecto con eventos en Ciudad de Mexico, Madrid, Barcelona, New York, London y Paris. Compra entradas y tickets online.',
+    'Descubre experiencias unicas y Arma tu Day perfecto con conciertos, gastronomia, arte y festivales en CDMX, Madrid, Barcelona, New York, London y Paris.',
   keywords: [
     'eventos', 'experiencias', 'conciertos', 'teatro', 'gastronomia',
     'arte', 'festivales', 'CDMX', 'Madrid', 'Barcelona', 'planes',
@@ -46,6 +46,8 @@ export const metadata: Metadata = {
     'exposiciones', 'talleres', 'workshops', 'New York', 'London',
     'Paris', 'eventos cerca de mi', 'comprar entradas online',
     'planes fin de semana', 'cosas que hacer', 'agenda cultural',
+    'arma tu day', 'planificador de eventos', 'itinerario de eventos',
+    'que hacer hoy', 'eventos gratis', 'ruta de eventos',
   ],
   authors: [{ name: 'CTXplorer', url: BASE_URL }],
   creator: 'CTXplorer',
@@ -61,7 +63,7 @@ export const metadata: Metadata = {
     locale: 'es_ES',
     siteName: 'CTXplorer',
     title: 'CTXplorer - Descubre los mejores planes y eventos en tu ciudad',
-    description: 'Experiencias unicas, conciertos, gastronomia y mas. Crea tu Day perfecto.',
+    description: 'Descubre experiencias unicas y Arma tu Day perfecto con conciertos, gastronomia, arte y festivales en tu ciudad. Compra entradas online.',
     url: BASE_URL,
     images: [
       {
@@ -77,8 +79,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@ctxplorer',
     creator: '@ctxplorer',
-    title: 'CTXplorer - Descubre los mejores planes en tu ciudad',
-    description: 'Experiencias unicas, conciertos, gastronomia y mas.',
+    title: 'CTXplorer - Arma tu Day perfecto con los mejores eventos',
+    description: 'Descubre experiencias unicas y Arma tu Day perfecto con conciertos, gastronomia, arte y festivales. Compra entradas online.',
     images: [
       {
         url: '/og-image.png',
@@ -112,7 +114,7 @@ export default function RootLayout({
     '@type': 'WebSite',
     name: 'CTXplorer',
     url: BASE_URL,
-    description: 'Descubre los mejores planes y eventos en tu ciudad. Conciertos, gastronomia, arte, festivales y experiencias unicas.',
+    description: 'Descubre los mejores planes y eventos en tu ciudad. Arma tu Day perfecto con conciertos, gastronomia, arte, festivales y experiencias unicas.',
     inLanguage: 'es',
     publisher: {
       '@type': 'Organization',
@@ -139,7 +141,7 @@ export default function RootLayout({
       width: 1200,
       height: 630,
     },
-    description: 'Plataforma de descubrimiento de eventos y experiencias en tu ciudad. Compra entradas para conciertos, teatro, gastronomia y mas.',
+    description: 'Plataforma de descubrimiento de eventos y experiencias en tu ciudad. Arma tu Day perfecto y compra entradas para conciertos, teatro, gastronomia y mas.',
     foundingDate: '2024',
     sameAs: [
       'https://www.instagram.com/ctxplorer',

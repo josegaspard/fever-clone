@@ -50,7 +50,7 @@ const BASE_URL = 'https://fever-clone.vercel.app';
 
 export const metadata = {
   title: 'CTXplorer - Descubre los mejores planes y eventos en tu ciudad',
-  description: 'Explora conciertos, gastronomia, arte, festivales y mas. Crea tu Day perfecto en Ciudad de Mexico, Madrid, Barcelona, New York, London y Paris. Eventos gratuitos y de pago. Compra entradas online.',
+  description: 'Explora conciertos, gastronomia, arte y festivales. Arma tu Day perfecto en CDMX, Madrid, Barcelona, New York, London y Paris. Eventos gratis y de pago.',
   keywords: [
     'eventos', 'conciertos', 'gastronomia', 'arte', 'festivales',
     'planes', 'experiencias', 'entradas', 'tickets', 'CDMX',
@@ -60,7 +60,7 @@ export const metadata = {
   alternates: { canonical: BASE_URL },
   openGraph: {
     title: 'CTXplorer - Descubre los mejores planes y eventos en tu ciudad',
-    description: 'Explora conciertos, gastronomia, arte, festivales y mas. Crea tu Day perfecto.',
+    description: 'Explora conciertos, gastronomia, arte y festivales. Arma tu Day perfecto con los mejores eventos de tu ciudad.',
     url: BASE_URL,
     siteName: 'CTXplorer',
     type: 'website',
@@ -215,27 +215,32 @@ export default async function HomePage() {
       {
         '@type': 'Question',
         name: 'Como funciona CTXplorer para explorar eventos?',
-        acceptedAnswer: { '@type': 'Answer', text: 'Descubre experiencias unicas en tu ciudad: conciertos, gastronomia, arte y mas. Navega por categorias o busca eventos especificos para encontrar lo que te interesa.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'CTXplorer te permite descubrir experiencias unicas en tu ciudad: conciertos, gastronomia, arte y mas. Navega por categorias, busca eventos especificos y usa nuestra funcion exclusiva "Arma tu Day" para crear itinerarios personalizados con multiples actividades en un solo dia.' },
       },
       {
         '@type': 'Question',
-        name: 'Como puedo crear mi Day perfecto en CTXplorer?',
-        acceptedAnswer: { '@type': 'Answer', text: 'Agrega actividades a tu plan diario. Te mostramos la ruta y el costo total para que puedas organizar tu dia de la mejor manera.' },
+        name: 'Que es "Arma tu Day" y como funciona?',
+        acceptedAnswer: { '@type': 'Answer', text: '"Arma tu Day" es la funcion estrella de CTXplorer que te diferencia de cualquier otra plataforma de eventos. Dinos con quien vas, tu presupuesto y tus intereses, y nuestro sistema con IA crea rutas personalizadas combinando los mejores eventos de tu ciudad. Ves la ruta optimizada en mapa, el costo total y puedes compartirla con amigos.' },
       },
       {
         '@type': 'Question',
         name: 'Como obtengo mis entradas en CTXplorer?',
-        acceptedAnswer: { '@type': 'Answer', text: 'Obten tus tickets QR directamente en la app, comparte con amigos y vive un dia inolvidable. Puedes comprar entradas para conciertos, teatro, gastronomia y mas.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'Compra entradas directamente en CTXplorer y recibe tus tickets QR al instante. Puedes comprar para eventos individuales o para un Day completo con "Arma tu Day". Comparte tu plan con amigos y vive un dia inolvidable con conciertos, teatro, gastronomia y mas.' },
       },
       {
         '@type': 'Question',
         name: 'En que ciudades esta disponible CTXplorer?',
-        acceptedAnswer: { '@type': 'Answer', text: 'CTXplorer esta disponible en Ciudad de Mexico, Madrid, Barcelona, New York, London, Paris y muchas mas ciudades. Explora eventos en tu ciudad favorita.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'CTXplorer esta disponible en Ciudad de Mexico (CDMX), Madrid, Barcelona, New York, London, Paris, Lima, Buenos Aires, Bogota y Monterrey. En cada ciudad puedes explorar eventos y usar "Arma tu Day" para planificar jornadas completas con actividades locales.' },
       },
       {
         '@type': 'Question',
         name: 'Hay eventos gratuitos en CTXplorer?',
-        acceptedAnswer: { '@type': 'Answer', text: 'Si, CTXplorer ofrece una seleccion de eventos gratuitos en todas las ciudades disponibles. Filtra por precio para encontrar experiencias sin costo.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'Si, CTXplorer ofrece una amplia seleccion de eventos gratuitos en todas las ciudades disponibles. Filtra por precio para encontrar experiencias sin costo, o usa "Arma tu Day" con presupuesto cero para descubrir los mejores planes gratis cerca de ti.' },
+      },
+      {
+        '@type': 'Question',
+        name: 'Puedo compartir mi plan de dia con amigos?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Si, con "Arma tu Day" puedes crear un itinerario completo y compartirlo con un enlace unico. Tus amigos pueden ver la ruta, los eventos seleccionados, horarios y el costo total. Tambien pueden unirse al plan y comprar sus propias entradas directamente.' },
       },
     ],
   };

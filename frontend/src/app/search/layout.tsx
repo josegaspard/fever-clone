@@ -5,7 +5,7 @@ const BASE_URL = 'https://fever-clone.vercel.app';
 export const metadata: Metadata = {
   title: 'Buscar eventos | CTXplorer',
   description:
-    'Busca y filtra eventos, conciertos, teatro, gastronomía, arte y más en tu ciudad. Encuentra entradas y experiencias únicas cerca de ti. Compara precios y compra tickets online.',
+    'Busca eventos, conciertos, teatro, gastronomia, arte y mas en tu ciudad. Filtra por precio, fecha y categoria. Arma tu Day perfecto con experiencias unicas.',
   keywords: [
     'buscar eventos', 'conciertos', 'teatro', 'gastronomía', 'arte',
     'experiencias', 'entradas', 'tickets', 'eventos cerca de mí',
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: 'Buscar eventos | CTXplorer',
-    description: 'Encuentra los mejores eventos, conciertos y experiencias en tu ciudad. Filtra por categoría, ciudad y precio.',
+    description: 'Encuentra los mejores eventos, conciertos y experiencias en tu ciudad. Filtra por categoria, ciudad y precio. Arma tu Day perfecto.',
     url: `${BASE_URL}/search`,
     siteName: 'CTXplorer',
     type: 'website',
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@ctxplorer',
     title: 'Buscar eventos | CTXplorer',
-    description: 'Encuentra los mejores eventos, conciertos y experiencias en tu ciudad.',
+    description: 'Encuentra los mejores eventos y experiencias en tu ciudad. Arma tu Day perfecto con CTXplorer.',
     images: ['/og-image.png'],
   },
   alternates: {

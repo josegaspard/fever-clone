@@ -138,69 +138,142 @@ export default function HeroBanner() {
               </div>
             </div>
 
-            {/* RIGHT — Animated Day builder preview */}
-            <div className="lg:col-span-5 hidden lg:block">
-              <div className="relative">
-                {/* Phone frame */}
-                <div className="relative mx-auto w-[280px] rounded-[2rem] p-3 shadow-2xl" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+            {/* RIGHT — TWO PHONE MOCKUPS side by side */}
+            <div className="lg:col-span-5 hidden lg:flex items-center gap-4 justify-center">
+
+              {/* PHONE 1: "Armando tu Day" — animated step by step */}
+              <div className="relative w-[240px] shrink-0">
+                <div className="rounded-[2rem] p-2.5 shadow-2xl" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
                   {/* Status bar */}
-                  <div className="flex items-center justify-between px-4 py-2 mb-2">
-                    <span className="text-[10px] font-medium" style={{ color: 'var(--text-tertiary)' }}>9:41</span>
-                    <div className="flex gap-1">
-                      <div className="w-3.5 h-2 rounded-sm" style={{ background: 'var(--text-tertiary)' }} />
-                      <div className="w-1.5 h-2 rounded-sm" style={{ background: 'var(--text-tertiary)' }} />
+                  <div className="flex items-center justify-between px-3 py-1.5 mb-1">
+                    <span className="text-[9px] font-medium" style={{ color: 'var(--text-tertiary)' }}>9:41</span>
+                    <div className="flex gap-0.5">
+                      <div className="w-3 h-1.5 rounded-sm" style={{ background: 'var(--text-tertiary)', opacity: 0.5 }} />
                     </div>
                   </div>
 
-                  {/* App header */}
-                  <div className="px-3 mb-3">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-[#e63946]">Tu Day</p>
-                    <p className="text-sm font-bold" style={{ color: 'var(--fg)' }}>Sábado en pareja</p>
+                  <div className="px-3 mb-2">
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-[#e63946]">Paso 1</p>
+                    <p className="text-xs font-bold" style={{ color: 'var(--fg)' }}>Armando tu Day</p>
                   </div>
 
-                  {/* Timeline — animated */}
-                  <div className="px-3 space-y-1">
+                  {/* Animated timeline */}
+                  <div className="px-2.5 space-y-0.5">
                     {DAY_STEPS.map((step, i) => (
-                      <div key={step.time} className={`transition-all duration-500 ${i <= activeStep ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
-                        <div className="flex items-center gap-2.5 py-2 px-2 rounded-lg" style={{ background: i === activeStep ? 'var(--surface)' : 'transparent', border: i === activeStep ? '1px solid var(--border)' : '1px solid transparent' }}>
-                          <div className="w-8 h-8 rounded-lg overflow-hidden relative shrink-0">
-                            <Image src={step.img} alt={step.title} fill sizes="32px" className="object-cover" />
+                      <div key={step.time} className={`transition-all duration-500 ${i <= activeStep ? 'opacity-100 translate-y-0' : 'opacity-20 translate-y-2'}`}>
+                        <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg" style={{ background: i === activeStep ? 'var(--surface)' : 'transparent', border: i === activeStep ? '1px solid var(--border)' : '1px solid transparent' }}>
+                          <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] shrink-0 ${i <= activeStep ? 'bg-[#e63946] text-white' : ''}`} style={i > activeStep ? { background: 'var(--surface)', color: 'var(--text-tertiary)' } : {}}>
+                            {i + 1}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[11px] font-semibold truncate" style={{ color: 'var(--fg)' }}>{step.title}</p>
-                            <p className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>{step.time} · {step.category}</p>
+                            <p className="text-[10px] font-semibold truncate" style={{ color: 'var(--fg)' }}>{step.title}</p>
+                            <p className="text-[8px]" style={{ color: 'var(--text-tertiary)' }}>{step.time}</p>
                           </div>
-                          <span className="text-[10px] font-bold shrink-0" style={{ color: 'var(--fg)' }}>{step.price}</span>
+                          <span className="text-[9px] font-bold shrink-0" style={{ color: 'var(--fg)' }}>{step.price}</span>
                         </div>
-                        {/* Transport line */}
-                        {i < DAY_STEPS.length - 1 && i < activeStep && (
-                          <div className="flex items-center gap-1.5 pl-6 py-0.5">
-                            <div className="w-px h-3" style={{ background: 'var(--border)' }} />
-                            <span className="text-[8px]" style={{ color: 'var(--text-tertiary)' }}>12 min en auto</span>
+                      </div>
+                    ))}
+
+                    {/* Add more CTA */}
+                    <div className={`transition-all duration-300 ${activeStep >= 2 ? 'opacity-100' : 'opacity-0'}`}>
+                      <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg border-dashed" style={{ border: '1px dashed var(--border)' }}>
+                        <div className="w-5 h-5 rounded-md flex items-center justify-center shrink-0" style={{ background: 'var(--surface)' }}>
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} style={{ color: 'var(--text-tertiary)' }}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                        </div>
+                        <p className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>Agregar actividad</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  <div className={`mx-2.5 mt-2 mb-2 transition-all duration-500 ${activeStep >= DAY_STEPS.length ? 'opacity-100' : 'opacity-30'}`}>
+                    <div className="w-full py-1.5 bg-[#e63946] text-white text-[10px] font-bold rounded-lg text-center">
+                      Confirmar Day
+                    </div>
+                  </div>
+                </div>
+                <p className="text-center text-[10px] font-medium mt-3" style={{ color: 'var(--text-tertiary)' }}>Elige actividades</p>
+              </div>
+
+              {/* Arrow between phones */}
+              <div className="shrink-0 flex flex-col items-center gap-1">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5} style={{ color: 'var(--text-tertiary)' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </div>
+
+              {/* PHONE 2: "Tu Day listo" — routes + transport */}
+              <div className="relative w-[240px] shrink-0">
+                <div className="rounded-[2rem] p-2.5 shadow-2xl" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+                  <div className="flex items-center justify-between px-3 py-1.5 mb-1">
+                    <span className="text-[9px] font-medium" style={{ color: 'var(--text-tertiary)' }}>9:41</span>
+                    <div className="flex gap-0.5">
+                      <div className="w-3 h-1.5 rounded-sm" style={{ background: 'var(--text-tertiary)', opacity: 0.5 }} />
+                    </div>
+                  </div>
+
+                  <div className="px-3 mb-2">
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-[#2a9d8f]">Listo</p>
+                    <p className="text-xs font-bold" style={{ color: 'var(--fg)' }}>Tu Day completo</p>
+                  </div>
+
+                  {/* Completed timeline with routes */}
+                  <div className="px-2.5 space-y-0">
+                    {DAY_STEPS.map((step, i) => (
+                      <div key={step.time}>
+                        <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg">
+                          <div className="w-6 h-6 rounded-md overflow-hidden relative shrink-0">
+                            <Image src={step.img} alt={step.title} fill sizes="24px" className="object-cover" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-semibold truncate" style={{ color: 'var(--fg)' }}>{step.title}</p>
+                            <p className="text-[8px]" style={{ color: 'var(--text-tertiary)' }}>{step.time}</p>
+                          </div>
+                          <svg className="w-3 h-3 text-[#2a9d8f] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                        {/* Transport between */}
+                        {i < DAY_STEPS.length - 1 && (
+                          <div className="ml-4 pl-3 py-1 flex items-center gap-1.5" style={{ borderLeft: '2px dashed var(--border)' }}>
+                            <div className="flex gap-1">
+                              <span className="text-[8px] px-1.5 py-0.5 rounded font-medium" style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}>
+                                {i === 0 ? 'L3 Metro' : 'Uber'}
+                              </span>
+                              <span className="text-[8px] px-1.5 py-0.5 rounded font-medium" style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}>
+                                {i === 0 ? '15 min' : '12 min'}
+                              </span>
+                              <span className="text-[8px] px-1.5 py-0.5 rounded font-medium" style={{ background: 'var(--surface)', color: 'var(--text-secondary)' }}>
+                                {i === 0 ? '$5' : '$85'}
+                              </span>
+                            </div>
                           </div>
                         )}
                       </div>
                     ))}
                   </div>
 
-                  {/* Total — appears when all steps shown */}
-                  <div className={`mx-3 mt-3 mb-2 flex items-center justify-between py-2 px-3 rounded-lg transition-all duration-500 ${activeStep >= DAY_STEPS.length ? 'opacity-100' : 'opacity-0'}`} style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                    <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>Total</span>
-                    <span className="text-xs font-black" style={{ color: 'var(--fg)' }}>$1,240 MXN</span>
+                  {/* Total + transport summary */}
+                  <div className="mx-2.5 mt-2 mb-1 p-2 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[9px]" style={{ color: 'var(--text-secondary)' }}>Actividades</span>
+                      <span className="text-[10px] font-bold" style={{ color: 'var(--fg)' }}>$1,240</span>
+                    </div>
+                    <div className="flex justify-between items-center mt-0.5">
+                      <span className="text-[9px]" style={{ color: 'var(--text-secondary)' }}>Transporte</span>
+                      <span className="text-[10px] font-bold" style={{ color: 'var(--fg)' }}>$90</span>
+                    </div>
+                    <div className="flex justify-between items-center mt-1 pt-1" style={{ borderTop: '1px solid var(--border)' }}>
+                      <span className="text-[9px] font-bold" style={{ color: 'var(--fg)' }}>Total Day</span>
+                      <span className="text-xs font-black text-[#e63946]">$1,330</span>
+                    </div>
                   </div>
 
-                  {/* CTA inside phone */}
-                  <div className={`mx-3 mb-3 transition-all duration-500 ${activeStep >= DAY_STEPS.length ? 'opacity-100' : 'opacity-0'}`}>
-                    <div className="w-full py-2 bg-[#e63946] text-white text-[11px] font-bold rounded-lg text-center">
-                      Reservar Day completo
+                  <div className="mx-2.5 mb-2 mt-1">
+                    <div className="w-full py-1.5 bg-[#2a9d8f] text-white text-[10px] font-bold rounded-lg text-center">
+                      Reservar todo
                     </div>
                   </div>
                 </div>
-
-                {/* Badge */}
-                <div className="absolute -top-2 -right-2 px-3 py-1 bg-[#e63946] text-white text-[10px] font-bold rounded-full shadow-lg">
-                  Animado
-                </div>
+                <p className="text-center text-[10px] font-medium mt-3" style={{ color: 'var(--text-tertiary)' }}>Ruta y transporte resuelto</p>
               </div>
             </div>
 

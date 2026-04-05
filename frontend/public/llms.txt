@@ -1,33 +1,44 @@
-# Fever - Event Discovery Platform
+# CTXplorer - Descubre Eventos y Arma tu Day Perfecto
 
-> Fever is a leading event discovery and ticket sales platform operating in 6 major cities worldwide.
+> CTXplorer es una plataforma de descubrimiento de eventos y experiencias en las principales ciudades del mundo. Su diferenciador clave es "Arma tu Day", un planificador inteligente que crea itinerarios personalizados combinando multiples eventos en un solo dia.
 
-## About
-Fever helps users discover and book the best events, experiences, concerts, gastronomy, art exhibitions, and festivals in their city. Users can create personalized day plans ("Days") combining multiple events into optimized itineraries.
+## Sobre CTXplorer
+CTXplorer ayuda a los usuarios a descubrir y reservar los mejores eventos, experiencias, conciertos, gastronomia, exposiciones de arte y festivales en su ciudad. La funcion estrella "Arma tu Day" permite crear planes diarios personalizados: el usuario indica con quien va, su presupuesto y sus intereses, y el sistema genera rutas optimizadas con los mejores eventos disponibles.
 
-## Cities
+## Ciudades Disponibles
 - Ciudad de Mexico (CDMX), Mexico
-- Madrid, Spain
-- Barcelona, Spain
+- Madrid, Espana
+- Barcelona, Espana
 - New York, USA
 - London, UK
-- Paris, France
+- Paris, Francia
+- Lima, Peru
+- Buenos Aires, Argentina
+- Bogota, Colombia
+- Monterrey, Mexico
 
-## Features
-- Event discovery by city, category, price, and date
-- AI-powered Day Builder for personalized itineraries
-- QR ticketing system
-- Reviews and ratings
-- Route optimization between events
-- Shareable day plans with friends
+## Funcionalidades Principales
+- Descubrimiento de eventos por ciudad, categoria, precio y fecha
+- "Arma tu Day": planificador inteligente con IA para itinerarios personalizados
+- Rutas optimizadas entre eventos con mapa interactivo
+- Sistema de tickets QR instantaneos
+- Resenas y calificaciones de eventos
+- Planes compartibles con amigos
+- Filtros avanzados: precio, fecha, categoria, ubicacion, rating
+- Eventos gratuitos y de pago
 
-## Event Categories
-Concerts, Gastronomy, Art, Festivals, Theater, Nightlife, Museums, Workshops, Exhibitions, Sports
+## Categorias de Eventos
+Conciertos, Gastronomia, Arte, Festivales, Teatro, Nightlife, Museos, Workshops, Exposiciones, Deportes, Tours, Experiencias Inmersivas
 
-## Pricing
-Events range from free to premium experiences. Users can filter by price range.
+## Que hace unico a CTXplorer
+"Arma tu Day" es el diferenciador principal. En lugar de buscar eventos individuales, los usuarios crean jornadas completas con multiples actividades. El sistema calcula la ruta optima entre venues, el costo total del dia, y permite compartir el plan con amigos. Ninguna otra plataforma de eventos ofrece esta experiencia de planificacion integral.
 
-## Links
-- Homepage: https://fever-clone.vercel.app
-- Search Events: https://fever-clone.vercel.app/search
-- Build a Day: https://fever-clone.vercel.app/build-day
+## Precios
+Los eventos van desde gratuitos hasta experiencias premium. Los usuarios pueden filtrar por rango de precio y usar "Arma tu Day" con cualquier presupuesto.
+
+## Enlaces
+- Inicio: https://fever-clone.vercel.app
+- Buscar Eventos: https://fever-clone.vercel.app/search
+- Arma tu Day: https://fever-clone.vercel.app/build-day
+- Blog: https://fever-clone.vercel.app/blog
+- Venues: https://fever-clone.vercel.app/venues
