@@ -1,32 +1,35 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import SearchBar from './SearchBar';
 
 const CITIES = [
-  { slug: 'cdmx', name: 'CDMX', country: 'Mexico', lat: 19.4326, lng: -99.1332, emoji: '🇲🇽' },
-  { slug: 'madrid', name: 'Madrid', country: 'España', lat: 40.4168, lng: -3.7038, emoji: '🇪🇸' },
-  { slug: 'barcelona', name: 'Barcelona', country: 'España', lat: 41.3874, lng: 2.1686, emoji: '🇪🇸' },
-  { slug: 'new-york', name: 'New York', country: 'USA', lat: 40.7128, lng: -74.006, emoji: '🇺🇸' },
-  { slug: 'london', name: 'London', country: 'UK', lat: 51.5074, lng: -0.1278, emoji: '🇬🇧' },
-  { slug: 'paris', name: 'Paris', country: 'France', lat: 48.8566, lng: 2.3522, emoji: '🇫🇷' },
+  { slug: 'cdmx', name: 'Ciudad de México', short: 'CDMX', country: 'México', lat: 19.4326, lng: -99.1332, image: 'https://images.unsplash.com/photo-1585464231875-d9ef1f5ad396?w=400&h=300&fit=crop' },
+  { slug: 'madrid', name: 'Madrid', short: 'Madrid', country: 'España', lat: 40.4168, lng: -3.7038, image: 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&h=300&fit=crop' },
+  { slug: 'barcelona', name: 'Barcelona', short: 'Barcelona', country: 'España', lat: 41.3874, lng: 2.1686, image: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=400&h=300&fit=crop' },
+  { slug: 'new-york', name: 'New York', short: 'NYC', country: 'USA', lat: 40.7128, lng: -74.006, image: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&h=300&fit=crop' },
+  { slug: 'london', name: 'London', short: 'London', country: 'UK', lat: 51.5074, lng: -0.1278, image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=300&fit=crop' },
+  { slug: 'paris', name: 'Paris', short: 'Paris', country: 'France', lat: 48.8566, lng: 2.3522, image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=300&fit=crop' },
 ];
 
-const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=1920&q=80',
-  'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1920&q=80',
-  'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=1920&q=80',
+const CATEGORIES = [
+  { slug: 'conciertos', label: 'Conciertos', icon: '🎵' },
+  { slug: 'gastronomia', label: 'Gastronomía', icon: '🍽️' },
+  { slug: 'arte', label: 'Arte y Museos', icon: '🎨' },
+  { slug: 'deportes', label: 'Deportes', icon: '⚽' },
+  { slug: 'teatro', label: 'Teatro', icon: '🎭' },
+  { slug: 'nightlife', label: 'Nightlife', icon: '🌙' },
+  { slug: 'tours', label: 'Tours', icon: '🗺️' },
+  { slug: 'bienestar', label: 'Bienestar', icon: '🧘' },
 ];
 
 export default function HeroBanner() {
   const router = useRouter();
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [mounted, setMounted] = useState(false);
   const [detectedCity, setDetectedCity] = useState<string | null>(null);
   const [detecting, setDetecting] = useState(false);
-  const [showCityPicker, setShowCityPicker] = useState(false);
-  const [bgIndex, setBgIndex] = useState(0);
-  const [videoLoaded, setVideoLoaded] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -38,184 +41,186 @@ export default function HeroBanner() {
         (pos) => {
           const { latitude, longitude } = pos.coords;
           let nearest = CITIES[0].slug, minDist = Infinity;
-          for (const c of CITIES) { const d = Math.sqrt((latitude - c.lat) ** 2 + (longitude - c.lng) ** 2); if (d < minDist) { minDist = d; nearest = c.slug; } }
+          for (const c of CITIES) {
+            const d = Math.sqrt((latitude - c.lat) ** 2 + (longitude - c.lng) ** 2);
+            if (d < minDist) { minDist = d; nearest = c.slug; }
+          }
           setDetectedCity(nearest);
           localStorage.setItem('ctxplorer-city', nearest);
           setDetecting(false);
         },
-        () => { setDetecting(false); setShowCityPicker(true); },
+        () => { setDetecting(false); },
         { timeout: 5000, maximumAge: 60000 }
       );
     }
   }, []);
 
-  useEffect(() => {
-    const t = setInterval(() => setBgIndex(i => (i + 1) % HERO_IMAGES.length), 6000);
-    return () => clearInterval(t);
-  }, []);
-
-  const handleCitySelect = (slug: string) => {
-    setDetectedCity(slug);
-    localStorage.setItem('ctxplorer-city', slug);
-    setShowCityPicker(false);
-    router.push(`/${slug}`);
+  const selectedCity = CITIES.find(c => c.slug === detectedCity);
+  const handleSearch = (q: string) => {
+    if (q.trim()) router.push(`/search?q=${encodeURIComponent(q.trim())}${detectedCity ? `&city=${detectedCity}` : ''}`);
   };
 
-  const selectedCity = CITIES.find(c => c.slug === detectedCity);
-
   return (
-    <section className="relative overflow-hidden min-h-[100svh]" role="banner">
-      {/* ── Background video ── */}
-      <video
-        ref={videoRef}
-        src="https://cdn.pixabay.com/video/2024/03/07/203040-921765610_large.mp4"
-        autoPlay muted loop playsInline
-        onLoadedData={() => setVideoLoaded(true)}
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
-      />
+    <div className={`transition-opacity duration-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+      {/* ── Hero section ── */}
+      <section className="relative overflow-hidden" role="banner">
+        {/* Background gradient — not full screen, just enough */}
+        <div className="absolute inset-0" style={{
+          background: 'linear-gradient(135deg, #0f0f0f 0%, #1a0a0e 40%, #0f0f0f 100%)',
+        }} />
+        {/* Subtle glow */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full opacity-[0.07]" style={{
+          background: 'radial-gradient(circle, #e63946 0%, transparent 70%)',
+        }} />
 
-      {/* ── Image fallback ── */}
-      {HERO_IMAGES.map((img, i) => (
-        <div key={img} className="absolute inset-0 transition-opacity duration-[2000ms]" style={{ opacity: !videoLoaded && bgIndex === i ? 1 : 0 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={img} alt={`Experiencia ${i + 1}`} className="w-full h-full object-cover" />
-        </div>
-      ))}
-
-      {/* ── Overlay — darker, cinematic ── */}
-      <div className="absolute inset-0 bg-black/50" />
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%)' }} />
-      <div className="absolute bottom-0 left-0 right-0 h-32" style={{ background: 'linear-gradient(to top, var(--bg), transparent)' }} />
-
-      {/* ── Content ── */}
-      <div className="relative z-10 min-h-[100svh] flex flex-col">
-
-        {/* Top spacer — pushes content to center */}
-        <div className="flex-1" />
-
-        {/* Main content block */}
-        <div className={`px-6 sm:px-8 max-w-5xl mx-auto w-full transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-28 sm:pt-36 pb-16 sm:pb-20">
           {/* City indicator */}
-          <div className="mb-6">
+          <div className="mb-4">
             {detecting ? (
-              <span className="inline-flex items-center gap-2 text-white/50 text-sm">
-                <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Detectando...
-              </span>
+              <span className="text-sm text-white/40">Detectando ubicación...</span>
             ) : selectedCity ? (
-              <button onClick={() => setShowCityPicker(!showCityPicker)} className="inline-flex items-center gap-1.5 text-white/60 text-sm hover:text-white/90 transition">
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" /></svg>
-                {selectedCity.name}, {selectedCity.country}
-                <svg className={`w-3 h-3 transition-transform ${showCityPicker ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-              </button>
-            ) : (
-              <button onClick={() => setShowCityPicker(true)} className="inline-flex items-center gap-1.5 text-[#e63946] text-sm font-medium hover:opacity-80 transition">
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" /></svg>
-                Selecciona tu ciudad
-              </button>
-            )}
-
-            {showCityPicker && (
-              <div className="flex flex-wrap gap-2 mt-3 animate-slide-up">
-                {CITIES.map(c => (
-                  <button
-                    key={c.slug}
-                    onClick={() => handleCitySelect(c.slug)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                      detectedCity === c.slug
-                        ? 'bg-[#e63946] text-white'
-                        : 'bg-white/10 text-white/80 hover:bg-white/20'
-                    }`}
-                  >
-                    {c.emoji} {c.name}
-                  </button>
-                ))}
-              </div>
-            )}
+              <span className="text-sm text-white/50">
+                Eventos en <span className="text-white/80 font-medium">{selectedCity.name}</span>
+              </span>
+            ) : null}
           </div>
 
           {/* Headline */}
-          <h1 className="text-[2.75rem] sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-[0.95] tracking-[-0.02em]">
-            Arma tu
-            <br />
-            <span className="text-[#e63946]">Day perfecto.</span>
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[1.05] tracking-[-0.02em] max-w-2xl">
+            Arma tu dia perfecto
           </h1>
 
           {/* Subtitle */}
-          <p className="text-white/50 text-lg sm:text-xl mt-5 max-w-lg leading-snug">
-            Combinamos actividades para ti.
-            <span className="text-white/80"> Ruta, transporte y todo resuelto.</span>
+          <p className="text-base sm:text-lg text-white/40 mt-4 max-w-lg leading-relaxed">
+            Combina restaurantes, conciertos, actividades y mas. Te armamos la ruta y te llevamos.
           </p>
 
-          {/* Mode pills */}
-          <div className="flex gap-2 mt-8 overflow-x-auto scrollbar-hide -mx-1 px-1">
+          {/* Search bar */}
+          <div className="mt-8 max-w-xl">
+            <SearchBar
+              onSearch={handleSearch}
+              large
+              placeholder={selectedCity ? `Buscar en ${selectedCity.short}...` : 'Que quieres hacer?'}
+              showSuggestions={false}
+            />
+          </div>
+
+          {/* Quick actions */}
+          <div className="flex flex-wrap gap-2 mt-6">
+            <button
+              onClick={() => router.push('/build-day')}
+              className="px-5 py-2.5 bg-[#e63946] text-white text-sm font-semibold rounded-xl hover:bg-[#d32836] transition active:scale-[0.97]"
+            >
+              Arma tu Day
+            </button>
+            <button
+              onClick={() => router.push(selectedCity ? `/${selectedCity.slug}` : '/search')}
+              className="px-5 py-2.5 bg-white/[0.08] text-white/70 text-sm font-medium rounded-xl hover:bg-white/[0.12] transition border border-white/[0.06]"
+            >
+              Explorar todo
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Categories — always visible, scrollable ── */}
+      <section className="border-b" style={{ borderColor: 'var(--border)', background: 'var(--bg)' }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide py-3 -mx-4 px-4 sm:mx-0 sm:px-0">
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat.slug}
+                onClick={() => router.push(`/search?category=${cat.slug}`)}
+                className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition hover:opacity-80"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                <span className="text-base">{cat.icon}</span>
+                <span className="whitespace-nowrap">{cat.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── "Arma tu Day" cards — the differentiator ── */}
+      <section className="py-10 sm:py-14" style={{ background: 'var(--bg)' }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold" style={{ color: 'var(--fg)' }}>
+                Arma tu Day
+              </h2>
+              <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+                Elige como quieres vivir tu dia
+              </p>
+            </div>
+            <button
+              onClick={() => router.push('/build-day')}
+              className="text-sm font-medium text-[#e63946] hover:opacity-80 transition hidden sm:block"
+            >
+              Ver todos →
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {[
-              { emoji: '🧑', label: 'Solo', sub: '1 persona' },
-              { emoji: '💑', label: 'Pareja', sub: '2 personas' },
-              { emoji: '👯', label: 'Amigos', sub: '3-8 personas' },
-              { emoji: '👨‍👩‍👧‍👦', label: 'Familia', sub: 'con ninos' },
+              { label: 'Solo', sub: 'Tu tiempo, tus reglas', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop', gradient: 'from-blue-900/80' },
+              { label: 'En pareja', sub: 'Cena + show + bar', img: 'https://images.unsplash.com/photo-1522413452208-996ff3f3e740?w=400&h=500&fit=crop', gradient: 'from-rose-900/80' },
+              { label: 'Con amigos', sub: 'Actividad + comida + fiesta', img: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&h=500&fit=crop', gradient: 'from-amber-900/80' },
+              { label: 'En familia', sub: 'Museo + parque + cena', img: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=400&h=500&fit=crop', gradient: 'from-emerald-900/80' },
             ].map(m => (
               <button
                 key={m.label}
                 onClick={() => router.push('/build-day')}
-                className="shrink-0 flex flex-col items-center gap-1 w-20 sm:w-24 py-3 rounded-2xl bg-white/[0.07] backdrop-blur-sm border border-white/[0.08] text-white hover:bg-white/[0.14] hover:border-white/[0.15] transition-all active:scale-95"
+                className="group relative aspect-[3/4] sm:aspect-[4/5] rounded-2xl overflow-hidden text-left transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
-                <span className="text-xl sm:text-2xl">{m.emoji}</span>
-                <span className="text-[11px] sm:text-xs font-semibold">{m.label}</span>
+                <Image
+                  src={m.img}
+                  alt={m.label}
+                  fill
+                  sizes="(max-width: 640px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className={`absolute inset-0 bg-gradient-to-t ${m.gradient} via-transparent to-black/20`} />
+                <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
+                  <p className="text-white font-bold text-sm sm:text-base">{m.label}</p>
+                  <p className="text-white/60 text-[11px] sm:text-xs mt-0.5">{m.sub}</p>
+                </div>
               </button>
             ))}
           </div>
 
-          {/* CTA */}
-          <div className="flex items-center gap-4 mt-10">
-            <button
-              onClick={() => router.push('/build-day')}
-              className="group px-8 sm:px-10 py-4 sm:py-[18px] bg-[#e63946] text-white font-bold text-[15px] sm:text-base rounded-2xl transition-all hover:bg-[#d32836] active:scale-[0.97] shadow-lg shadow-[#e63946]/25"
-            >
-              <span className="flex items-center gap-2">
-                Comenzar
-                <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-              </span>
-            </button>
-            <button
-              onClick={() => router.push(selectedCity ? `/${selectedCity.slug}` : '/search')}
-              className="text-white/40 text-sm hover:text-white/70 transition hidden sm:block"
-            >
-              Explorar eventos
-            </button>
-          </div>
+          {/* Mobile CTA */}
+          <button
+            onClick={() => router.push('/build-day')}
+            className="w-full mt-4 py-3.5 bg-[#e63946] text-white font-bold text-sm rounded-xl hover:bg-[#d32836] transition sm:hidden active:scale-[0.98]"
+          >
+            Arma tu Day ahora
+          </button>
         </div>
+      </section>
 
-        {/* Bottom spacer + features */}
-        <div className="flex-1 flex flex-col justify-end pb-8 sm:pb-10 px-6 sm:px-8 max-w-5xl mx-auto w-full">
-          <div className={`flex items-center gap-6 transition-all duration-1000 delay-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
-            {[
-              { icon: '🗺️', text: 'Rutas completas' },
-              { icon: '🚇', text: 'Transporte' },
-              { icon: '⏱️', text: 'Tiempos reales' },
-              { icon: '🚐', text: 'Te llevamos' },
-            ].map(f => (
-              <span key={f.text} className="text-[10px] sm:text-[11px] text-white/25 font-medium hidden sm:inline-flex items-center gap-1">
-                {f.icon} {f.text}
-              </span>
-            ))}
-            {/* Mobile: just show 2 */}
-            <span className="text-[10px] text-white/25 font-medium sm:hidden">🗺️ Rutas · 🚇 Transporte · 🚐 Te llevamos</span>
+      {/* ── City selector — if no city detected ── */}
+      {!detectedCity && !detecting && (
+        <section className="pb-10" style={{ background: 'var(--bg)' }}>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--fg)' }}>Elige tu ciudad</h2>
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+              {CITIES.map(c => (
+                <button
+                  key={c.slug}
+                  onClick={() => { setDetectedCity(c.slug); localStorage.setItem('ctxplorer-city', c.slug); router.push(`/${c.slug}`); }}
+                  className="group relative aspect-[4/3] rounded-xl overflow-hidden"
+                >
+                  <Image src={c.image} alt={c.name} fill sizes="(max-width: 640px) 33vw, 16vw" className="object-cover group-hover:scale-110 transition-transform duration-300" />
+                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition" />
+                  <span className="absolute inset-0 flex items-center justify-center text-white text-xs sm:text-sm font-bold">{c.short}</span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 z-10 transition-all duration-1000 delay-700 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
-        <button
-          onClick={() => window.scrollTo({ top: window.innerHeight - 80, behavior: 'smooth' })}
-          className="w-7 h-10 border border-white/10 rounded-full flex items-start justify-center pt-1.5"
-          aria-label="Scroll"
-        >
-          <div className="w-0.5 h-2 bg-white/30 rounded-full animate-bounce" style={{ animationDuration: '2s' }} />
-        </button>
-      </div>
-    </section>
+        </section>
+      )}
+    </div>
   );
 }
