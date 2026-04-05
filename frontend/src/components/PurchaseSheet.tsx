@@ -424,26 +424,25 @@ function SheetContent({
                 </div>
               )}
 
-              {/* Perfect Day upsell */}
-              <div className="rounded-xl p-3.5" style={{ background: 'linear-gradient(135deg, rgba(230,57,70,0.06), rgba(42,157,143,0.06))', border: '1px solid var(--border)' }}>
-                <p className="text-xs font-bold mb-2" style={{ color: 'var(--fg)' }}>Arma tu Day perfecto</p>
-                <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="text-base">🍽️</span>
-                    <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Cena antes</span>
+              {/* Perfect Day upsell — compelling */}
+              <div className="rounded-xl p-3.5 relative overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                <div className="absolute top-0 right-0 w-20 h-20 rounded-full opacity-10" style={{ background: 'radial-gradient(circle, #e63946, transparent)', transform: 'translate(30%, -30%)' }} />
+                <div className="flex items-start gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-sm">✨</span>
                   </div>
-                  <span className="text-[10px] hidden sm:inline" style={{ color: 'var(--text-tertiary)' }}>|</span>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="text-base">🍸</span>
-                    <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Drinks despues</span>
-                  </div>
-                  <span className="text-[10px] hidden sm:inline" style={{ color: 'var(--text-tertiary)' }}>|</span>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="text-base">📍</span>
-                    <span className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>Actividades cerca</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold" style={{ color: 'var(--fg)' }}>No solo compres un ticket</p>
+                    <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                      Al comprar, te sugerimos cena, bar, actividades y transporte para un día completo.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {['🍽️ Cena', '🍸 Bar', '📍 Cerca', '🚐 Transporte'].map(t => (
+                        <span key={t} className="text-[9px] px-2 py-0.5 rounded-full font-medium" style={{ background: 'var(--card)', color: 'var(--text-tertiary)', border: '1px solid var(--border)' }}>{t}</span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <p className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>Compra tu entrada y te ayudamos a armar el dia perfecto</p>
               </div>
 
               {/* Security badges */}

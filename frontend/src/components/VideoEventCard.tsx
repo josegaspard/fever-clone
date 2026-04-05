@@ -15,14 +15,22 @@ export default function VideoEventCard({ event }: VideoEventCardProps) {
   return (
     <Link href={`/events/${event.slug}`} className="group block" aria-label={`${event.title} - Video`}>
       <div className="video-event-card relative aspect-video rounded-2xl overflow-hidden border transition-all duration-500" style={{ borderColor: 'var(--border)' }}>
-        {/* Video background */}
-        {event.videoUrl ? (
+        {/* Video background — supports YouTube embeds and raw video */}
+        {event.videoUrl && event.videoUrl.includes('youtube.com/embed') ? (
+          <div className="absolute inset-0">
+            {event.image && <Image src={event.image} alt={event.title} fill sizes="(max-width:768px) 100vw, 33vw" className="object-cover" />}
+            <iframe
+              src={`${event.videoUrl}?autoplay=0&mute=1&controls=0&showinfo=0&rel=0&loop=1&modestbranding=1`}
+              className="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              allow="autoplay; encrypted-media"
+              loading="lazy"
+              title={event.title}
+            />
+          </div>
+        ) : event.videoUrl ? (
           <video
             src={event.videoUrl}
-            muted
-            loop
-            playsInline
-            preload="metadata"
+            muted loop playsInline preload="metadata"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()}
             onMouseLeave={(e) => { const v = e.currentTarget as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
