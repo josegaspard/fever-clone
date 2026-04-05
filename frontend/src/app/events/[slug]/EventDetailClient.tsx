@@ -588,24 +588,38 @@ export default function EventDetailClient({ event, related, venue }: Props) {
             </section>
 
             {/* ---- Video del evento ---- */}
-            {hasVideo && (
-              <section className="animate-fade-in">
-                <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--fg)' }}>
-                  Video del evento
-                </h2>
-                <div className="relative rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
-                  <video
-                    ref={videoRef}
-                    src={event.videoUrl}
-                    controls
-                    playsInline
-                    poster={gallery[0] || undefined}
-                    className="w-full aspect-video object-cover"
-                    style={{ background: '#000' }}
-                  />
-                </div>
-              </section>
-            )}
+            {hasVideo && (() => {
+              const ytMatch = event.videoUrl?.match(/(?:\/embed\/|[?&]v=)([^?&]+)/);
+              const ytId = ytMatch ? ytMatch[1] : null;
+              return (
+                <section className="animate-fade-in">
+                  <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--fg)' }}>
+                    Video del evento
+                  </h2>
+                  <div className="relative rounded-2xl overflow-hidden aspect-video" style={{ border: '1px solid var(--border)', background: '#000' }}>
+                    {ytId ? (
+                      <iframe
+                        src={`https://www.youtube.com/embed/${ytId}?autoplay=0&rel=0&modestbranding=1&playsinline=1`}
+                        className="absolute inset-0 w-full h-full"
+                        allow="autoplay; encrypted-media; picture-in-picture"
+                        allowFullScreen
+                        title={event.title}
+                        style={{ border: 'none' }}
+                      />
+                    ) : (
+                      <video
+                        ref={videoRef}
+                        src={event.videoUrl}
+                        controls
+                        playsInline
+                        poster={gallery[0] || undefined}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+                </section>
+              );
+            })()}
 
             {/* ---- Ubicacion ---- */}
             {event.address && (
