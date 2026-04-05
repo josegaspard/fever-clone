@@ -282,9 +282,9 @@ export default function EventDetailClient({ event, related, venue }: Props) {
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.1) 70%, rgba(0,0,0,0.25) 100%)' }} />
             <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%)' }} />
 
-            {/* Top actions */}
-            <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
-              <button onClick={toggleFav} disabled={favLoading} className="w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition hover:scale-110" style={{ background: isFav ? 'rgba(230,57,70,0.9)' : 'rgba(0,0,0,0.4)' }}>
+            {/* Top actions — stop propagation so clicks don't open gallery */}
+            <div className="absolute top-4 right-4 flex items-center gap-2 z-10" onClick={(e) => e.stopPropagation()}>
+              <button onClick={(e) => { e.stopPropagation(); toggleFav(); }} disabled={favLoading} className="w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition hover:scale-110" style={{ background: isFav ? 'rgba(230,57,70,0.9)' : 'rgba(0,0,0,0.4)' }}>
                 <svg className="w-5 h-5 text-white" fill={isFav ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
               </button>
               <ShareButton title={event.title} description={event.shortDescription || event.description.slice(0, 100)} />
