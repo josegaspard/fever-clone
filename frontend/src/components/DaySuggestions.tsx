@@ -16,14 +16,13 @@ interface DaySuggestionsProps {
 
 type TabKey = 'previa' | 'post-show' | 'cerca' | 'grupo';
 
-const TABS: { key: TabKey; label: string; icon: string; desc: string }[] = [
-  { key: 'previa', label: 'Previa', icon: '☕', desc: 'Restaurantes, cafes y experiencias gastronomicas' },
-  { key: 'post-show', label: 'Post-show', icon: '🍸', desc: 'Bares, vida nocturna y comida tarde' },
-  { key: 'cerca', label: 'Cerca', icon: '📍', desc: 'Actividades en la misma zona' },
-  { key: 'grupo', label: 'Para tu grupo', icon: '👥', desc: 'Planes grupales con amigos' },
+const TABS: { key: TabKey; label: string; desc: string }[] = [
+  { key: 'previa', label: 'Previa', desc: 'Antes de tu evento principal' },
+  { key: 'post-show', label: 'Post-show', desc: 'Sigue la fiesta despues' },
+  { key: 'cerca', label: 'Cerca', desc: 'Actividades en la misma zona' },
+  { key: 'grupo', label: 'Para tu grupo', desc: 'Ideales para ir en grupo' },
 ];
 
-// Context-aware category mapping based on what was purchased
 const RELATED_CATEGORIES: Record<string, { previa: string[]; 'post-show': string[] }> = {
   conciertos: { previa: ['gastronomia', 'tours'], 'post-show': ['nightlife', 'gastronomia'] },
   gastronomia: { previa: ['conciertos', 'arte'], 'post-show': ['nightlife', 'conciertos'] },
@@ -38,7 +37,7 @@ const RELATED_CATEGORIES: Record<string, { previa: string[]; 'post-show': string
 const DEFAULT_TAB_CATEGORIES: Record<TabKey, string[] | null> = {
   'previa': ['gastronomia', 'bienestar', 'tours'],
   'post-show': ['nightlife', 'conciertos'],
-  'cerca': null, // all, sorted by distance
+  'cerca': null,
   'grupo': ['deportes', 'festivales', 'experiencias-inmersivas'],
 };
 
@@ -105,7 +104,6 @@ export default function DaySuggestions({ planId, currentEventIds, citySlug, even
   const filtered = useMemo(() => {
     const cats = tabCategories[activeTab];
     if (cats === null) {
-      // "Cerca" — show all suggestions
       return suggestions.slice(0, 8);
     }
     const result = suggestions.filter((e) => {
@@ -147,89 +145,83 @@ export default function DaySuggestions({ planId, currentEventIds, citySlug, even
 
   if (dismissed || (!loading && suggestions.length === 0)) return null;
 
-  const cs = (e: Event) => e.currency === 'GBP' ? '£' : e.currency === 'EUR' ? '€' : '$';
-  const currentTabMeta = TABS.find((t) => t.key === activeTab)!;
+  const cs = (e: Event) => e.currency === 'GBP' ? '\u00a3' : e.currency === 'EUR' ? '\u20ac' : '$';
 
   return (
-    <div
-      className="rounded-2xl overflow-hidden"
-      style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border)',
-      }}
-    >
-      {/* Header */}
-      <div className="p-5 pb-2 flex items-start justify-between">
-        <div>
-          <h3 className="text-lg font-bold" style={{ color: 'var(--fg)' }}>
-            Completa tu Day perfecto
-          </h3>
-          <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
-            Agrega actividades antes, despues o cerca de tu evento
+    <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+      {/* Header with gradient accent */}
+      <div className="relative p-5 pb-3 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1" style={{ background: 'linear-gradient(90deg, #e63946, #f97316, #8b5cf6)' }} />
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#e63946] mb-1">Tu Day no esta completo</p>
+            <h3 className="text-lg font-bold" style={{ color: 'var(--fg)' }}>
+              Agrega mas actividades
+            </h3>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
+              Los mejores Days tienen 3+ actividades con ruta optimizada
+            </p>
+          </div>
+          <button
+            onClick={() => setDismissed(true)}
+            className="p-1.5 rounded-full hover:opacity-60 transition"
+            style={{ color: 'var(--text-tertiary)', background: 'var(--surface)' }}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Savings hint */}
+        <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: 'rgba(42,157,143,0.08)', border: '1px solid rgba(42,157,143,0.15)' }}>
+          <svg className="w-4 h-4 text-[#2a9d8f] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+          <p className="text-[11px] text-[#2a9d8f] font-medium">
+            Agrega cena + bar y calcula la ruta mas rapida entre actividades
           </p>
         </div>
-        <button
-          onClick={() => setDismissed(true)}
-          className="p-1 hover:opacity-60 transition"
-          style={{ color: 'var(--text-tertiary)' }}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="px-5 pt-2 pb-3">
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+      {/* Tabs */}
+      <div className="px-5 pt-1 pb-3">
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.key;
             return (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200"
+                className={`shrink-0 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${isActive ? 'text-white shadow-sm' : ''}`}
                 style={{
-                  background: isActive ? 'var(--fg)' : 'var(--card)',
-                  color: isActive ? 'var(--bg)' : 'var(--text-secondary)',
-                  border: isActive ? '1px solid var(--fg)' : '1px solid var(--border)',
+                  background: isActive ? 'linear-gradient(135deg, #e63946, #c62d3a)' : 'var(--surface)',
+                  color: isActive ? 'white' : 'var(--text-secondary)',
+                  border: isActive ? 'none' : '1px solid var(--border)',
                 }}
               >
-                <span className="text-sm">{tab.icon}</span>
                 {tab.label}
               </button>
             );
           })}
         </div>
-        {/* Tab description */}
-        <p className="text-[11px] mt-2 pl-1" style={{ color: 'var(--text-tertiary)' }}>
-          {currentTabMeta.desc}
-        </p>
       </div>
 
-      {/* Suggestion Cards */}
+      {/* Grid */}
       <div className="px-5 pb-4">
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="h-28 rounded-xl shimmer"
-                style={{ background: 'var(--card)' }}
-              />
+              <div key={i} className="aspect-[3/4] rounded-xl animate-pulse" style={{ background: 'var(--surface)' }} />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div
-            className="text-center py-8 rounded-xl"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
-          >
-            <p className="text-2xl mb-2">{currentTabMeta.icon}</p>
+          <div className="text-center py-10 rounded-xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-              No hay sugerencias de {currentTabMeta.label.toLowerCase()} por ahora
+              No hay sugerencias de &quot;{TABS.find(t => t.key === activeTab)?.label}&quot; por ahora
             </p>
             <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
-              Prueba otra categoria o explora mas actividades
+              Prueba otra categoria
             </p>
           </div>
         ) : (
@@ -237,33 +229,62 @@ export default function DaySuggestions({ planId, currentEventIds, citySlug, even
             {filtered.map((event) => (
               <div
                 key={event.id}
-                className="group rounded-xl overflow-hidden transition-all hover:shadow-lg"
-                style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+                className="group rounded-xl overflow-hidden transition-all hover:shadow-lg hover:-translate-y-0.5"
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
               >
                 {/* Image */}
                 <div className="relative aspect-[4/3] overflow-hidden">
                   {event.image ? (
                     <Image src={event.image} alt={event.title} fill sizes="(max-width:640px) 50vw, (max-width:1024px) 33vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-2xl" style={{ background: 'var(--surface)' }}>{currentTabMeta.icon}</div>
+                    <div className="w-full h-full flex items-center justify-center" style={{ background: 'var(--card)' }}>
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--text-tertiary)' }} strokeWidth={1}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14" />
+                      </svg>
+                    </div>
                   )}
-                  <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md text-[11px] font-bold text-white" style={{ background: event.price === 0 ? '#2a9d8f' : 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}>
-                    {event.price === 0 ? 'Gratis' : `${cs(event)}${event.price.toFixed(0)}`}
+                  {/* Price badge */}
+                  <div className="absolute top-2 right-2">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold text-white backdrop-blur-sm" style={{ background: event.price === 0 ? '#2a9d8f' : 'rgba(0,0,0,0.7)' }}>
+                      {event.price === 0 ? 'Gratis' : `${cs(event)}${event.price.toFixed(0)}`}
+                    </span>
+                  </div>
+                  {/* Hover overlay with quick-add */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Link href={`/events/${event.slug}`} className="text-white text-[10px] font-semibold underline underline-offset-2">
+                      Ver detalles
+                    </Link>
                   </div>
                 </div>
+
                 {/* Info */}
                 <div className="p-2.5">
-                  <p className="text-xs font-bold line-clamp-2 leading-tight" style={{ color: 'var(--fg)' }}>{event.title}</p>
-                  <p className="text-[10px] mt-1" style={{ color: 'var(--text-tertiary)' }}>
-                    {event.category?.name || ''} · {getTimeEstimate(event.category?.slug)}
-                  </p>
+                  <p className="text-xs font-bold line-clamp-2 leading-tight mb-1" style={{ color: 'var(--fg)' }}>{event.title}</p>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
+                      {event.category?.name || ''}
+                    </span>
+                    <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>·</span>
+                    <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
+                      {getTimeEstimate(event.category?.slug)}
+                    </span>
+                  </div>
                   <button
                     onClick={() => handleAdd(event)}
                     disabled={adding === event.id}
-                    className="w-full mt-2 py-2 text-[11px] font-bold rounded-lg text-white transition hover:opacity-90 disabled:opacity-50"
-                    style={{ background: event.price === 0 ? '#2a9d8f' : '#e63946' }}
+                    className="w-full py-2 text-[11px] font-bold rounded-lg text-white transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
+                    style={{ background: event.price === 0 ? 'linear-gradient(135deg, #2a9d8f, #1a7a6f)' : 'linear-gradient(135deg, #e63946, #c62d3a)' }}
                   >
-                    {adding === event.id ? '...' : event.price === 0 ? '+ Agregar a mi Day' : 'Comprar y agregar'}
+                    {adding === event.id ? (
+                      <span className="flex items-center justify-center gap-1.5">
+                        <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
+                        Agregando...
+                      </span>
+                    ) : event.price === 0 ? (
+                      '+ Agregar gratis'
+                    ) : (
+                      `${cs(event)}${event.price.toFixed(0)} - Agregar`
+                    )}
                   </button>
                 </div>
               </div>
@@ -272,24 +293,21 @@ export default function DaySuggestions({ planId, currentEventIds, citySlug, even
         )}
       </div>
 
-      {/* Prominent CTA */}
+      {/* Bottom CTA */}
       <div className="px-5 pb-5">
         <Link
           href={`/search${citySlug ? `?city=${citySlug}` : ''}`}
-          className="group/cta block w-full text-center py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-90"
-          style={{
-            background: 'linear-gradient(135deg, var(--fg), var(--text-secondary))',
-            color: 'var(--bg)',
-          }}
+          className="group/cta flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-semibold transition-all hover:shadow-md"
+          style={{ background: 'var(--surface)', color: 'var(--fg)', border: '1px solid var(--border)' }}
         >
           Explorar mas actividades
           <svg
-            className="w-4 h-4 inline-block ml-1.5 transition-transform duration-200 group-hover/cta:translate-x-1"
+            className="w-4 h-4 transition-transform group-hover/cta:translate-x-1"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
         </Link>
       </div>

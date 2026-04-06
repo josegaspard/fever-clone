@@ -7,3 +7,4 @@ uploads/*
 !uploads/.gitkeep
 dist
 .DS_Store
+.vercel

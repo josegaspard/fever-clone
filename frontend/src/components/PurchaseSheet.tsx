@@ -15,7 +15,7 @@ interface PurchaseSheetProps {
 
 export default function PurchaseSheet({ event, open, onClose }: PurchaseSheetProps) {
   const router = useRouter();
-  const { user } = useAuth();
+  useAuth();
   const { showToast } = useToast();
 
   const [step, setStep] = useState<'details' | 'day' | 'processing'>('details');
@@ -30,6 +30,8 @@ export default function PurchaseSheet({ event, open, onClose }: PurchaseSheetPro
   const cs = event.currency === 'GBP' ? '\u00A3' : event.currency === 'EUR' ? '\u20AC' : '$';
   const cl = event.currency || 'MXN';
   const total = event.price * quantity;
+  const capacityPercent = event.capacity && event.soldCount ? Math.min(100, Math.round((event.soldCount / event.capacity) * 100)) : null;
+  const isAlmostFull = capacityPercent !== null && capacityPercent > 70;
 
   useEffect(() => {
     if (open) {
@@ -98,7 +100,7 @@ export default function PurchaseSheet({ event, open, onClose }: PurchaseSheetPro
   }
 
   async function handleCreateNewDay() {
-    const title = newDayTitle.trim() || `Day — ${event.title}`;
+    const title = newDayTitle.trim() || `Day - ${event.title}`;
     setProcessing(true);
     setStep('processing');
     try {
@@ -134,13 +136,12 @@ export default function PurchaseSheet({ event, open, onClose }: PurchaseSheetPro
     }
   }
 
-  // Quick buy without selecting a day — creates day automatically
   async function handleQuickBuy() {
     setProcessing(true);
     setStep('processing');
     try {
       const plan = await createPlan({
-        title: `Day — ${event.title}`,
+        title: `Day - ${event.title}`,
         planDate: event.date,
       });
       const item = await addPlanItem(plan.id, {
@@ -188,9 +189,18 @@ export default function PurchaseSheet({ event, open, onClose }: PurchaseSheetPro
 
   if (!open) return null;
 
+  const sheetProps = {
+    event, step, quantity, setQuantity, isFree, cs, cl, total,
+    plans, loadingPlans, processing, showNewDay, setShowNewDay,
+    newDayTitle, setNewDayTitle, onClose, onContinueToDay: handleContinueToDay,
+    onQuickBuy: handleQuickBuy, onSelectPlan: handleSelectPlan,
+    onCreateNewDay: handleCreateNewDay, onBack: () => setStep('details'),
+    formatDate, capacityPercent, isAlmostFull,
+  };
+
   return (
     <>
-      {/* Backdrop — desktop modal */}
+      {/* Backdrop -- desktop modal */}
       <div
         className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm hidden lg:flex items-center justify-center p-4"
         onClick={onClose}
@@ -200,73 +210,26 @@ export default function PurchaseSheet({ event, open, onClose }: PurchaseSheetPro
           style={{ background: 'var(--card)' }}
           onClick={(e) => e.stopPropagation()}
         >
-          <SheetContent
-            event={event}
-            step={step}
-            quantity={quantity}
-            setQuantity={setQuantity}
-            isFree={isFree}
-            cs={cs}
-            cl={cl}
-            total={total}
-            plans={plans}
-            loadingPlans={loadingPlans}
-            processing={processing}
-            showNewDay={showNewDay}
-            setShowNewDay={setShowNewDay}
-            newDayTitle={newDayTitle}
-            setNewDayTitle={setNewDayTitle}
-            onClose={onClose}
-            onContinueToDay={handleContinueToDay}
-            onQuickBuy={handleQuickBuy}
-            onSelectPlan={handleSelectPlan}
-            onCreateNewDay={handleCreateNewDay}
-            onBack={() => setStep('details')}
-            formatDate={formatDate}
-          />
+          <SheetContent {...sheetProps} />
         </div>
       </div>
 
-      {/* Mobile — full screen slide from left */}
+      {/* Mobile -- full screen slide from bottom */}
       <div
         className={`fixed inset-0 z-[60] lg:hidden transition-transform duration-300 ease-out ${
-          open ? 'translate-x-0' : '-translate-x-full'
+          open ? 'translate-y-0' : 'translate-y-full'
         }`}
         style={{ background: 'var(--bg)' }}
       >
         <div className="h-full overflow-y-auto">
-          <SheetContent
-            event={event}
-            step={step}
-            quantity={quantity}
-            setQuantity={setQuantity}
-            isFree={isFree}
-            cs={cs}
-            cl={cl}
-            total={total}
-            plans={plans}
-            loadingPlans={loadingPlans}
-            processing={processing}
-            showNewDay={showNewDay}
-            setShowNewDay={setShowNewDay}
-            newDayTitle={newDayTitle}
-            setNewDayTitle={setNewDayTitle}
-            onClose={onClose}
-            onContinueToDay={handleContinueToDay}
-            onQuickBuy={handleQuickBuy}
-            onSelectPlan={handleSelectPlan}
-            onCreateNewDay={handleCreateNewDay}
-            onBack={() => setStep('details')}
-            formatDate={formatDate}
-            mobile
-          />
+          <SheetContent {...sheetProps} mobile />
         </div>
       </div>
     </>
   );
 }
 
-// ── Inner content shared between mobile and desktop ──
+// ── Inner content ──
 
 interface SheetContentProps {
   event: Event;
@@ -291,6 +254,8 @@ interface SheetContentProps {
   onCreateNewDay: () => void;
   onBack: () => void;
   formatDate: (d: string) => string;
+  capacityPercent: number | null;
+  isAlmostFull: boolean;
   mobile?: boolean;
 }
 
@@ -298,7 +263,8 @@ function SheetContent({
   event, step, quantity, setQuantity, isFree, cs, cl, total,
   plans, loadingPlans, processing, showNewDay, setShowNewDay,
   newDayTitle, setNewDayTitle, onClose, onContinueToDay, onQuickBuy,
-  onSelectPlan, onCreateNewDay, onBack, formatDate, mobile,
+  onSelectPlan, onCreateNewDay, onBack, formatDate,
+  capacityPercent, isAlmostFull,
 }: SheetContentProps) {
   return (
     <div className="flex flex-col h-full">
@@ -330,10 +296,13 @@ function SheetContent({
       {/* Processing state */}
       {step === 'processing' && (
         <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
-          <div className="w-12 h-12 border-3 border-[#e63946] border-t-transparent rounded-full animate-spin" />
+          <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'rgba(230,57,70,0.1)' }}>
+            <div className="w-8 h-8 border-3 border-[#e63946] border-t-transparent rounded-full animate-spin" />
+          </div>
           <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-            {isFree ? 'Reservando tu entrada...' : 'Preparando tu Day perfecto...'}
+            {isFree ? 'Reservando tu entrada...' : 'Preparando tu pago seguro...'}
           </p>
+          <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>No cierres esta ventana</p>
         </div>
       )}
 
@@ -341,27 +310,65 @@ function SheetContent({
       {step === 'details' && (
         <>
           <div className="flex-1 overflow-y-auto">
-            {/* Event card */}
             <div className="p-4 space-y-4">
+              {/* Event card -- larger image */}
               <div className="flex gap-3">
-                <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 relative" style={{ background: 'var(--surface)' }}>
+                <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0 relative" style={{ background: 'var(--surface)' }}>
                   {event.image && (
-                    <Image src={event.image} alt={event.title} fill sizes="80px" className="object-cover" />
+                    <Image src={event.image} alt={event.title} fill sizes="96px" className="object-cover" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-sm line-clamp-2" style={{ color: 'var(--fg)' }}>{event.title}</h3>
-                  <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-xs mt-1 flex items-center gap-1" style={{ color: 'var(--text-secondary)' }}>
+                    <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                     {event.date && formatDate(event.date)}
                     {event.time && ` · ${event.time}`}
                   </p>
-                  {event.address && (
-                    <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-tertiary)' }}>{event.address}</p>
+                  {event.city?.name && (
+                    <p className="text-xs mt-0.5 flex items-center gap-1" style={{ color: 'var(--text-tertiary)' }}>
+                      <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                      </svg>
+                      {event.city.name}
+                    </p>
+                  )}
+                  {event.rating && event.rating > 0 && (
+                    <div className="flex items-center gap-1 mt-1">
+                      <svg className="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      <span className="text-[10px] font-semibold" style={{ color: 'var(--fg)' }}>{event.rating.toFixed(1)}</span>
+                      {event.reviewCount && <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>({event.reviewCount})</span>}
+                    </div>
                   )}
                 </div>
               </div>
 
-              {/* Divider */}
+              {/* Urgency bar -- capacity */}
+              {isAlmostFull && capacityPercent !== null && (
+                <div className="rounded-lg p-3" style={{ background: 'rgba(230,57,70,0.06)', border: '1px solid rgba(230,57,70,0.15)' }}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-semibold text-[#e63946] flex items-center gap-1.5">
+                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+                      Alta demanda
+                    </span>
+                    <span className="text-[10px] font-bold text-[#e63946]">{capacityPercent}% vendido</span>
+                  </div>
+                  <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
+                    <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${capacityPercent}%`, background: 'linear-gradient(90deg, #e63946, #ff6b6b)' }} />
+                  </div>
+                </div>
+              )}
+
+              {/* Social proof */}
+              {event.soldCount && event.soldCount > 10 && (
+                <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                  <svg className="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                  <span>{event.soldCount.toLocaleString()}+ personas ya compraron</span>
+                </div>
+              )}
+
               <div style={{ borderTop: '1px solid var(--border)' }} />
 
               {/* Ticket type */}
@@ -369,10 +376,10 @@ function SheetContent({
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="text-sm font-semibold" style={{ color: 'var(--fg)' }}>Entrada General</p>
-                    <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Acceso al evento</p>
+                    <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Acceso completo al evento</p>
                   </div>
                   <p className="text-sm font-bold" style={{ color: isFree ? '#2a9d8f' : 'var(--fg)' }}>
-                    {isFree ? 'GRATIS' : `${cs}${event.price.toFixed(2)} ${cl}`}
+                    {isFree ? 'GRATIS' : `${cs}${event.price.toFixed(0)} ${cl}`}
                   </p>
                 </div>
 
@@ -410,79 +417,83 @@ function SheetContent({
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs" style={{ color: 'var(--text-secondary)' }}>
                     <span>Entrada General x{quantity}</span>
-                    <span>{cs}{(event.price * quantity).toFixed(2)}</span>
+                    <span>{cs}{(event.price * quantity).toFixed(0)}</span>
                   </div>
                   <div className="flex justify-between text-xs" style={{ color: 'var(--text-secondary)' }}>
                     <span>Cargo por servicio</span>
-                    <span>{cs}0.00</span>
+                    <span className="text-green-500 font-medium">Gratis</span>
                   </div>
                   <div style={{ borderTop: '1px solid var(--border)' }} />
                   <div className="flex justify-between">
                     <span className="text-sm font-bold" style={{ color: 'var(--fg)' }}>Total</span>
-                    <span className="text-sm font-bold" style={{ color: 'var(--fg)' }}>{cs}{total.toFixed(2)} {cl}</span>
+                    <span className="text-base font-black" style={{ color: 'var(--fg)' }}>{cs}{total.toFixed(0)} {cl}</span>
                   </div>
                 </div>
               )}
 
-              {/* Perfect Day upsell — compelling */}
-              <div className="rounded-xl p-3.5 relative overflow-hidden" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                <div className="absolute top-0 right-0 w-20 h-20 rounded-full opacity-10" style={{ background: 'radial-gradient(circle, #e63946, transparent)', transform: 'translate(30%, -30%)' }} />
-                <div className="flex items-start gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-[#e63946]/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="text-sm">✨</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold" style={{ color: 'var(--fg)' }}>No solo compres un ticket</p>
-                    <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>
-                      Al comprar, te sugerimos cena, bar, actividades y transporte para un día completo.
-                    </p>
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                      {['🍽️ Cena', '🍸 Bar', '📍 Cerca', '🚐 Transporte'].map(t => (
-                        <span key={t} className="text-[9px] px-2 py-0.5 rounded-full font-medium" style={{ background: 'var(--card)', color: 'var(--text-tertiary)', border: '1px solid var(--border)' }}>{t}</span>
-                      ))}
+              {/* "Arma tu Day" upsell -- compelling design */}
+              <div className="rounded-xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+                <div className="p-4 relative" style={{ background: 'linear-gradient(135deg, rgba(230,57,70,0.08), rgba(139,92,246,0.06))' }}>
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #e63946, #c62d3a)' }}>
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
                     </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-bold" style={{ color: 'var(--fg)' }}>No solo compres un ticket</p>
+                      <p className="text-xs mt-1 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                        Al comprar, te sugerimos cena, bar y actividades para armar un dia completo con ruta y transporte.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 mt-3 ml-[52px]">
+                    {[
+                      { label: 'Cena', color: '#f97316' },
+                      { label: 'Bar', color: '#8b5cf6' },
+                      { label: 'Cerca', color: '#2a9d8f' },
+                      { label: 'Ruta', color: '#3b82f6' },
+                    ].map(t => (
+                      <span key={t.label} className="text-[10px] px-2.5 py-1 rounded-full font-medium" style={{ background: `${t.color}12`, color: t.color, border: `1px solid ${t.color}25` }}>
+                        {t.label}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
 
               {/* Security badges */}
-              <div className="flex items-center gap-4 flex-wrap pt-1">
-                <div className="flex items-center gap-1.5">
-                  <svg className="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
-                  </svg>
-                  <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Pago seguro</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <svg className="w-3.5 h-3.5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
-                  </svg>
-                  <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Stripe</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <svg className="w-3.5 h-3.5 text-purple-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM15.1 8H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z" />
-                  </svg>
-                  <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Ticket con QR</span>
-                </div>
+              <div className="flex items-center justify-between py-2">
+                {[
+                  { icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', label: 'Pago seguro', color: '#10b981' },
+                  { icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', label: 'Stripe', color: '#6366f1' },
+                  { icon: 'M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z', label: 'Ticket QR', color: '#8b5cf6' },
+                ].map(badge => (
+                  <div key={badge.label} className="flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke={badge.color} viewBox="0 0 24 24" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d={badge.icon} />
+                    </svg>
+                    <span className="text-[10px] font-medium" style={{ color: 'var(--text-tertiary)' }}>{badge.label}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Bottom CTA */}
+          {/* Bottom CTA -- fixed */}
           <div className="p-4 space-y-2" style={{ borderTop: '1px solid var(--border)', background: 'var(--card)' }}>
             <button
               onClick={onQuickBuy}
               disabled={processing}
-              className="w-full py-3.5 text-white font-bold rounded-xl transition hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
+              className="w-full py-3.5 text-white font-bold rounded-xl transition-all hover:shadow-lg active:scale-[0.99] disabled:opacity-60 text-sm"
               style={{
-                background: isFree ? '#2a9d8f' : 'linear-gradient(135deg, #e63946, #c62d3a)',
-                boxShadow: isFree ? '0 4px 20px rgba(42,157,143,0.3)' : '0 4px 20px rgba(230,57,70,0.3)',
+                background: isFree ? 'linear-gradient(135deg, #2a9d8f, #1a7a6f)' : 'linear-gradient(135deg, #e63946, #c62d3a)',
+                boxShadow: isFree ? '0 4px 20px rgba(42,157,143,0.25)' : '0 4px 20px rgba(230,57,70,0.25)',
               }}
             >
               {isFree
-                ? 'Reservar y armar mi Day'
-                : `Comprar y armar mi Day`
+                ? 'Reservar gratis y armar mi Day'
+                : `${cs}${total.toFixed(0)} ${cl} -- Comprar y armar mi Day`
               }
             </button>
             <button
@@ -501,9 +512,21 @@ function SheetContent({
         <>
           <div className="flex-1 overflow-y-auto">
             <div className="p-4 space-y-3">
+              <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                <div className="w-10 h-10 rounded-lg overflow-hidden relative shrink-0" style={{ background: 'var(--card)' }}>
+                  {event.image && <Image src={event.image} alt="" fill sizes="40px" className="object-cover" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold truncate" style={{ color: 'var(--fg)' }}>{event.title}</p>
+                  <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
+                    {!isFree && <>{cs}{total.toFixed(0)} {cl} · </>}{quantity} entrada{quantity > 1 ? 's' : ''}
+                  </p>
+                </div>
+              </div>
+
               <p className="text-sm font-semibold" style={{ color: 'var(--fg)' }}>Selecciona un Day</p>
               <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                {isFree ? 'Agrega este evento gratis a tu plan del dia.' : 'El evento se agregara a tu Day y procederas al pago.'}
+                {isFree ? 'Agrega este evento gratis a tu plan del dia.' : 'El evento se agregara y procederas al pago seguro.'}
               </p>
 
               {loadingPlans ? (
@@ -512,10 +535,16 @@ function SheetContent({
                 </div>
               ) : plans.length === 0 && !showNewDay ? (
                 <div className="text-center py-6">
-                  <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>No tienes Days creados</p>
+                  <div className="w-14 h-14 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ background: 'rgba(230,57,70,0.08)' }}>
+                    <svg className="w-6 h-6 text-[#e63946]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p className="text-sm font-semibold mb-1" style={{ color: 'var(--fg)' }}>Crea tu primer Day</p>
+                  <p className="text-xs mb-4" style={{ color: 'var(--text-secondary)' }}>Organiza tus actividades en un plan perfecto</p>
                   <button
                     onClick={() => setShowNewDay(true)}
-                    className="px-5 py-2.5 bg-[#e63946] hover:bg-[#c62d3a] text-white text-sm font-bold rounded-xl transition"
+                    className="px-6 py-2.5 text-white text-sm font-bold rounded-xl transition" style={{ background: 'linear-gradient(135deg, #e63946, #c62d3a)' }}
                   >
                     Crear mi primer Day
                   </button>
@@ -556,7 +585,7 @@ function SheetContent({
                   <input
                     value={newDayTitle}
                     onChange={(e) => setNewDayTitle(e.target.value)}
-                    placeholder={`Day — ${event.title}`}
+                    placeholder={`Day - ${event.title}`}
                     className="w-full rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#e63946]"
                     style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--fg)' }}
                     autoFocus
@@ -565,7 +594,8 @@ function SheetContent({
                     <button
                       onClick={onCreateNewDay}
                       disabled={processing}
-                      className="flex-1 py-2.5 bg-[#e63946] hover:bg-[#c62d3a] text-white text-sm font-bold rounded-lg transition disabled:opacity-50"
+                      className="flex-1 py-2.5 text-white text-sm font-bold rounded-lg transition disabled:opacity-50"
+                      style={{ background: 'linear-gradient(135deg, #e63946, #c62d3a)' }}
                     >
                       {processing ? 'Creando...' : isFree ? 'Crear y reservar' : 'Crear y pagar'}
                     </button>
