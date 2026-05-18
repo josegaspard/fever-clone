@@ -66,7 +66,7 @@ async function handleCleanup(req: NextRequest) {
   const buildQuery = (op: 'select' | 'delete') => {
     let q =
       op === 'select'
-        ? supabase.from('events').select('id, slug, title, external_source, date', { count: 'exact', head: false })
+        ? supabase.from('events').select('id, slug, title, date', { count: 'exact', head: false })
         : supabase.from('events').delete();
     if (cityId) q = q.eq('city_id', cityId);
     if (onlyFuture) q = q.gte('date', new Date().toISOString().slice(0, 10));
