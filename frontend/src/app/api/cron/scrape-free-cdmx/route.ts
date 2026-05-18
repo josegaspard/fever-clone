@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { downloadAndStoreImage } from '@/lib/event-image';
 
 export const maxDuration = 300;
 export const dynamic = 'force-dynamic';
@@ -218,6 +219,9 @@ async function upsertEvent(
 
   const categoryId = categoryIdsBySlug.get(ev.category) || categoryIdsBySlug.get('tours') || null;
 
+  // Si hay image_url, intentar descargarla al bucket Supabase
+  const storedImage = await downloadAndStoreImage(ev.image_url, 'events/cdmx', `${baseSlug}-free`);
+
   const payload = {
     title: ev.title,
     slug,
@@ -229,7 +233,7 @@ async function upsertEvent(
     price: 0,
     currency: 'MXN',
     original_price: null,
-    image: ev.image_url || null,
+    image: storedImage,
     gallery: null,
     city_id: cityId,
     category_id: categoryId,

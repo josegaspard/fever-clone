@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { downloadAndStoreImage } from '@/lib/event-image';
 
 export const maxDuration = 300;
 export const dynamic = 'force-dynamic';
@@ -737,7 +738,9 @@ export async function POST(req: NextRequest) {
 
   // 5. Slug + payload
   const slug = `que-hacer-hoy-${ctx.dayName}-${ctx.day}-de-${ctx.monthName}-en-${city.slug}-tk-${tiktok.videoId || 'manual'}-${ctx.date}`;
-  const heroImage = tiktok.thumbnail || events.find((e) => e.image)?.image || null;
+  const rawHero = tiktok.thumbnail || events.find((e) => e.image)?.image || null;
+  // TikTok thumbnails caducan en horas — guardamos copia en bucket
+  const heroImage = await downloadAndStoreImage(rawHero, 'blog/cerebro', `${slug}-hero`);
   const wordCount = gen.content_html.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
   const readingTime = Math.max(3, Math.round(wordCount / 220));
 

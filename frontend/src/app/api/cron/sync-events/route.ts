@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { downloadAndStoreImage } from '@/lib/event-image';
 
 export const maxDuration = 300;
 export const dynamic = 'force-dynamic';
@@ -255,7 +256,8 @@ async function syncCity(
       const price = priceRange?.min ?? 0;
       const originalPrice = priceRange?.max ?? null;
       const currency = priceRange?.currency || (filter.country === 'MX' ? 'MXN' : null);
-      const image = pickBestImage(ev.images);
+      const rawImage = pickBestImage(ev.images);
+      const image = await downloadAndStoreImage(rawImage, `events/${citySlug}`, `${baseSlug}-tm-${ev.id.slice(-8)}`);
       const gallery = buildGallery(ev.images);
       const { description, shortDescription } = buildDescription(ev);
       const categorySlug = mapCategory(ev);
