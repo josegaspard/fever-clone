@@ -65,7 +65,7 @@ interface TmEvent {
 
 // ctxplorer city.slug -> TM filter (countryCode + city name)
 const CITY_TM_FILTER: Record<string, { country: string; city: string }> = {
-  cdmx: { country: 'MX', city: 'Mexico City' },
+  mx: { country: 'MX', city: 'Mexico City' },
   monterrey: { country: 'MX', city: 'Monterrey' },
   madrid: { country: 'ES', city: 'Madrid' },
   barcelona: { country: 'ES', city: 'Barcelona' },

@@ -314,9 +314,9 @@ export async function GET(req: NextRequest) {
   const { data: city } = await supabase
     .from('cities')
     .select('id, slug, name')
-    .eq('slug', 'cdmx')
+    .eq('slug', 'mx')
     .maybeSingle();
-  if (!city) return NextResponse.json({ error: 'CDMX city not found' }, { status: 500 });
+  if (!city) return NextResponse.json({ error: 'MX city not found' }, { status: 500 });
 
   const { data: cats } = await supabase.from('categories').select('id, slug');
   const categoryIdsBySlug = new Map<string, number>();

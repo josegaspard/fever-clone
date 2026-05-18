@@ -166,7 +166,7 @@ export async function GET(req: NextRequest) {
   const { data: city } = await supabase
     .from('cities')
     .select('id, slug')
-    .eq('slug', 'cdmx')
+    .eq('slug', 'mx')
     .maybeSingle();
   if (!city) return NextResponse.json({ error: 'CDMX missing' }, { status: 500 });
 

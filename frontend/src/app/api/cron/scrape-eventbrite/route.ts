@@ -18,7 +18,7 @@ const UA =
 
 // Eventbrite search URLs per ctxplorer city. price=free filter aplicado por ciudad.
 const EB_URLS: Record<string, { url: string; currency: string }> = {
-  cdmx: { url: 'https://www.eventbrite.com.mx/d/mexico--ciudad-de-mexico/free--events/', currency: 'MXN' },
+  mx: { url: 'https://www.eventbrite.com.mx/d/mexico--ciudad-de-mexico/free--events/', currency: 'MXN' },
   monterrey: { url: 'https://www.eventbrite.com.mx/d/mexico--monterrey/free--events/', currency: 'MXN' },
   madrid: { url: 'https://www.eventbrite.es/d/spain--madrid/free--events/', currency: 'EUR' },
   barcelona: { url: 'https://www.eventbrite.es/d/spain--barcelona/free--events/', currency: 'EUR' },
