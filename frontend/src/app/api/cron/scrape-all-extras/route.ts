@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { commonCronAuth } from '@/lib/event-upsert';
 
-export const maxDuration = 800;
+export const maxDuration = 300;
 export const dynamic = 'force-dynamic';
 
 // Llama secuencialmente a todos los scrapers individuales que no entraron al cron limit.
@@ -61,17 +61,25 @@ export async function GET(req: NextRequest) {
   const onlyParam = req.nextUrl.searchParams.get('only'); // p.ej. only=eventbrite,unam
   const onlySet = onlyParam ? new Set(onlyParam.split(',').map((s) => s.trim())) : null;
 
-  const results: Record<string, unknown> = {};
-  for (const step of PIPELINE) {
-    if (onlySet && !onlySet.has(step.name)) continue;
+  // Hobby plan: 300s max por funcion. Cada child es serverless independiente con su propio budget,
+  // asi que los disparamos en paralelo. Si el orchestrator muere antes de terminar de esperar,
+  // los hijos siguen vivos y persistiendo en DB.
+  const steps = PIPELINE.filter((s) => !onlySet || onlySet.has(s.name));
+  const promises = steps.map((step) => {
     const pathWithKey = keyQs
       ? step.path + (step.path.includes('?') ? '&' : '?') + `key=${encodeURIComponent(keyQs)}`
       : step.path;
-    const r = await callInternal(base, pathWithKey, authHeader, step.timeoutMs);
-    results[step.name] = r;
-    // pequeño respiro entre scrapers
-    await new Promise((r) => setTimeout(r, 500));
-  }
+    return callInternal(base, pathWithKey, authHeader, Math.min(step.timeoutMs, 280_000)).then(
+      (r) => [step.name, r] as const
+    );
+  });
+  const settled = await Promise.allSettled(promises);
+  const results: Record<string, unknown> = {};
+  settled.forEach((s, i) => {
+    const name = steps[i].name;
+    if (s.status === 'fulfilled') results[name] = s.value[1];
+    else results[name] = { ok: false, status: 0, ms: 0, body: String(s.reason) };
+  });
 
   return NextResponse.json({
     ok: true,
