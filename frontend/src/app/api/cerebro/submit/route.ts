@@ -421,6 +421,190 @@ REGLAS content_html:
 `;
 }
 
+// ---------------- Events extractor del TikTok ----------------
+
+interface TikTokExtractedEvent {
+  title: string;
+  date: string;
+  time?: string | null;
+  address: string;
+  description: string;
+  short_description?: string;
+  category: string;
+  source_url?: string | null;
+}
+
+async function extractEventsFromTikTok(
+  tiktok: TikTokMeta,
+  cityName: string,
+  defaultDate: string
+): Promise<TikTokExtractedEvent[]> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return [];
+
+  const prompt = `Analiza este TikTok sobre ${cityName} y extrae EVENTOS especificos que se puedan agregar a una agenda cultural.
+
+URL: ${tiktok.url}
+Autor: @${tiktok.authorName || 'desconocido'}
+Titulo: ${tiktok.title || ''}
+Caption: ${tiktok.caption || '(sin caption)'}
+
+Un EVENTO es algo con LUGAR concreto + ACTIVIDAD + fecha/horario implicito o explicito. Ejemplos:
+- "El mercado de Coyoacan tiene tacos increibles los sabados" → evento {Mercado de Coyoacan - tacos, fecha sabado, address Centro Coyoacan}
+- "Hoy hay concierto en Foro Indie Rocks" → evento {concierto Foro Indie Rocks}
+- "El parque la Mexicana esta increible al atardecer" → evento {Parque La Mexicana atardecer}
+
+NO son eventos: opiniones genericas, memes, contenido viral sin lugar fisico.
+
+REGLAS estrictas:
+- SOLO eventos con lugar concreto identificable.
+- Fecha: si el TikTok no dice fecha exacta, usa ${defaultDate}.
+- NO inventes precios, horarios o detalles que no esten en el caption.
+- Si no hay ningun evento extraible, devuelve {"events": []}.
+
+Devuelve EXCLUSIVAMENTE JSON valido (sin markdown, sin backticks):
+{
+  "events": [
+    {
+      "title": "Nombre del evento o lugar+actividad",
+      "date": "YYYY-MM-DD",
+      "time": "HH:MM" o null,
+      "address": "Direccion o zona en ${cityName}",
+      "description": "60-120 palabras explicando que es, basado solo en el TikTok. Cita el TikTok como 'segun @${tiktok.authorName || 'creador local'}'.",
+      "short_description": "1 oracion max 200 chars",
+      "category": "uno de: conciertos | arte | gastronomia | teatro | festivales | inmersivo | deportes | bienestar | tours | nightlife",
+      "source_url": "${tiktok.url}"
+    }
+  ]
+}
+
+Maximo 3 eventos. Si dudas, devuelve menos.`;
+
+  // Solo intenta Gemini para esta extraccion (la siguiente llamada hara cascade completo)
+  for (const model of ['gemini-2.5-flash', 'gemini-2.5-flash-lite']) {
+    try {
+      const res = await fetch(`${GEMINI_BASE}/${model}:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.4,
+            topP: 0.9,
+            maxOutputTokens: 8000,
+            responseMimeType: 'application/json',
+          },
+        }),
+      });
+      if (!res.ok) continue;
+      const json = (await res.json()) as {
+        candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+      };
+      const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) continue;
+      let cleaned = text.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
+      const first = cleaned.indexOf('{');
+      const last = cleaned.lastIndexOf('}');
+      if (first !== -1 && last !== -1 && last > first) cleaned = cleaned.slice(first, last + 1);
+      const parsed = JSON.parse(cleaned) as { events?: TikTokExtractedEvent[] };
+      return (parsed.events || []).filter(
+        (e) => e && e.title && e.date && /^\d{4}-\d{2}-\d{2}$/.test(e.date) && e.address
+      );
+    } catch {
+      continue;
+    }
+  }
+  return [];
+}
+
+async function upsertExtractedEvent(
+  ev: TikTokExtractedEvent,
+  cityId: number,
+  categoryIdsBySlug: Map<string, number>,
+  tiktokVideoId: string | null
+): Promise<{ slug: string; action: string; error?: string }> {
+  const baseSlug = (function slugify(s: string) {
+    return s
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .replace(/-{2,}/g, '-')
+      .slice(0, 80);
+  })(ev.title);
+  if (!baseSlug) return { slug: '', action: 'skipped', error: 'no slug' };
+  const suffix = tiktokVideoId ? `tk-${tiktokVideoId.slice(-8)}` : `tk-${ev.date}`;
+  const slug = `${baseSlug}-${suffix}`.slice(0, 110);
+
+  const categoryId =
+    categoryIdsBySlug.get(ev.category) || categoryIdsBySlug.get('tours') || null;
+
+  const payload = {
+    title: ev.title,
+    slug,
+    description: ev.description,
+    short_description: (ev.short_description || ev.description).slice(0, 200),
+    date: ev.date,
+    time: ev.time || null,
+    duration: null,
+    price: 0,
+    currency: 'MXN',
+    original_price: null,
+    image: null,
+    gallery: null,
+    city_id: cityId,
+    category_id: categoryId,
+    address: ev.address,
+    lat: null,
+    lng: null,
+    capacity: null,
+    sold_count: 0,
+    featured: false,
+    status: 'PUBLISHED',
+    external_url: ev.source_url || null,
+    external_source: 'tiktok',
+    external_id: tiktokVideoId,
+    updated_at: new Date().toISOString(),
+  };
+
+  const tryWrite = async (
+    op: 'insert' | 'update',
+    existingId?: number
+  ): Promise<{ error: string | null }> => {
+    const writeOnce = async (data: Record<string, unknown>) => {
+      if (op === 'insert') return await supabase.from('events').insert(data);
+      return await supabase.from('events').update(data).eq('id', existingId!);
+    };
+    const first = await writeOnce(payload as Record<string, unknown>);
+    if (!first.error) return { error: null };
+    if (/column.*does not exist|external_/i.test(first.error.message)) {
+      const fb = { ...payload } as Record<string, unknown>;
+      delete fb.external_url;
+      delete fb.external_source;
+      delete fb.external_id;
+      const second = await writeOnce(fb);
+      if (second.error) return { error: second.error.message };
+      return { error: null };
+    }
+    return { error: first.error.message };
+  };
+
+  const { data: existing } = await supabase
+    .from('events')
+    .select('id')
+    .eq('slug', slug)
+    .maybeSingle();
+  if (existing?.id) {
+    const r = await tryWrite('update', existing.id);
+    if (r.error) return { slug, action: 'error', error: r.error };
+    return { slug, action: 'updated' };
+  }
+  const r = await tryWrite('insert');
+  if (r.error) return { slug, action: 'error', error: r.error };
+  return { slug, action: 'created' };
+}
+
 // ---------------- Handler ----------------
 
 interface SubmitBody {
@@ -429,6 +613,7 @@ interface SubmitBody {
   date?: string;
   captionOverride?: string;
   dryRun?: boolean;
+  extractEvents?: boolean; // default true
 }
 
 export async function POST(req: NextRequest) {
@@ -484,7 +669,34 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 3. Query eventos reales de esa ciudad+fecha (range +-1 dia para captar finde)
+  // 3a. NUEVO: extraer eventos del TikTok y upsertearlos en events
+  const extractEvents = body.extractEvents !== false;
+  let tiktokEvents: TikTokExtractedEvent[] = [];
+  const eventOutcomes: Array<{ slug: string; action: string; error?: string }> = [];
+  if (extractEvents && !body.dryRun) {
+    try {
+      tiktokEvents = await extractEventsFromTikTok(tiktok, city.name, ctx.date);
+    } catch {
+      // no fatal — sigue
+    }
+    if (tiktokEvents.length) {
+      const { data: cats } = await supabase.from('categories').select('id, slug');
+      const categoryIdsBySlug = new Map<string, number>();
+      for (const c of cats || []) categoryIdsBySlug.set(c.slug as string, c.id as number);
+      for (const ev of tiktokEvents) {
+        eventOutcomes.push(
+          await upsertExtractedEvent(ev, city.id, categoryIdsBySlug, tiktok.videoId)
+        );
+      }
+    }
+  } else if (extractEvents && body.dryRun) {
+    // En dryRun solo extrae pero no upsertea
+    try {
+      tiktokEvents = await extractEventsFromTikTok(tiktok, city.name, ctx.date);
+    } catch {}
+  }
+
+  // 3b. Query eventos reales de esa ciudad+fecha (incluye los recien creados arriba)
   const { data: eventsRaw } = await supabase
     .from('events')
     .select(
@@ -537,6 +749,7 @@ export async function POST(req: NextRequest) {
       city: city.slug,
       date: ctx.date,
       eventsCount: events.length,
+      tiktokEvents,
       slug,
       title: gen.title,
       meta_title: gen.meta_title,
@@ -605,6 +818,7 @@ export async function POST(req: NextRequest) {
     date: ctx.date,
     eventsCount: events.length,
     tiktok: { url: tiktok.url, author: tiktok.authorName, title: tiktok.title },
+    extractedEvents: eventOutcomes,
     wordCount,
     action: existing?.id ? 'updated' : 'created',
     _model: gen._model,
