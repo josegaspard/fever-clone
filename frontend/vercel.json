@@ -14,12 +14,8 @@
       "schedule": "0 5 * * *"
     },
     {
-      "path": "/api/cron/scrape-free-cdmx",
+      "path": "/api/cron/scrape-all-extras",
       "schedule": "30 5 * * *"
-    },
-    {
-      "path": "/api/cron/scrape-cartelera-cdmx",
-      "schedule": "45 5 * * *"
     }
   ]
 }
