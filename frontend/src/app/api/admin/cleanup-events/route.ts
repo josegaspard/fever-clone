@@ -37,6 +37,8 @@ async function handleCleanup(req: NextRequest) {
   const includeNull = sp.get('includeNull') === '1';
   const cityParam = sp.get('city');
   const onlyFuture = sp.get('onlyFuture') === '1';
+  const slugLike = sp.get('slugLike'); // ej. %-free-% (Gemini) o %-tk-% (TikTok)
+  const deleteAllCity = sp.get('deleteAllCity') === '1';
   const dryRun = sp.get('dryRun') === '1';
   const confirm = sp.get('confirm');
 
@@ -69,9 +71,18 @@ async function handleCleanup(req: NextRequest) {
     if (cityId) q = q.eq('city_id', cityId);
     if (onlyFuture) q = q.gte('date', new Date().toISOString().slice(0, 10));
 
+    // Slug pattern filter (no requiere external_source column)
+    if (slugLike) {
+      q = q.ilike('slug', slugLike);
+      return q;
+    }
+    // Delete-all-city (requiere cityId presente)
+    if (deleteAllCity) {
+      if (!cityId) throw new Error('deleteAllCity requires city= param');
+      return q;
+    }
     // Source filter: sources non-empty AND/OR includeNull
     if (sources.length > 0 && includeNull) {
-      // (external_source IN sources) OR (external_source IS NULL)
       const list = sources.map((s) => `external_source.eq.${s}`).join(',');
       q = q.or(`${list},external_source.is.null`);
     } else if (sources.length > 0) {
@@ -79,7 +90,7 @@ async function handleCleanup(req: NextRequest) {
     } else if (includeNull) {
       q = q.is('external_source', null);
     } else {
-      throw new Error('Provide at least sources= or includeNull=1');
+      throw new Error('Provide slugLike= o deleteAllCity=1 o sources= o includeNull=1');
     }
     return q;
   };
