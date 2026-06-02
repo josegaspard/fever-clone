@@ -121,7 +121,7 @@ export async function POST() {
     for (const v of venues) {
       const { data, error } = await supabase
         .from('venues')
-        .upsert(v, { onConflict: 'slug' })
+        .upsert(v as Record<string, unknown>, { onConflict: 'slug' })
         .select('id, slug')
         .single();
 
