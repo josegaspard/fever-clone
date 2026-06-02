@@ -46,7 +46,7 @@ function transformEvent(row: Record<string, unknown>) {
   };
 }
 
-const BASE_URL = 'https://fever-clone.vercel.app';
+const BASE_URL = 'https://ctxplorer.com';
 
 export const metadata = {
   title: 'CTXplorer - Descubre los mejores planes y eventos en tu ciudad',

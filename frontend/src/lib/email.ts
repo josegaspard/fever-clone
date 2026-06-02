@@ -3,8 +3,8 @@
 // Set RESEND_API_KEY in .env.local to enable real emails
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
-const FROM_EMAIL = process.env.EMAIL_FROM || 'CTXplorer <noreply@fever-clone.vercel.app>';
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://fever-clone.vercel.app';
+const FROM_EMAIL = process.env.EMAIL_FROM || 'CTXplorer <noreply@ctxplorer.com>';
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ctxplorer.com';
 
 interface EmailOptions {
   to: string;

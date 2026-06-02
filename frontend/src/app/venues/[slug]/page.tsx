@@ -7,7 +7,7 @@ import VenueProfileClient from './VenueProfileClient';
 // ISR: revalidate every 5 minutes
 export const revalidate = 300;
 
-const BASE_URL = 'https://fever-clone.vercel.app';
+const BASE_URL = 'https://ctxplorer.com';
 
 interface VenueRow {
   id: number;

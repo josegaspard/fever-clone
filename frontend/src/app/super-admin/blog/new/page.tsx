@@ -331,7 +331,7 @@ export default function BlogNewPage() {
                     style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}
                   >
                     <p className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>
-                      fever-clone.vercel.app &rsaquo; blog &rsaquo; {slug || 'slug-del-articulo'}
+                      ctxplorer.com &rsaquo; blog &rsaquo; {slug || 'slug-del-articulo'}
                     </p>
                     <p
                       className="text-base font-medium mb-1 line-clamp-1"

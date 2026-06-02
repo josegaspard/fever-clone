@@ -1,9 +1,9 @@
 import { Metadata } from 'next';
 
-const BASE_URL = 'https://fever-clone.vercel.app';
+const BASE_URL = 'https://ctxplorer.com';
 
 export const metadata: Metadata = {
-  title: 'Buscar eventos | CTXplorer',
+  title: 'Buscar eventos',
   description:
     'Busca eventos, conciertos, teatro, gastronomia, arte y mas en tu ciudad. Filtra por precio, fecha y categoria. Arma tu Day perfecto con experiencias unicas.',
   keywords: [

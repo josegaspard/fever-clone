@@ -72,7 +72,7 @@ export default function CookiesPage() {
 
         <section>
           <h2 className="text-lg font-bold mb-2" style={{ color: 'var(--fg)' }}>Contacto</h2>
-          <p>Para consultas sobre cookies: <strong>privacy@fever-clone.vercel.app</strong></p>
+          <p>Para consultas sobre cookies: <strong>privacy@ctxplorer.com</strong></p>
         </section>
       </div>
     </div>

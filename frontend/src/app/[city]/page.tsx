@@ -8,7 +8,7 @@ import EventCarousel from '@/components/EventCarousel';
 
 export const revalidate = 300;
 
-const BASE_URL = 'https://fever-clone.vercel.app';
+const BASE_URL = 'https://ctxplorer.com';
 
 const CITY_HERO_IMAGES: Record<string, string> = {
   cdmx: 'https://images.unsplash.com/photo-1585464231875-d9ef1f5ad396?w=1920&q=80',
@@ -95,7 +95,9 @@ export async function generateMetadata({
   const name = cityData.name;
   const country = cityData.country;
   const desc = CITY_DESCRIPTIONS[citySlug] || `Descubre los mejores eventos y experiencias en ${name}. Conciertos, gastronomia, arte, festivales y mas.`;
-  const title = `Eventos en ${name} - Conciertos, Gastronomia, Arte y Mas | CTXplorer`;
+  // Root layout applies the `%s | CTXplorer` template, so the brand must NOT be
+  // added here or the <title> renders doubled ("... | CTXplorer | CTXplorer").
+  const title = `Eventos en ${name} - Conciertos, Gastronomia, Arte y Mas`;
   const url = `${BASE_URL}/${citySlug}`;
 
   return {

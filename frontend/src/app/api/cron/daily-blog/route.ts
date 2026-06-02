@@ -79,6 +79,22 @@ interface CityRow {
   country: string | null;
 }
 
+// One guide per METRO, not per city row. The `cities` table holds several rows
+// for the same metropolitan area (e.g. CDMX = Ciudad de México / México / México
+// CDMX / Iztacalco / Cuauhtémoc), which produced duplicate "qué hacer hoy"
+// guides (mx vs mexico vs mexico-cdmx…) and SEO cannibalization. We collapse
+// those into a single canonical target and aggregate their events.
+interface MetroTarget {
+  slug: string;
+  name: string;
+  ids: number[];
+}
+const METRO_GROUPS: MetroTarget[] = [
+  { slug: 'cdmx', name: 'Ciudad de México', ids: [6, 9, 11, 20, 23] },
+  { slug: 'guadalajara', name: 'Guadalajara', ids: [8, 10, 12] },
+  { slug: 'monterrey', name: 'Monterrey', ids: [7, 18] },
+];
+
 interface EventRow {
   title: string;
   slug: string;
@@ -345,7 +361,7 @@ REGLAS de content_html (estrictas):
 }
 
 async function processCity(
-  city: CityRow,
+  city: MetroTarget,
   ctx: ReturnType<typeof getDateContext>,
   dryRun: boolean
 ): Promise<Record<string, unknown>> {
@@ -355,18 +371,28 @@ async function processCity(
       'title, slug, short_description, description, date, time, address, price, currency, image, featured, categories(name)'
     )
     .eq('status', 'PUBLISHED')
-    .eq('city_id', city.id)
+    .in('city_id', city.ids)
     .eq('date', ctx.date)
     .order('featured', { ascending: false })
     .order('rating', { ascending: false, nullsFirst: false })
-    .limit(20);
+    .limit(40);
 
   if (evErr) return { city: city.slug, error: `events query: ${evErr.message}` };
   if (!events || events.length === 0) {
     return { city: city.slug, skipped: 'no events for date' };
   }
 
-  const eventsLite: EventLite[] = (events as unknown as EventRow[]).map((e) => ({
+  // Aggregating several city rows of the same metro can surface the same event
+  // twice (split across ids / repeated showtimes) — dedupe by normalized title.
+  const seenTitles = new Set<string>();
+  const deduped = (events as unknown as EventRow[]).filter((e) => {
+    const k = (e.title || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    if (!k || seenTitles.has(k)) return false;
+    seenTitles.add(k);
+    return true;
+  }).slice(0, 20);
+
+  const eventsLite: EventLite[] = deduped.map((e) => ({
     title: e.title,
     slug: e.slug,
     shortDescription: e.short_description,
@@ -475,9 +501,32 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  // Collapse same-metro city rows into one canonical target (dedupe), then add
+  // every remaining standalone city as its own single-id target.
+  const cityById = new Map<number, CityRow>(
+    (cities as CityRow[]).map((c) => [c.id, c] as [number, CityRow])
+  );
+  const used = new Set<number>();
+  const metros: MetroTarget[] = [];
+  for (const g of METRO_GROUPS) {
+    const present = g.ids.filter((id) => cityById.has(id));
+    if (!present.length) continue;
+    present.forEach((id) => used.add(id));
+    metros.push({ slug: g.slug, name: g.name, ids: present });
+  }
+  for (const c of cities as CityRow[]) {
+    if (used.has(c.id)) continue;
+    metros.push({ slug: c.slug, name: c.name, ids: [c.id] });
+  }
+
+  // cityFilter matches either a canonical metro slug or any member city slug.
   const targets = cityFilter
-    ? (cities as CityRow[]).filter((c) => c.slug === cityFilter)
-    : (cities as CityRow[]);
+    ? metros.filter(
+        (m) =>
+          m.slug === cityFilter ||
+          m.ids.some((id) => cityById.get(id)?.slug === cityFilter)
+      )
+    : metros;
 
   if (targets.length === 0) {
     return NextResponse.json({ error: 'no matching cities' }, { status: 404 });

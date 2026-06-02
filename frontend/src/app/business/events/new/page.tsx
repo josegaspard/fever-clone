@@ -645,7 +645,7 @@ export default function NewBusinessEventPage() {
               <p className="text-[10px] font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-tertiary)' }}>Vista previa en Google</p>
               <div>
                 <p className="text-sm truncate" style={{ color: '#1a0dab' }}>{form.metaTitle || form.title || 'Titulo del evento'} | CTXplorer</p>
-                <p className="text-xs truncate" style={{ color: '#006621' }}>fever-clone.vercel.app/events/{form.slug || 'slug-del-evento'}</p>
+                <p className="text-xs truncate" style={{ color: '#006621' }}>ctxplorer.com/events/{form.slug || 'slug-del-evento'}</p>
                 <p className="text-xs line-clamp-2 mt-0.5" style={{ color: 'var(--text-secondary)' }}>{form.metaDescription || form.shortDescription || form.description?.slice(0, 160) || 'Descripcion del evento que aparecera en los resultados de busqueda...'}</p>
               </div>
             </div>

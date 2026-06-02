@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 export const revalidate = 3600; // Revalidate every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = 'https://fever-clone.vercel.app';
+  const base = 'https://ctxplorer.com';
   const now = new Date().toISOString();
 
   const [eventsRes, citiesRes, categoriesRes, blogRes, venuesRes] = await Promise.all([

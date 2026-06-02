@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Arma tu Day Perfecto | CTXplorer',
+  title: 'Arma tu Day Perfecto',
   description: 'Crea tu día perfecto con eventos, experiencias, conciertos, gastronomía y más. Elige tu grupo, presupuesto y preferencias para generar rutas personalizadas.',
 };
 

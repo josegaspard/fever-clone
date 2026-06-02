@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     const currency = (event.currency || 'MXN').toLowerCase();
     const unitAmount = Math.round(event.price * 100);
-    const origin = req.headers.get('origin') || 'https://fever-clone.vercel.app';
+    const origin = req.headers.get('origin') || 'https://ctxplorer.com';
 
     const successUrl = planId
       ? `${origin}/plans/${planId}?success=true&session_id={CHECKOUT_SESSION_ID}`

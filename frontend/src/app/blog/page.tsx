@@ -5,10 +5,12 @@ import { supabase } from '@/lib/supabase';
 
 export const revalidate = 300;
 
-const BASE_URL = 'https://fever-clone.vercel.app';
+const BASE_URL = 'https://ctxplorer.com';
 
 export const metadata: Metadata = {
-  title: 'Blog CTXplorer - Guias, tendencias y lo mejor en eventos',
+  // Root template adds "| CTXplorer"; keep the brand out of the main title to
+  // avoid "Blog CTXplorer ... | CTXplorer" redundancy.
+  title: 'Guias, tendencias y lo mejor en eventos',
   description:
     'Descubre guias, tendencias, consejos y lo mejor del mundo de los eventos. Articulos sobre gastronomia, cultura, musica, viajes y planes en tu ciudad.',
   keywords: [

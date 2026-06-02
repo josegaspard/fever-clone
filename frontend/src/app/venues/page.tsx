@@ -4,7 +4,7 @@ import VenuesListClient from './VenuesListClient';
 
 export const revalidate = 300;
 
-const BASE_URL = 'https://fever-clone.vercel.app';
+const BASE_URL = 'https://ctxplorer.com';
 
 export const metadata: Metadata = {
   title: 'Venues - Descubre los mejores lugares | CTXPLORER',

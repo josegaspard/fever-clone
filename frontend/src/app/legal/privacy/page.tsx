@@ -81,7 +81,7 @@ export default function PrivacyPage() {
             <li><strong>Portabilidad:</strong> recibir tus datos en formato estructurado</li>
             <li><strong>Oposicion:</strong> oponerte al tratamiento para fines de marketing</li>
           </ul>
-          <p className="mt-2">Para ejercer estos derechos, contacta a: <strong>privacy@fever-clone.vercel.app</strong></p>
+          <p className="mt-2">Para ejercer estos derechos, contacta a: <strong>privacy@ctxplorer.com</strong></p>
         </section>
 
         <section>
@@ -102,7 +102,7 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="text-lg font-bold mb-2" style={{ color: 'var(--fg)' }}>8. Contacto</h2>
-          <p>Para consultas sobre privacidad: <strong>privacy@fever-clone.vercel.app</strong></p>
+          <p>Para consultas sobre privacidad: <strong>privacy@ctxplorer.com</strong></p>
         </section>
       </div>
     </div>

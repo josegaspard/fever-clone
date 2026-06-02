@@ -18,7 +18,7 @@ const inter = Inter({
   preload: true,
 });
 
-const BASE_URL = 'https://fever-clone.vercel.app';
+const BASE_URL = 'https://ctxplorer.com';
 
 export const viewport: Viewport = {
   themeColor: [

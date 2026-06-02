@@ -201,7 +201,7 @@ export async function POST() {
       events_created: eventsCreated,
       venues: Object.keys(venueIds).map(slug => ({
         slug,
-        url: `https://fever-clone.vercel.app/venues/${slug}`,
+        url: `https://ctxplorer.com/venues/${slug}`,
       })),
     });
   } catch (err) {

@@ -75,7 +75,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-lg font-bold mb-2" style={{ color: 'var(--fg)' }}>10. Contacto</h2>
-          <p>Para cualquier consulta relacionada con estos terminos, puedes contactarnos a traves de la plataforma o al correo: <strong>legal@fever-clone.vercel.app</strong></p>
+          <p>Para cualquier consulta relacionada con estos terminos, puedes contactarnos a traves de la plataforma o al correo: <strong>legal@ctxplorer.com</strong></p>
         </section>
       </div>
     </div>

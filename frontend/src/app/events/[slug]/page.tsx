@@ -7,7 +7,7 @@ import EventDetailClient from './EventDetailClient';
 // ISR: revalidate every 5 minutes
 export const revalidate = 300;
 
-const BASE_URL = 'https://fever-clone.vercel.app';
+const BASE_URL = 'https://ctxplorer.com';
 
 function transformEvent(row: Record<string, unknown>): Event {
   const city = row.cities as Record<string, unknown> | null;
@@ -97,6 +97,9 @@ export async function generateMetadata({
     || `${event.title} en ${cityName}. ${priceText}. ${event.description.slice(0, 140)}...`;
 
   const eventUrl = `${BASE_URL}/events/${event.slug}`;
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const effectiveDate = String(event.endDate || event.date || '').slice(0, 10);
+  const isEventPast = !!effectiveDate && effectiveDate < todayStr;
   const dateFormatted = new Date(event.date).toLocaleDateString('es-ES', {
     year: 'numeric',
     month: 'long',
@@ -165,10 +168,13 @@ export async function generateMetadata({
       canonical: eventUrl,
     },
     robots: {
-      index: true,
+      // Past events stay reachable (link equity / users with the URL) but drop
+      // out of the index so stale "el <fecha pasada>" pages don't rank. Removed
+      // events return 410 via proxy.ts; this covers still-PUBLISHED past ones.
+      index: !isEventPast,
       follow: true,
       googleBot: {
-        index: true,
+        index: !isEventPast,
         follow: true,
         'max-video-preview': -1,
         'max-image-preview': 'large',
