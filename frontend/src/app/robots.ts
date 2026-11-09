@@ -10,7 +10,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: [
           '/api/',
-          '/auth/',
           '/admin/',
           '/super-admin/',
           '/business/',
@@ -31,7 +30,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
         disallow: [
           '/api/',
-          '/auth/',
           '/admin/',
           '/super-admin/',
           '/business/',
@@ -51,27 +49,27 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: 'GPTBot',
         allow: ['/', '/events/', '/search', '/build-day'],
-        disallow: ['/api/', '/auth/', '/admin/', '/super-admin/', '/business/'],
+        disallow: ['/api/', '/admin/', '/super-admin/', '/business/'],
       },
       {
         userAgent: 'ChatGPT-User',
         allow: ['/', '/events/', '/search'],
-        disallow: ['/api/', '/auth/', '/admin/', '/super-admin/', '/business/'],
+        disallow: ['/api/', '/admin/', '/super-admin/', '/business/'],
       },
       {
         userAgent: 'Claude-Web',
         allow: ['/', '/events/', '/search'],
-        disallow: ['/api/', '/auth/', '/admin/', '/super-admin/', '/business/'],
+        disallow: ['/api/', '/admin/', '/super-admin/', '/business/'],
       },
       {
         userAgent: 'PerplexityBot',
         allow: ['/', '/events/', '/search'],
-        disallow: ['/api/', '/auth/', '/admin/', '/super-admin/', '/business/'],
+        disallow: ['/api/', '/admin/', '/super-admin/', '/business/'],
       },
       {
         userAgent: 'Bingbot',
         allow: ['/', '/events/', '/search', '/build-day'],
-        disallow: ['/api/', '/auth/', '/admin/', '/super-admin/', '/business/', '/onboarding/'],
+        disallow: ['/api/', '/admin/', '/super-admin/', '/business/', '/onboarding/'],
       },
     ],
     sitemap: `${base}/sitemap.xml`,
